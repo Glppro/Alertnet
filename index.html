@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAINTENANCE MODE | AlertNet v3.0</title>
+    <title>CORE OVERHAUL | AlertNet Sentinel</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -11,218 +11,255 @@
         :root {
             --primary: #00f2ff;
             --primary-glow: rgba(0, 242, 255, 0.4);
-            --bg: #020205;
-            --surface: #0a0a0f;
-            --border: rgba(0, 242, 255, 0.1);
+            --bg: #010103;
+            --surface: #07070a;
+            --border: rgba(0, 242, 255, 0.12);
             --text: #f8fafc;
-            --error: #ff4d4d;
-            --success: #00ffaa;
+            --accent: #7000ff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* SFONDO DINAMICO */
-        .scanline {
-            width: 100%; height: 100px;
-            background: linear-gradient(0deg, rgba(0, 242, 255, 0) 0%, rgba(0, 242, 255, 0.05) 50%, rgba(0, 242, 255, 0) 100%);
-            position: fixed; top: -100px; left: 0;
-            animation: scan 4s linear infinite;
-            z-index: 1;
-        }
-
-        @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
-
-        /* CONTAINER PRINCIPALE */
-        .main-frame {
-            position: relative;
-            z-index: 2;
-            width: 90%;
-            max-width: 900px;
-            display: grid;
-            grid-template-columns: 1fr 300px;
+            padding: 20px;
             gap: 20px;
+        }
+
+        /* --- BACKGROUND EFFECTS --- */
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, black 120%);
+            pointer-events: none; z-index: 10;
+        }
+
+        /* --- DASHBOARD LAYOUT --- */
+        .side-panel {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-display {
+            flex: 1;
             background: var(--surface);
-            padding: 30px;
-            border-radius: 30px;
             border: 1px solid var(--border);
-            box-shadow: 0 0 100px rgba(0,0,0,0.8);
-        }
-
-        /* RADAR ANIMATO */
-        .radar-box {
+            border-radius: 20px;
             position: relative;
-            width: 150px;
-            height: 150px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            overflow: hidden;
-        }
-        .radar-sweep {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: conic-gradient(from 0deg, transparent 0%, var(--primary-glow) 25%, transparent 50%);
-            animation: sweep 3s linear infinite;
-        }
-        @keyframes sweep { to { transform: rotate(360deg); } }
-
-        /* PROGRESS BAR */
-        .progress-container {
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            height: 6px;
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 65%;
-            background: var(--primary);
-            box-shadow: 0 0 15px var(--primary);
-            animation: pulse-width 2s infinite ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            box-shadow: inset 0 0 50px rgba(0, 242, 255, 0.05);
         }
 
-        /* SIDEBAR STATUS */
-        .sidebar {
-            border-left: 1px solid var(--border);
-            padding-left: 20px;
-        }
-        .node-status {
-            font-size: 11px;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 15px;
-        }
-        .status-tag {
-            padding: 2px 6px;
-            border-radius: 4px;
-            float: right;
-        }
-        .online { background: rgba(0, 255, 170, 0.1); color: var(--success); }
-        .maint { background: rgba(255, 77, 77, 0.1); color: var(--error); }
-
-        /* TERMINALE */
-        .terminal-box {
-            background: rgba(0,0,0,0.4);
+        .card {
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 15px;
-            padding: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--primary);
+            padding: 20px;
+        }
+
+        /* --- WORLD MAP SIMULATION --- */
+        .map-container {
+            flex: 1;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Simple_world_map.svg') no-repeat center;
+            background-size: contain;
+            opacity: 0.1;
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(150deg);
+            position: relative;
+        }
+
+        .ping {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(10); opacity: 0; }
+        }
+
+        /* --- BIO SCANNER --- */
+        .scanner {
             height: 150px;
-            overflow-y: hidden;
+            position: relative;
+            background: rgba(0, 242, 255, 0.02);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .scan-bar {
+            width: 100%; height: 2px;
+            background: var(--primary);
+            position: absolute;
+            top: 0;
+            box-shadow: 0 0 20px var(--primary);
+            animation: scan-move 3s infinite ease-in-out;
+        }
+        @keyframes scan-move {
+            0%, 100% { top: 0%; }
+            50% { top: 100%; }
         }
 
-        h1 { font-size: 38px; font-weight: 800; letter-spacing: -2px; }
-
-        @media (max-width: 800px) {
-            .main-frame { grid-template-columns: 1fr; }
-            .sidebar { border-left: none; border-top: 1px solid var(--border); padding-top: 20px; padding-left: 0; }
+        /* --- DATA GRAPHS --- */
+        .graph-line {
+            height: 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
         }
+        .bar {
+            width: 4px;
+            background: var(--primary);
+            animation: grow 0.5s infinite alternate;
+        }
+        @keyframes grow { from { height: 20%; } to { height: 100%; } }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toast-container {
+            position: fixed; top: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 100;
+        }
+        .toast {
+            background: rgba(0, 242, 255, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 12px 20px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono';
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .glitch-text {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--text);
+            text-shadow: 2px 0 var(--accent), -2px 0 var(--primary);
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="scanline"></div>
+    <div class="vignette"></div>
 
-    <div class="main-frame">
-        <div class="content">
-            <div class="radar-box">
-                <div class="radar-sweep"></div>
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:var(--primary);"><i class="fa-solid fa-satellite-dish"></i></div>
-            </div>
-            
-            <h1>AlertNet <span style="color: var(--primary)">v3.0 Core</span></h1>
-            <p style="color: #64748b; margin-top: 10px;">Aggiornamento dei moduli di difesa neurale in corso. La protezione non si ferma, stiamo solo cambiando pelle.</p>
-
-            <div class="progress-container">
-                <div class="progress-fill"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono'; font-size:12px; color:var(--primary);">
-                <span>DEPLOYMENT STATUS: 65%</span>
-                <span id="uptime">00:45:12</span>
-            </div>
-
-            <div class="terminal-box" style="margin-top: 25px;">
-                <div id="logs">
-                    <div>> [OK] Firewall Bypass Protection Re-initialized</div>
-                    <div>> [INIT] Loading Neural Anti-Spam Patterns...</div>
-                    <div>> [DB] Migrating SQL clusters to encrypted volume...</div>
+    <div class="side-panel">
+        <div class="card">
+            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 10px;">AUTH STATUS</h3>
+            <div class="scanner">
+                <div class="scan-bar"></div>
+                <div style="font-size: 10px; padding: 10px; color: var(--primary); opacity: 0.6;">
+                    SCANNING BIO-DATA...<br>IDENT: ADMIN_V3<br>LEVEL: CLEARANCE_RED
                 </div>
             </div>
         </div>
 
-        <div class="sidebar">
-            <h3 style="font-size: 14px; margin-bottom: 20px; text-transform: uppercase; color: #94a3b8;">Network Nodes</h3>
-            
-            <div class="node-status">
-                MILAN-01 <span class="status-tag online">ONLINE</span>
-                <div style="height:2px; width:100%; background:var(--success); opacity:0.3; margin-top:5px;"></div>
-            </div>
+        <div class="card" style="flex: 1;">
+            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 15px;">LIVE TRAFFIC</h3>
+            <div id="traffic-logs" style="font-family: 'JetBrains Mono'; font-size: 10px; color: #64748b;">
+                </div>
+        </div>
 
-            <div class="node-status">
-                FRANKFURT-04 <span class="status-tag online">ONLINE</span>
-                <div style="height:2px; width:100%; background:var(--success); opacity:0.3; margin-top:5px;"></div>
-            </div>
-
-            <div class="node-status">
-                LONDON-DB <span class="status-tag maint">UPGRADING</span>
-                <div style="height:2px; width:100%; background:var(--error); opacity:0.3; margin-top:5px;"></div>
-            </div>
-
-            <div style="margin-top: 40px; padding: 15px; background: rgba(0,242,255,0.05); border-radius: 12px; border: 1px solid var(--border);">
-                <p style="font-size: 10px; color: var(--primary); font-weight: 800;">AVVISO DI SICUREZZA</p>
-                <p style="font-size: 11px; color: #94a3b8; line-height: 1.4;">Tutte le funzioni di moderazione automatica rimangono attive sui server protetti.</p>
-            </div>
-
-            <a href="#" style="display:block; margin-top: 20px; text-align:center; color:white; text-decoration:none; font-size:12px; opacity:0.5;">
-                <i class="fa-brands fa-discord"></i> Community Support
-            </a>
+        <div class="card">
+            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 10px;">CPU LOAD</h3>
+            <div class="graph-line" id="cpu-graph"></div>
         </div>
     </div>
 
+    <div class="main-display">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1 class="glitch-text" style="font-size: 40px;">System Offline</h1>
+                <p style="color: #64748b; font-family: 'JetBrains Mono';">ALERTNET_SENTINEL_V3.0 // MAINT_MODE</p>
+            </div>
+            <div style="text-align: right;">
+                <div id="clock" style="font-size: 24px; font-weight: 800;">00:00:00</div>
+                <div style="color: var(--primary); font-size: 10px;">UTC/GMT +1</div>
+            </div>
+        </div>
+
+        <div class="map-container" id="map"></div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between;">
+            <div style="font-size: 12px; color: #64748b;">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> SINCRONIZZAZIONE NODI GLOBALI...
+            </div>
+            <div style="display: flex; gap: 20px;">
+                <span style="font-size: 12px; color: var(--primary);">ENCRYPTION: AES-256</span>
+                <span style="font-size: 12px; color: var(--primary);">SHARDS: 12/12</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
     <script>
-        // Log del terminale rotanti
-        const commands = [
-            "> [SEC] Patching CVE-2026-4412...",
-            "> [NET] Verifying Anycast IP Propagation",
-            "> [SYS] Kernel security level set to MAXIMUM",
-            "> [IO] Refreshing API credentials...",
-            "> [AUTH] Multi-factor layer operational",
-            "> [INFO] Core v3.0 stable reached"
-        ];
-        let i = 0;
-        const logBox = document.getElementById('logs');
-
+        // Orologio
         setInterval(() => {
-            const line = document.createElement('div');
-            line.textContent = commands[i];
-            logBox.appendChild(line);
-            if(logBox.childNodes.length > 7) logBox.removeChild(logBox.firstChild);
-            i = (i + 1) % commands.length;
-        }, 2500);
-
-        // Countdown Uptime
-        let seconds = 2712;
-        setInterval(() => {
-            seconds--;
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            document.getElementById('uptime').textContent = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
         }, 1000);
+
+        // Generatore di Grafico CPU
+        const graph = document.getElementById('cpu-graph');
+        for(let i=0; i<40; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.animationDelay = `${i * 0.05}s`;
+            graph.appendChild(bar);
+        }
+
+        // Notifiche Toast Casuali
+        const events = [
+            "Firewall rule #882 updated",
+            "Node MILAN-01 synchronized",
+            "DDoS mitigation active",
+            "Database shard encrypted",
+            "Memory buffer cleared"
+        ];
+
+        function createToast() {
+            const container = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="fa-solid fa-info-circle"></i> ${events[Math.floor(Math.random()*events.length)]}`;
+            container.appendChild(t);
+            setTimeout(() => t.remove(), 4000);
+        }
+        setInterval(createToast, 6000);
+
+        // Logs di traffico
+        const traffic = document.getElementById('traffic-logs');
+        setInterval(() => {
+            const entry = document.createElement('div');
+            entry.style.marginBottom = "5px";
+            entry.innerHTML = `<span style="color:var(--primary)">[${new Date().toLocaleTimeString()}]</span> REQ_IN: ${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.X.X`;
+            traffic.prepend(entry);
+            if(traffic.childNodes.length > 15) traffic.removeChild(traffic.lastChild);
+        }, 2000);
+
+        // Punti sulla mappa casuali
+        const map = document.getElementById('map');
+        function addPing() {
+            const ping = document.createElement('div');
+            ping.className = 'ping';
+            ping.style.left = Math.random() * 90 + '%';
+            ping.style.top = Math.random() * 90 + '%';
+            map.appendChild(ping);
+            setTimeout(() => ping.remove(), 2000);
+        }
+        setInterval(addPing, 1500);
+
     </script>
 </body>
 </html>
