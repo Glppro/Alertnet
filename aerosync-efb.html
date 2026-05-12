@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AEROSYNC | ULTIMATE EFB</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--dk:#07090f;--sb:#0a0d18;--pn:#0e1220;--pn2:#111525;--ac:#2979ff;--ac2:#00c8ff;--tx:#d0d6e8;--mu:#5a6480;--br:#1a2035;--br2:#222840;--grn:#00d87a;--amb:#ffb400;--wrn:#ff6b35;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body,html{height:100vh;width:100vw;background:var(--dk);color:var(--tx);font-family:'Segoe UI','Inter',sans-serif;display:flex;overflow:hidden;font-size:13px;}
+
+/* ===== LOADER ===== */
+#loader{position:fixed;inset:0;z-index:99999;background:#04060d;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease-out;}
+#loader.hide{opacity:0;pointer-events:none;}
+.ld-logo{font-size:30px;font-weight:900;letter-spacing:4px;color:white;margin-bottom:5px;}
+.ld-logo span{color:var(--ac);}
+.ld-sub{font-size:11px;color:var(--mu);letter-spacing:3px;text-transform:uppercase;margin-bottom:56px;}
+.ld-orbit{position:relative;width:160px;height:160px;margin-bottom:44px;}
+.ld-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(41,121,255,.2);}
+.ld-ring2{inset:28px;border-color:rgba(0,200,255,.14);}
+.ld-arm{position:absolute;width:100%;height:100%;top:0;left:0;}
+.ld-arm1{animation:spin 3.5s linear infinite;}
+.ld-arm2{animation:spin 6s linear infinite reverse;}
+.ld-arm3{animation:spin 9s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.ld-plane{position:absolute;top:-9px;left:50%;margin-left:-8px;font-size:15px;}
+.ld-plane.a{color:var(--ac);}
+.ld-plane.b{color:var(--ac2);}
+.ld-plane.c{color:var(--grn);}
+.ld-core{position:absolute;inset:0;margin:auto;width:14px;height:14px;border-radius:50%;background:var(--ac);box-shadow:0 0 22px var(--ac),0 0 44px rgba(41,121,255,.3);}
+.ld-bar-wrap{width:300px;margin-bottom:14px;}
+.ld-bar-bg{height:3px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.ld-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:3px;transition:width .35s ease;}
+.ld-msg{font-size:11px;color:var(--mu);margin-top:10px;min-height:16px;}
+.ld-pct{font-size:12px;color:var(--ac);margin-top:4px;font-weight:700;}
+
+/* ===== NAV ===== */
+nav{width:56px;background:var(--sb);border-right:1px solid var(--br);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;z-index:2000;}
+.nav-logo{width:36px;height:36px;background:var(--ac);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;margin-bottom:16px;box-shadow:0 0 18px rgba(41,121,255,.4);}
+.nb{width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;font-size:15px;color:var(--mu);transition:all .2s;position:relative;}
+.nb:hover{color:white;background:var(--pn2);}
+.nb.active{color:white;background:var(--ac);}
+.nb .bdg{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--grn);border:1px solid var(--sb);}
+.nsep{width:28px;height:1px;background:var(--br);margin:5px 0;}
+.nb-bot{margin-top:auto;}
+
+/* ===== APP ===== */
+#app-root{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+header{height:50px;background:var(--pn);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 16px;gap:14px;z-index:1500;}
+.hb{font-size:13px;font-weight:800;letter-spacing:2px;color:white;white-space:nowrap;}
+.hb span{color:var(--ac);}
+.hsep{width:1px;height:20px;background:var(--br);}
+.srch{position:relative;display:flex;align-items:center;}
+.srch i{position:absolute;left:10px;color:var(--mu);font-size:12px;}
+.srch input{background:var(--dk);border:1px solid var(--br2);color:white;padding:7px 12px 7px 30px;border-radius:8px;font-size:12px;width:180px;outline:none;transition:.2s;}
+.srch input:focus{border-color:var(--ac);}
+.btn-tr{background:var(--ac);border:none;color:white;padding:7px 16px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;}
+.btn-tr:hover{background:#1460e8;}
+.pills{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.pill{display:flex;align-items:center;gap:5px;background:var(--pn2);border:1px solid var(--br2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--mu);cursor:pointer;transition:.2s;white-space:nowrap;}
+.pill.sel{border-color:rgba(0,216,122,.5);color:var(--grn);}
+.dot{width:6px;height:6px;border-radius:50%;}
+.layout{display:flex;flex:1;overflow:hidden;position:relative;}
+
+/* ===== EXPLORER ===== */
+#explorer{width:290px;min-width:290px;background:var(--pn);border-right:1px solid var(--br);z-index:1000;display:flex;flex-direction:column;}
+.xtabs{display:flex;background:var(--sb);border-bottom:1px solid var(--br);}
+.xtab{flex:1;padding:10px 0;font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--mu);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:.2s;text-transform:uppercase;}
+.xtab.active{color:white;border-bottom-color:var(--ac);}
+.xtab:hover:not(.active){color:var(--tx);}
+.tc{display:none;flex-direction:column;flex:1;overflow-y:auto;min-height:0;}
+.tc.active{display:flex;}
+.tc::-webkit-scrollbar{width:4px;}
+.tc::-webkit-scrollbar-thumb{background:var(--br2);border-radius:4px;}
+.sh{padding:9px 14px 8px;font-size:9px;font-weight:800;color:var(--ac);letter-spacing:1.2px;text-transform:uppercase;border-bottom:1px solid var(--br);background:var(--sb);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sc{background:var(--br2);border-radius:10px;padding:1px 7px;font-size:9px;color:var(--mu);font-weight:600;}
+.empty{padding:28px 16px;text-align:center;color:var(--mu);font-size:11px;line-height:1.7;}
+.empty i{font-size:26px;display:block;margin-bottom:10px;opacity:.3;}
+.vcard{padding:10px 14px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .15s;}
+.vcard:hover{background:var(--pn2);}
+.vc-h{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.vc-cs{font-size:13px;font-weight:700;color:white;}
+.vc-rt{font-size:11px;color:var(--ac2);margin-top:2px;}
+.vc-in{font-size:11px;color:var(--mu);}
+.vc-bar{height:2px;background:var(--br);border-radius:2px;margin-top:7px;overflow:hidden;}
+.vc-fill{height:100%;background:var(--ac);border-radius:2px;}
+.tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.4px;}
+.tg{background:rgba(0,216,122,.15);color:var(--grn);border:1px solid rgba(0,216,122,.3);}
+.ta{background:rgba(255,180,0,.15);color:var(--amb);border:1px solid rgba(255,180,0,.3);}
+.tp{background:rgba(107,63,255,.15);color:#a580ff;border:1px solid rgba(107,63,255,.3);}
+.t0{background:rgba(0,200,255,.15);color:var(--ac2);border:1px solid rgba(0,200,255,.3);}
+.ti{background:rgba(255,107,53,.15);color:#ff6b35;border:1px solid rgba(255,107,53,.3);}
+.atcc{padding:10px 14px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;}
+.atcc:hover{background:var(--pn2);}
+.atci{width:34px;height:34px;border-radius:8px;background:rgba(0,216,122,.1);border:1px solid rgba(0,216,122,.25);display:flex;align-items:center;justify-content:center;color:var(--grn);font-size:13px;flex-shrink:0;}
+.atccs{font-size:12px;font-weight:700;color:white;}
+.atcfr{font-size:14px;font-weight:800;color:var(--grn);}
+.ntab{flex:1;padding:8px 0;font-size:9px;font-weight:800;letter-spacing:.5px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;transition:.2s;}
+.wx-box{margin:10px 14px;background:var(--pn2);border:1px solid var(--br2);border-radius:10px;padding:12px;}
+.wx-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.wx-icao{font-size:18px;font-weight:800;color:white;}
+.wx-nm{font-size:10px;color:var(--mu);}
+.wx-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.wx-it{background:var(--dk);border-radius:6px;padding:8px 10px;border:1px solid var(--br);}
+.wx-lb{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.wx-vl{font-size:13px;font-weight:700;color:white;}
+.metar-b{margin:10px 14px;background:#0a1a10;border:1px solid rgba(0,216,122,.2);border-radius:8px;padding:10px;font-family:monospace;font-size:10px;color:var(--grn);line-height:1.7;}
+.notam-it{padding:10px 14px;border-bottom:1px solid var(--br);}
+.notam-id{font-size:10px;color:var(--wrn);font-weight:700;margin-bottom:3px;}
+.notam-tx{font-size:11px;color:var(--tx);line-height:1.5;}
+.notam-mt{font-size:10px;color:var(--mu);margin-top:4px;}
+.upl{margin:12px;border:1px dashed var(--br2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:.2s;color:var(--mu);font-size:11px;}
+.upl:hover{border-color:var(--ac);color:white;background:rgba(41,121,255,.04);}
+.upl i{font-size:22px;display:block;margin-bottom:8px;color:var(--ac);}
+.cth{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .15s;}
+.cth:hover{background:var(--pn2);}
+.cthi{width:34px;height:40px;border-radius:4px;background:var(--dk);border:1px solid var(--br2);display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:14px;flex-shrink:0;}
+.ctnm{font-size:12px;color:white;font-weight:600;}
+.ctmt{font-size:10px;color:var(--mu);margin-top:2px;}
+
+/* ===== MAP ===== */
+#map{position:absolute;inset:0;z-index:1;background:#06070d;}
+.plbl{background:rgba(5,7,14,.9)!important;border:none!important;color:white!important;font-size:10px!important;font-weight:700!important;padding:2px 5px!important;border-radius:4px!important;}
+
+/* ===== PDF OVERLAY ===== */
+#chart-ovl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;pointer-events:none;opacity:0;display:none;border:1px solid var(--br2);border-radius:4px;overflow:hidden;transition:opacity .3s ease;max-width:90vw;max-height:85vh;}
+#chart-ovl.active{display:block;pointer-events:auto;opacity:.9;}
+#pdf-canvas{display:block;max-width:100%;}
+#ovl-tb{position:absolute;top:8px;right:8px;z-index:600;display:none;gap:6px;}
+#ovl-tb.active{display:flex;}
+.ovlb{width:32px;height:32px;border-radius:8px;background:rgba(10,12,22,.92);border:1px solid var(--br2);color:var(--tx);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;}
+.ovlb:hover{background:var(--ac);color:white;}
+.mc{position:absolute;top:16px;right:16px;z-index:1100;display:flex;flex-direction:column;gap:6px;}
+.brb{width:38px;height:38px;background:var(--pn);border:1px solid var(--br2);color:var(--tx);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;}
+.brb:hover{background:var(--ac);color:white;border-color:var(--ac);}
+.lg{position:absolute;bottom:16px;right:16px;z-index:1100;display:flex;flex-direction:column;gap:6px;}
+.lb{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--pn);border:1px solid var(--br2);color:var(--mu);border-radius:8px;cursor:pointer;font-size:11px;transition:.2s;white-space:nowrap;}
+.lb:hover{color:white;background:var(--pn2);}
+.lb.on{color:var(--ac2);border-color:rgba(0,200,255,.3);}
+.ld2{width:8px;height:8px;border-radius:50%;}
+#info-panel{position:absolute;bottom:16px;left:16px;z-index:1200;width:290px;background:var(--pn);border:1px solid var(--br2);border-radius:12px;padding:14px 16px;display:none;animation:slideUp .3s ease;}
+#info-panel.active{display:block;}
+.iph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.ipcs{font-size:18px;font-weight:800;color:white;}
+.ipcl{cursor:pointer;color:var(--mu);font-size:16px;}
+.ipgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ipit{background:var(--pn2);border-radius:8px;padding:8px 10px;border:1px solid var(--br);}
+.iplb{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.ipvl{font-size:13px;font-weight:700;color:white;}
+.iprt{display:flex;align-items:center;gap:6px;margin-top:10px;padding:8px 10px;background:var(--pn2);border-radius:8px;border:1px solid var(--br);font-size:12px;}
+.ipdep{color:var(--amb);font-weight:700;}
+.iparr{color:var(--grn);font-weight:700;}
+.ippg{margin-top:8px;}
+.ippb{height:3px;background:var(--br);border-radius:3px;overflow:hidden;margin-top:4px;}
+.ippf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .5s ease;}
+footer{height:28px;background:var(--sb);border-top:1px solid var(--br);display:flex;align-items:center;padding:0 16px;gap:20px;font-size:10px;color:var(--mu);z-index:1500;flex-shrink:0;}
+.fti{display:flex;align-items:center;gap:5px;}
+
+/* ===== TAXI SELECTION ===== */
+#taxi-panel{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:1300;background:var(--pn);border:1px solid var(--br2);border-radius:12px;padding:12px 16px;display:none;min-width:320px;max-width:500px;animation:slideUp .3s ease;}
+#taxi-panel.active{display:block;}
+.taxi-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.taxi-title{font-size:12px;font-weight:700;color:white;}
+.taxi-close{cursor:pointer;color:var(--mu);font-size:14px;}
+.taxi-icao-tag{font-size:10px;color:var(--ac2);font-weight:700;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.25);border-radius:6px;padding:2px 8px;}
+.gate-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.gate-scroll::-webkit-scrollbar{height:3px;}
+.gate-scroll::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px;}
+.gate-btn{flex-shrink:0;padding:5px 12px;border-radius:8px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);font-size:11px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap;}
+.gate-btn:hover{background:rgba(0,216,122,.12);border-color:rgba(0,216,122,.3);color:var(--grn);}
+.gate-btn.sel{background:rgba(0,216,122,.15);border-color:var(--grn);color:var(--grn);}
+.taxi-rwy-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.rwy-chip{padding:4px 10px;border-radius:20px;background:var(--pn2);border:1px solid var(--br2);font-size:10px;font-weight:700;color:var(--mu);cursor:pointer;transition:.2s;}
+.rwy-chip.sel{background:rgba(255,180,0,.15);border-color:var(--amb);color:var(--amb);}
+.taxi-status{margin-top:8px;font-size:10px;color:var(--mu);font-family:monospace;}
+.taxi-status span{color:var(--grn);}
+
+/* ===== CHART MODAL ===== */
+#cm{display:none;position:fixed;inset:0;z-index:9000;background:rgba(4,5,10,.97);flex-direction:column;}
+#cm.active{display:flex;}
+.cmtop{height:52px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.cmtitle{font-size:13px;font-weight:700;color:white;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cmicao{font-size:10px;font-weight:800;color:var(--ac);letter-spacing:1px;background:rgba(41,121,255,.12);border:1px solid rgba(41,121,255,.3);border-radius:6px;padding:3px 8px;}
+.cmb{width:34px;height:34px;border-radius:8px;background:var(--pn2);border:1px solid var(--br2);color:var(--tx);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0;}
+.cmb:hover{background:var(--ac);color:white;border-color:var(--ac);}
+.cmb.dx:hover{background:#c0392b;border-color:#c0392b;}
+.cmb.draw-active{background:rgba(255,180,0,.2);color:var(--amb);border-color:var(--amb);}
+.cmvp{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:grab;position:relative;}
+.cmvp.grab{cursor:grabbing;}
+.cmvp.draw-mode{cursor:crosshair!important;}
+#mcw{position:relative;transform-origin:center center;transition:transform .08s ease;}
+#modal-canvas{display:block;border:1px solid var(--br2);}
+#draw-canvas{position:absolute;inset:0;pointer-events:none;border-radius:0;}
+#draw-canvas.active{pointer-events:auto;}
+.cmbot{height:48px;flex-shrink:0;background:var(--pn);border-top:1px solid var(--br2);display:flex;align-items:center;justify-content:center;gap:10px;}
+.cmzi{font-size:12px;color:var(--mu);min-width:46px;text-align:center;}
+.cmpi{font-size:12px;color:var(--mu);padding:0 14px;border-left:1px solid var(--br2);border-right:1px solid var(--br2);}
+
+/* Draw toolbar */
+#draw-toolbar{position:absolute;top:60px;left:50%;transform:translateX(-50%);z-index:9500;display:none;gap:6px;align-items:center;background:rgba(10,13,24,.95);border:1px solid var(--br2);border-radius:12px;padding:8px 12px;box-shadow:0 8px 32px rgba(0,0,0,.6);}
+#draw-toolbar.visible{display:flex;}
+.dt-sep{width:1px;height:24px;background:var(--br2);}
+.dt-col{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.15s;flex-shrink:0;}
+.dt-col:hover,.dt-col.sel{border-color:white;transform:scale(1.15);}
+.dt-size{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--mu);}
+.dt-size input{width:60px;accent-color:var(--ac);}
+.dt-btn{padding:5px 10px;border-radius:7px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s;}
+.dt-btn:hover{background:var(--ac);color:white;border-color:var(--ac);}
+.dt-btn.danger:hover{background:#c0392b;border-color:#c0392b;}
+
+/* ===== SCRATCHPAD ===== */
+#scratchpad{position:fixed;z-index:8500;display:none;flex-direction:column;background:var(--pn);border:1px solid var(--br2);border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,.7);overflow:hidden;min-width:320px;min-height:260px;}
+#scratchpad.open{display:flex;}
+.sp-header{height:42px;background:var(--sb);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 14px;gap:10px;cursor:move;flex-shrink:0;user-select:none;}
+.sp-title{font-size:12px;font-weight:700;color:white;flex:1;}
+.sp-hbtn{width:28px;height:28px;border-radius:7px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;}
+.sp-hbtn:hover{background:var(--ac);color:white;}
+.sp-hbtn.danger:hover{background:#c0392b;}
+.sp-tools{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--br2);background:var(--pn2);flex-shrink:0;flex-wrap:wrap;}
+.sp-tool{width:28px;height:28px;border-radius:7px;background:transparent;border:1px solid var(--br2);color:var(--mu);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;}
+.sp-tool:hover{background:var(--ac);color:white;border-color:var(--ac);}
+.sp-tool.sel{background:rgba(41,121,255,.2);color:var(--ac);border-color:var(--ac);}
+.sp-col{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.15s;flex-shrink:0;}
+.sp-col:hover,.sp-col.sel{border-color:white;transform:scale(1.2);}
+#sp-canvas{flex:1;cursor:crosshair;display:block;background:#06090f;}
+.sp-resize{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:se-resize;display:flex;align-items:flex-end;justify-content:flex-end;padding:3px;color:var(--mu);font-size:9px;}
+
+/* ===== OFP PANEL ===== */
+#ofp-panel{position:fixed;inset:0;z-index:10001;background:rgba(3,4,10,.97);display:none;flex-direction:column;}
+#ofp-panel.open{display:flex;}
+.ofp-top{height:52px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.ofp-logo{width:34px;height:34px;border-radius:8px;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.25);display:flex;align-items:center;justify-content:center;color:var(--ac2);font-size:14px;}
+.ofp-title{font-size:13px;font-weight:700;color:white;flex:1;}
+.ofp-title span{font-weight:400;font-size:11px;color:var(--mu);}
+.ofp-close{width:34px;height:34px;border-radius:8px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.ofp-close:hover{background:#c0392b;color:white;}
+.ofp-body{display:flex;flex:1;overflow:hidden;}
+.ofp-left{width:380px;border-right:1px solid var(--br2);overflow-y:auto;padding:16px;}
+.ofp-right{flex:1;overflow-y:auto;}
+.wp-table-hd{display:grid;grid-template-columns:1fr .6fr .5fr .6fr .5fr .5fr .6fr;background:var(--sb);padding:10px 16px;font-size:9px;font-weight:800;color:var(--ac);letter-spacing:.8px;text-transform:uppercase;border-bottom:1px solid var(--br2);position:sticky;top:0;z-index:2;}
+.wp-th{padding:0 4px;}
+
+/* ===== SIMBRIEF PANEL ===== */
+#sbp{position:fixed;inset:0;z-index:10000;background:rgba(3,4,10,.97);display:none;flex-direction:column;}
+#sbp.open{display:flex;}
+.sbtop{height:52px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.sblogo{width:34px;height:34px;border-radius:8px;background:rgba(165,128,255,.12);border:1px solid rgba(165,128,255,.3);display:flex;align-items:center;justify-content:center;color:#a580ff;font-size:14px;}
+.sbtitle{font-size:13px;font-weight:700;color:white;flex:1;}
+.sbtitle span{font-weight:400;font-size:11px;color:var(--mu);}
+.sbcl{width:34px;height:34px;border-radius:8px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.sbcl:hover{background:#c0392b;color:white;}
+#sb-pill{display:none;align-items:center;gap:6px;background:rgba(0,216,122,.1);border:1px solid rgba(0,216,122,.3);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:700;color:var(--grn);margin-right:8px;}
+.sbbody{display:flex;flex:1;overflow:hidden;}
+.sbleft{width:420px;border-right:1px solid var(--br2);overflow-y:auto;padding:0;}
+.sbright{flex:1;position:relative;overflow:hidden;background:var(--dk);}
+.sbsec{padding:16px 18px;border-bottom:1px solid var(--br2);}
+.sblb{font-size:10px;font-weight:700;color:var(--tx);margin-bottom:8px;}
+.sbrow{display:flex;gap:8px;}
+.sbinp{flex:1;background:var(--dk);border:1px solid var(--br2);border-radius:8px;color:white;padding:8px 12px;font-size:12px;outline:none;}
+.sbinp:focus{border-color:#a580ff;}
+.sbbtn{background:rgba(165,128,255,.2);border:1px solid rgba(165,128,255,.4);color:#a580ff;padding:8px 16px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;}
+.sbbtn:hover{background:rgba(165,128,255,.3);}
+.sbhint{font-size:10px;color:var(--mu);margin-top:8px;line-height:1.6;}
+#sb-loading{display:none;padding:30px;text-align:center;color:var(--ac);}
+#sb-err{display:none;padding:14px 18px;}
+.sb-etl{font-size:12px;font-weight:700;color:#ff6060;margin-bottom:4px;}
+.sb-emsg{font-size:11px;color:var(--mu);}
+#sb-data{display:none;}
+.sb-rc{padding:14px 18px;border-bottom:1px solid var(--br2);}
+.sb-aps{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.sb-ap{text-align:center;}
+.sb-ap-code{font-size:22px;font-weight:900;color:white;}
+.sb-dep-code{color:var(--amb);}
+.sb-arr-code{color:var(--grn);}
+.sb-ap-nm{font-size:9px;color:var(--mu);margin-top:2px;}
+.sb-mid{flex:1;text-align:center;}
+.sb-mid-line{height:1px;background:linear-gradient(90deg,var(--amb),var(--ac2),var(--grn));margin:6px 0;border-radius:1px;}
+.sb-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.sb-tag{background:var(--pn2);border:1px solid var(--br2);border-radius:8px;padding:6px 10px;min-width:80px;}
+.sb-tl{font-size:8px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px;}
+.sb-tv{font-size:12px;font-weight:700;color:white;}
+.sb-fuel-row{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--br2);}
+.sb-fi{flex:1;background:var(--pn2);border:1px solid var(--br2);border-radius:8px;padding:8px 10px;text-align:center;}
+.sb-fil{font-size:8px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.sb-fiv{font-size:14px;font-weight:800;}
+.sb-procs{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--br2);}
+.sb-proc{flex:1;background:var(--pn2);border:1px solid var(--br2);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.15s;}
+.sb-proc:hover{border-color:var(--ac);}
+.sb-dep-proc{border-color:rgba(255,180,0,.3);}
+.sb-arr-proc{border-color:rgba(0,216,122,.3);}
+.sb-plb{font-size:8px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.sb-pnm{font-size:14px;font-weight:800;color:white;}
+.sb-prwy{font-size:10px;color:var(--mu);margin-top:2px;}
+.sb-rstr{margin:0 18px 12px;padding:10px 14px;background:var(--dk);border:1px solid var(--br2);border-radius:8px;font-family:monospace;font-size:11px;color:var(--ac2);word-break:break-all;line-height:1.7;}
+#sb-wstrip-hd{padding:10px 18px;font-size:10px;font-weight:700;color:white;background:var(--sb);border-top:1px solid var(--br2);border-bottom:1px solid var(--br2);display:flex;align-items:center;justify-content:space-between;}
+#sb-wstrip{max-height:200px;overflow-y:auto;border-bottom:1px solid var(--br2);}
+.sb-wp{display:grid;grid-template-columns:1fr .7fr .5fr .6fr .5fr;padding:6px 18px;border-bottom:1px solid var(--br);font-size:11px;color:var(--tx);}
+.sb-wp:hover{background:var(--pn2);}
+.sb-acts{padding:12px 18px;display:flex;flex-direction:column;gap:6px;}
+.sb-act{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;transition:.15s;}
+.sb-act:hover{background:var(--pn2);}
+.sb-act-map{color:var(--ac);}
+.sb-act-ofp{color:var(--ac2);}
+.sb-act-trk{color:var(--grn);}
+.sb-act-chr{color:var(--amb);}
+.sb-mhint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#sb-hbox{background:var(--pn);border:1px solid var(--br2);border-radius:14px;padding:30px 40px;text-align:center;font-size:14px;color:var(--mu);line-height:2;pointer-events:none;}
+#sb-hbox i{font-size:30px;display:block;margin-bottom:10px;color:#a580ff;opacity:.5;}
+
+/* ===== CHART LIBRARY PANEL ===== */
+#cl-panel{position:fixed;inset:0;z-index:10002;background:rgba(3,4,10,.97);display:none;flex-direction:column;}
+#cl-panel.open{display:flex;}
+.cl-top{height:52px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.cl-logo{width:34px;height:34px;border-radius:8px;background:rgba(41,121,255,.12);border:1px solid rgba(41,121,255,.25);display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:14px;}
+.cl-title{font-size:13px;font-weight:700;color:white;flex:1;}
+.cl-title span{font-weight:400;font-size:11px;color:var(--mu);}
+.cl-close{width:34px;height:34px;border-radius:8px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.cl-close:hover{background:#c0392b;color:white;}
+.cl-body{display:flex;flex:1;overflow:hidden;}
+.cl-left{width:380px;border-right:1px solid var(--br2);display:flex;flex-direction:column;overflow:hidden;}
+.cl-search-bar{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--br2);flex-shrink:0;}
+.cl-icao-in{flex:1;background:var(--dk);border:1px solid var(--br2);border-radius:8px;color:white;padding:8px 12px;font-size:13px;font-weight:700;text-transform:uppercase;outline:none;letter-spacing:1px;}
+.cl-icao-in:focus{border-color:var(--ac);}
+.cl-search-btn{background:var(--ac);border:none;color:white;padding:8px 16px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;}
+.cl-search-btn:hover{background:#1460e8;}
+.cl-filters{display:flex;gap:4px;padding:8px 14px;border-bottom:1px solid var(--br2);flex-wrap:wrap;flex-shrink:0;}
+.cl-flt{padding:4px 10px;border-radius:20px;background:var(--pn2);border:1px solid var(--br2);font-size:9px;font-weight:700;color:var(--mu);cursor:pointer;transition:.15s;}
+.cl-flt:hover{color:white;border-color:var(--ac);}
+.cl-flt.active{background:rgba(41,121,255,.15);border-color:var(--ac);color:var(--ac);}
+.cl-flt.f-sid.active{background:rgba(255,180,0,.12);border-color:var(--amb);color:var(--amb);}
+.cl-flt.f-star.active{background:rgba(0,216,122,.12);border-color:var(--grn);color:var(--grn);}
+.cl-flt.f-iap.active{background:rgba(41,121,255,.12);border-color:var(--ac);color:var(--ac);}
+.cl-flt.f-ad.active{background:rgba(165,128,255,.12);border-color:#a580ff;color:#a580ff;}
+.cl-flt.f-gnd.active{background:rgba(255,107,53,.12);border-color:var(--wrn);color:var(--wrn);}
+.cl-list{flex:1;overflow-y:auto;}
+.cl-list::-webkit-scrollbar{width:4px;}
+.cl-list::-webkit-scrollbar-thumb{background:var(--br2);border-radius:4px;}
+.cl-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .15s;}
+.cl-row:hover{background:var(--pn2);}
+.cl-row.cl-active-row{background:rgba(41,121,255,.08);border-left:3px solid var(--ac);}
+.cl-row-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.cl-ic-sid{background:rgba(255,180,0,.15);color:var(--amb);}
+.cl-ic-star{background:rgba(0,216,122,.12);color:var(--grn);}
+.cl-ic-iap{background:rgba(41,121,255,.15);color:var(--ac);}
+.cl-ic-ad{background:rgba(165,128,255,.12);color:#a580ff;}
+.cl-ic-gnd{background:rgba(255,107,53,.12);color:var(--wrn);}
+.cl-ic-vfr{background:rgba(0,200,255,.12);color:var(--ac2);}
+.cl-row-info{flex:1;min-width:0;}
+.cl-row-nm{font-size:12px;color:white;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-row-mt{font-size:10px;color:var(--mu);margin-top:2px;display:flex;align-items:center;gap:6px;}
+.cl-src-badge{font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;letter-spacing:.5px;}
+.csb-cf{background:rgba(41,121,255,.15);color:var(--ac);}
+.csb-faa{background:rgba(255,180,0,.15);color:var(--amb);}
+.csb-en{background:rgba(0,216,122,.12);color:var(--grn);}
+.csb-ec{background:rgba(165,128,255,.12);color:#a580ff;}
+.csb-lo{background:rgba(0,200,255,.12);color:var(--ac2);}
+.cl-row-btns{display:flex;gap:5px;flex-shrink:0;}
+.cl-row-btn{width:28px;height:28px;border-radius:7px;background:var(--pn2);border:1px solid var(--br2);color:var(--mu);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;transition:.15s;}
+.cl-row-btn:hover{background:var(--ac);color:white;border-color:var(--ac);}
+.cl-row-btn.imp:hover{background:var(--grn);border-color:var(--grn);color:#000;}
+.cl-right{flex:1;background:var(--dk);display:flex;flex-direction:column;overflow:hidden;}
+.cl-preview-top{height:48px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.cl-preview-nm{font-size:13px;font-weight:700;color:white;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-preview-body{flex:1;position:relative;overflow:hidden;}
+#cl-iframe{width:100%;height:100%;border:none;background:#fff;}
+#cl-pdf-vp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:auto;background:#1a1a2e;}
+.cl-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:40px;}
+.cl-hint i{font-size:44px;opacity:.2;display:block;margin-bottom:6px;}
+.cl-hint-title{font-size:14px;font-weight:700;color:var(--tx);}
+.cl-hint-sub{font-size:12px;color:var(--mu);line-height:1.7;}
+.cl-src-section{padding:20px;overflow-y:auto;flex:1;}
+.cl-src-hd{font-size:9px;font-weight:800;color:var(--ac);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:12px;}
+.cl-src-link{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--br2);border-radius:10px;text-decoration:none;color:var(--tx);background:var(--pn2);margin-bottom:8px;transition:background .15s;}
+.cl-src-link:hover{background:var(--pn);}
+.cl-src-link-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.cl-src-nm{font-size:12px;font-weight:700;color:white;}
+.cl-src-desc{font-size:10px;color:var(--mu);margin-top:2px;}
+.cl-loading{padding:40px;text-align:center;color:var(--mu);}
+.cl-loading i{font-size:28px;color:var(--ac);display:block;margin-bottom:12px;}
+.cl-err{padding:14px;margin:12px;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.3);border-radius:10px;}
+.cl-err-t{font-size:11px;font-weight:700;color:#ff6060;margin-bottom:4px;}
+.cl-err-m{font-size:11px;color:var(--mu);}
+.cl-progress-bar-wrap{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(41,121,255,.06);border-bottom:1px solid var(--br);flex-shrink:0;display:none;}
+.cl-progress-bar-wrap.visible{display:flex!important;}
+.cl-prog-txt{font-size:10px;color:var(--ac2);flex:1;}
+.cl-prog-bg{height:3px;background:var(--br2);border-radius:3px;overflow:hidden;width:80px;}
+.cl-prog-fill{height:100%;background:var(--ac);border-radius:3px;transition:width .4s ease;}
+.cl-import-all-btn{margin:10px 14px;display:none;align-items:center;gap:8px;padding:9px 14px;background:rgba(0,216,122,.1);border:1px solid rgba(0,216,122,.3);border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:var(--grn);transition:.2s;}
+.cl-import-all-btn.visible{display:flex!important;}
+.cl-import-all-btn:hover{background:rgba(0,216,122,.18);}
+.auto-fetch-btn{margin:12px 12px 4px;display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(41,121,255,.1);border:1px solid rgba(41,121,255,.3);border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:var(--ac);transition:.2s;}
+.auto-fetch-btn:hover{background:rgba(41,121,255,.18);}
+.cl-stat-row{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--br);flex-shrink:0;}
+.cl-stat{background:var(--pn2);border:1px solid var(--br);border-radius:7px;padding:5px 10px;font-size:10px;color:var(--mu);}
+.cl-stat span{color:white;font-weight:700;margin-left:4px;}
+
+/* ===== ATIS PANEL ===== */
+#atis-panel{position:fixed;inset:0;z-index:10003;background:rgba(3,4,10,.97);display:none;flex-direction:column;}
+#atis-panel.open{display:flex;}
+.atis-top{height:52px;flex-shrink:0;background:var(--pn);border-bottom:1px solid var(--br2);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.atis-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;max-width:800px;margin:0 auto;width:100%;}
+.atis-section{background:var(--pn2);border:1px solid var(--br2);border-radius:14px;padding:20px;}
+.atis-section-hd{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.atis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.atis-item{background:var(--dk);border:1px solid var(--br);border-radius:10px;padding:12px;text-align:center;}
+.atis-item-lb{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.atis-item-vl{font-size:16px;font-weight:800;color:var(--ac2);}
+.atis-raw{font-family:monospace;font-size:11px;line-height:1.8;color:var(--grn);background:#0a1a10;border:1px solid rgba(0,216,122,.2);border-radius:8px;padding:14px;word-break:break-all;}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadein{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-logo">AERO<span>SYNC</span></div>
+  <div class="ld-sub">Electronic Flight Bag — Ultimate Edition</div>
+  <div class="ld-orbit">
+    <div class="ld-ring"></div><div class="ld-ring ld-ring2"></div>
+    <div class="ld-arm ld-arm1"><div class="ld-plane a"><i class="fa-solid fa-plane"></i></div></div>
+    <div class="ld-arm ld-arm2"><div class="ld-plane b"><i class="fa-solid fa-plane"></i></div></div>
+    <div class="ld-arm ld-arm3"><div class="ld-plane c"><i class="fa-solid fa-plane"></i></div></div>
+    <div class="ld-core"></div>
+  </div>
+  <div class="ld-bar-wrap">
+    <div class="ld-bar-bg"><div class="ld-bar-fill" id="ld-fill"></div></div>
+    <div class="ld-msg" id="ld-msg">Inizializzazione sistema...</div>
+    <div class="ld-pct" id="ld-pct">0%</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav" style="display:none">
+  <div class="nav-logo"><i class="fa-solid fa-compass"></i></div>
+  <div class="nb active" onclick="switchTab('charts',this)" title="Charts"><i class="fa-solid fa-map"></i></div>
+  <div class="nb" onclick="switchTab('vatsim',this)" title="Traffic"><i class="fa-solid fa-plane"></i><div class="bdg"></div></div>
+  <div class="nb" onclick="switchTab('weather',this)" title="Weather"><i class="fa-solid fa-cloud-sun"></i></div>
+  <div class="nb" onclick="switchTab('notam',this)" title="NOTAMs"><i class="fa-solid fa-triangle-exclamation"></i></div>
+  <div class="nsep"></div>
+  <div class="nb" id="sb-navbtn" onclick="openSb()" title="SimBrief OFP" style="position:relative">
+    <i class="fa-solid fa-route"></i>
+    <div id="sb-ndot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#a580ff;border:1px solid var(--sb)"></div>
+  </div>
+  <div class="nb" id="ofp-navbtn" onclick="openOfp()" title="OFP"><i class="fa-solid fa-file-lines"></i>
+    <div id="ofp-ndot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--ac2);border:1px solid var(--sb)"></div>
+  </div>
+  <div class="nb" onclick="openScratchpad()" title="Scratchpad"><i class="fa-solid fa-pen-to-square"></i></div>
+  <div class="nb" onclick="openCL()" title="Chart Library"><i class="fa-solid fa-book-atlas"></i></div>
+  <div class="nb" onclick="openAtis()" title="ATIS"><i class="fa-solid fa-tower-broadcast"></i></div>
+  <div class="nsep"></div>
+  <div class="nb" onclick="toggleOvl()" title="Toggle Overlay"><i class="fa-solid fa-layer-group"></i></div>
+  <div class="nb nb-bot" onclick="document.getElementById('pdf-upload').click()" title="Import PDF"><i class="fa-solid fa-file-arrow-up"></i></div>
+  <input type="file" id="pdf-upload" accept=".pdf" style="display:none" onchange="handleImport(this)">
+</nav>
+
+<!-- APP ROOT -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="hb">AERO<span>SYNC</span> <span style="font-weight:300;font-size:10px;color:var(--mu);letter-spacing:1px">EFB</span></div>
+    <div class="hsep"></div>
+    <div class="srch"><i class="fa-solid fa-magnifying-glass"></i><input id="airport-search" type="text" placeholder="ICAO — es. LIMC, EDDF" maxlength="4"></div>
+    <button class="btn-tr" onclick="zoomAirport()">TRACK</button>
+    <div class="pills">
+      <div class="pill sel" id="pill-vatsim" onclick="setNet('vatsim')"><div class="dot" style="background:var(--grn)"></div>VATSIM</div>
+      <div class="pill" id="pill-ivao" onclick="setNet('ivao')"><div class="dot" style="background:#ff6b35"></div>IVAO</div>
+      <div class="pill" id="pill-volanta" onclick="setNet('volanta')"><div class="dot" style="background:#a580ff"></div>VOLANTA</div>
+      <div class="pill" id="pill-batc" onclick="setNet('batc')"><div class="dot" style="background:#ffb400"></div>BeyondATC</div>
+      <div class="pill" style="cursor:default"><div class="dot" style="background:var(--amb)"></div><span id="pcnt">0</span>&nbsp;online</div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside id="explorer">
+      <div class="xtabs">
+        <div class="xtab active" id="xt-charts" onclick="switchExTab('charts')">Charts</div>
+        <div class="xtab" id="xt-vatsim" onclick="switchExTab('vatsim')">Traffic</div>
+        <div class="xtab" id="xt-weather" onclick="switchExTab('weather')">WX</div>
+        <div class="xtab" id="xt-notam" onclick="switchExTab('notam')">NOTAM</div>
+      </div>
+      <div id="tc-charts" class="tc active">
+        <div class="auto-fetch-btn" onclick="openCL(activeIcao||'')"><i class="fa-solid fa-magnifying-glass"></i> Cerca Charts Online (Auto-fetch)</div>
+        <div class="upl" onclick="document.getElementById('pdf-upload').click()"><i class="fa-solid fa-file-arrow-up"></i>Importa chart PDF<br><small style="opacity:.6">Clicca per caricare</small></div>
+        <div class="sh">Charts importate <span class="sc" id="chart-cnt">0</span></div>
+        <div id="chart-list"><div class="empty"><i class="fa-regular fa-file-pdf"></i>Nessuna chart.<br>Carica un PDF sopra o usa<br><strong style="color:var(--ac);cursor:pointer" onclick="openCL(activeIcao||'')">Cerca Charts Online</strong></div></div>
+      </div>
+      <div id="tc-vatsim" class="tc">
+        <div style="display:flex;background:var(--dk);border-bottom:1px solid var(--br);flex-shrink:0">
+          <div class="ntab" id="ntab-vatsim" onclick="switchNetTab('vatsim')" style="color:var(--grn);border-bottom-color:var(--grn)">VATSIM</div>
+          <div class="ntab" id="ntab-ivao" onclick="switchNetTab('ivao')" style="color:var(--mu)">IVAO</div>
+          <div class="ntab" id="ntab-volanta" onclick="switchNetTab('volanta')" style="color:var(--mu)">VOLANTA</div>
+          <div class="ntab" id="ntab-batc" onclick="switchNetTab('batc')" style="color:var(--mu)">BATC</div>
+        </div>
+        <div id="nc-vatsim" style="display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0">
+          <div class="sh">ATC Online <span class="sc" id="v-atc">0</span></div><div id="v-atcl"></div>
+          <div class="sh">Voli in area <span class="sc" id="v-pc">0</span></div><div id="v-pltl"></div>
+        </div>
+        <div id="nc-ivao" style="display:none;flex-direction:column;flex:1;overflow-y:auto;min-height:0">
+          <div class="sh">IVAO ATC <span class="sc" id="i-atc">0</span></div><div id="i-atcl"></div>
+          <div class="sh">IVAO Voli <span class="sc" id="i-pc">0</span></div><div id="i-pltl"></div>
+        </div>
+        <div id="nc-volanta" style="display:none;flex-direction:column;flex:1;overflow-y:auto;min-height:0">
+          <div style="padding:16px"><div style="background:rgba(165,128,255,.08);border:1px solid rgba(165,128,255,.25);border-radius:10px;padding:14px"><div style="font-size:11px;font-weight:700;color:#a580ff;margin-bottom:6px"><i class="fa-solid fa-circle-info"></i> Volanta</div><div style="font-size:11px;color:var(--mu);line-height:1.7">Volanta traccia voli localmente. API pubblica non disponibile.</div></div><a href="https://volanta.app" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--pn2);border:1px solid var(--br2);border-radius:8px;text-decoration:none;color:white;font-size:12px;font-weight:600;margin-top:10px"><i class="fa-solid fa-arrow-up-right-from-square" style="color:#a580ff"></i>Apri volanta.app</a></div>
+        </div>
+        <div id="nc-batc" style="display:none;flex-direction:column;flex:1;overflow-y:auto;min-height:0">
+          <div style="padding:16px"><div style="background:rgba(255,180,0,.07);border:1px solid rgba(255,180,0,.25);border-radius:10px;padding:14px"><div style="font-size:11px;font-weight:700;color:var(--amb);margin-bottom:6px"><i class="fa-solid fa-robot"></i> BeyondATC</div><div style="font-size:11px;color:var(--mu);line-height:1.7">BeyondATC usa AI locale. Nessuna API pubblica.</div></div></div>
+          <div class="sh">Frequenze ATC simulate</div>
+          <div class="atcc"><div class="atci" style="background:rgba(255,180,0,.1);border-color:rgba(255,180,0,.3);color:var(--amb)"><i class="fa-solid fa-robot"></i></div><div><div class="atccs">AI_GND <span class="tag ta">GND</span></div><div class="atcfr" style="color:var(--amb)">121.900 MHz</div></div></div>
+          <div class="atcc"><div class="atci" style="background:rgba(255,180,0,.1);border-color:rgba(255,180,0,.3);color:var(--amb)"><i class="fa-solid fa-robot"></i></div><div><div class="atccs">AI_TWR <span class="tag tg">TWR</span></div><div class="atcfr" style="color:var(--amb)">118.700 MHz</div></div></div>
+          <div class="atcc"><div class="atci" style="background:rgba(255,180,0,.1);border-color:rgba(255,180,0,.3);color:var(--amb)"><i class="fa-solid fa-robot"></i></div><div><div class="atccs">AI_APP <span class="tag tp">APP</span></div><div class="atcfr" style="color:var(--amb)">119.100 MHz</div></div></div>
+        </div>
+      </div>
+      <div id="tc-weather" class="tc"><div id="wx-content"><div class="empty"><i class="fa-solid fa-cloud-sun"></i>Cerca un ICAO per il METAR.</div></div></div>
+      <div id="tc-notam" class="tc">
+        <div class="sh">NOTAMs attivi <span class="sc" id="notam-cnt">0</span></div>
+        <div id="notam-list"><div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>Cerca un ICAO.</div></div>
+      </div>
+    </aside>
+
+    <!-- MAP AREA -->
+    <div style="flex:1;position:relative;overflow:hidden">
+      <div id="map"></div>
+      <div id="chart-ovl"><canvas id="pdf-canvas"></canvas></div>
+      <div id="ovl-tb">
+        <div class="ovlb" onclick="chgOp(.1)"><i class="fa-solid fa-circle"></i></div>
+        <div class="ovlb" onclick="chgOp(-.1)"><i class="fa-solid fa-circle-half-stroke"></i></div>
+        <div class="ovlb" onclick="toggleOvl()"><i class="fa-solid fa-xmark"></i></div>
+      </div>
+      <div class="mc">
+        <button class="brb" onclick="map.zoomIn()"><i class="fa-solid fa-plus"></i></button>
+        <button class="brb" onclick="map.zoomOut()"><i class="fa-solid fa-minus"></i></button>
+        <button class="brb" onclick="recenter()"><i class="fa-solid fa-crosshairs"></i></button>
+        <button class="brb" id="ovl-btn" onclick="toggleOvl()"><i class="fa-solid fa-copy"></i></button>
+        <button class="brb" id="taxi-btn" onclick="toggleTaxi()" title="Taxi Selection" style="display:none"><i class="fa-solid fa-road"></i></button>
+      </div>
+      <div class="lg">
+        <div class="lb on" id="ly-vatsim" onclick="togLy('vatsim')"><div class="ld2" style="background:var(--ac)"></div>VATSIM</div>
+        <div class="lb" id="ly-ivao" onclick="togLy('ivao')"><div class="ld2" style="background:#ff6b35"></div>IVAO</div>
+        <div class="lb on" id="ly-route" onclick="togLy('route')"><div class="ld2" style="background:#a580ff"></div>Rotta OFP</div>
+      </div>
+      <div id="info-panel">
+        <div class="iph"><div class="ipcs" id="ip-cs">---</div><div class="ipcl" onclick="closeInfo()"><i class="fa-solid fa-xmark"></i></div></div>
+        <div class="ipgrid">
+          <div class="ipit"><div class="iplb">Altitudine</div><div class="ipvl" id="ip-alt">---</div></div>
+          <div class="ipit"><div class="iplb">Velocita GS</div><div class="ipvl" id="ip-spd">---</div></div>
+          <div class="ipit"><div class="iplb">Heading</div><div class="ipvl" id="ip-hdg">---</div></div>
+          <div class="ipit"><div class="iplb">Aeromobile</div><div class="ipvl" id="ip-ac">---</div></div>
+        </div>
+        <div class="iprt" id="ip-rt" style="display:none">
+          <span class="ipdep" id="ip-dep">----</span>
+          <span style="color:var(--mu)"><i class="fa-solid fa-arrow-right-long"></i></span>
+          <span class="iparr" id="ip-arr">----</span>
+        </div>
+        <div class="ippg" id="ip-pg" style="display:none">
+          <div style="font-size:9px;color:var(--mu);display:flex;justify-content:space-between"><span id="ip-dl">DEP</span><span style="color:var(--ac2)">EN ROUTE</span><span id="ip-al">ARR</span></div>
+          <div class="ippb"><div class="ippf" id="ip-pf" style="width:50%"></div></div>
+        </div>
+      </div>
+      <div id="taxi-panel">
+        <div class="taxi-hd">
+          <div style="display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-road" style="color:var(--grn)"></i>
+            <span class="taxi-title">Taxi Selection</span>
+            <span class="taxi-icao-tag" id="taxi-icao-lbl">----</span>
+          </div>
+          <span class="taxi-close" onclick="closeTaxi()"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div style="font-size:9px;color:var(--mu);margin-bottom:8px;letter-spacing:.5px">RUNWAY ATTIVA</div>
+        <div class="taxi-rwy-row" id="taxi-rwy-row"></div>
+        <div style="font-size:9px;color:var(--mu);margin-bottom:8px;letter-spacing:.5px">SELEZIONA GATE / STAND</div>
+        <div class="gate-scroll" id="gate-scroll"></div>
+        <div class="taxi-status" id="taxi-status">Seleziona una runway e un gate per illuminare il percorso taxi.</div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="fti"><div style="width:5px;height:5px;border-radius:50%;background:var(--grn)" id="ft-dot"></div><span id="ft-net">VATSIM LIVE</span></div>
+    <div class="fti"><i class="fa-solid fa-globe" style="font-size:9px"></i><span id="ft-icao">Nessun ICAO</span></div>
+    <div class="fti" id="ft-ofp" style="display:none;cursor:pointer" onclick="openSb()"><i class="fa-solid fa-route" style="font-size:9px;color:#a580ff"></i><span id="ft-ofp-rt" style="color:#a580ff">OFP</span></div>
+    <div class="fti" style="margin-left:auto"><i class="fa-regular fa-clock" style="font-size:9px"></i> UTC: <strong id="utc" style="color:white;margin-left:4px">--:--:--</strong></div>
+    <div class="fti"><span id="ft-cnt">0</span> aerei online</div>
+  </footer>
+</div>
+
+<!-- CHART MODAL -->
+<div id="cm">
+  <div class="cmtop">
+    <div class="cmicao" id="cm-icao">----</div>
+    <div class="cmtitle" id="cm-title">Chart</div>
+    <div class="cmb" id="draw-toggle-btn" onclick="toggleDrawMode()" title="Disegna sulla chart"><i class="fa-solid fa-pen"></i></div>
+    <div class="cmb" onclick="mzoom(.25)"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+    <div class="cmb" onclick="mzoom(-.25)"><i class="fa-solid fa-magnifying-glass-minus"></i></div>
+    <div class="cmb" onclick="mreset()"><i class="fa-solid fa-expand"></i></div>
+    <div class="cmb" onclick="mrot()"><i class="fa-solid fa-rotate-right"></i></div>
+    <div class="cmb dx" onclick="closeCm()"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div id="draw-toolbar">
+    <div class="cmb" id="dt-pen" onclick="setDrawTool('pen')" title="Penna" style="font-size:11px"><i class="fa-solid fa-pen"></i></div>
+    <div class="cmb" id="dt-hl" onclick="setDrawTool('highlight')" title="Evidenziatore" style="font-size:11px"><i class="fa-solid fa-highlighter"></i></div>
+    <div class="cmb" id="dt-arr" onclick="setDrawTool('arrow')" title="Freccia" style="font-size:11px"><i class="fa-solid fa-arrow-up-right"></i></div>
+    <div class="cmb" id="dt-circ" onclick="setDrawTool('circle')" title="Cerchio" style="font-size:11px"><i class="fa-regular fa-circle"></i></div>
+    <div class="cmb" id="dt-eraser" onclick="setDrawTool('eraser')" title="Gomma" style="font-size:11px"><i class="fa-solid fa-eraser"></i></div>
+    <div class="dt-sep"></div>
+    <div class="dt-col sel" style="background:#ff1744" title="Rosso" onclick="setDrawColor('#ff1744',this)"></div>
+    <div class="dt-col" style="background:#ffb400" title="Giallo" onclick="setDrawColor('#ffb400',this)"></div>
+    <div class="dt-col" style="background:#00d87a" title="Verde" onclick="setDrawColor('#00d87a',this)"></div>
+    <div class="dt-col" style="background:#2979ff" title="Blu" onclick="setDrawColor('#2979ff',this)"></div>
+    <div class="dt-col" style="background:#ffffff" title="Bianco" onclick="setDrawColor('#ffffff',this)"></div>
+    <div class="dt-sep"></div>
+    <div class="dt-size"><span>Dim</span><input type="range" id="dt-size-range" min="1" max="20" value="3" style="width:60px" oninput="drawSize=parseInt(this.value)"></div>
+    <div class="dt-sep"></div>
+    <div class="dt-btn" onclick="undoDrawing()"><i class="fa-solid fa-rotate-left"></i> Undo</div>
+    <div class="dt-btn danger" onclick="clearDrawing()"><i class="fa-solid fa-trash"></i> Clear</div>
+    <div class="dt-btn" onclick="saveDrawing()"><i class="fa-solid fa-download"></i> Salva PNG</div>
+  </div>
+  <div class="cmvp" id="cm-vp">
+    <div id="mcw"><canvas id="modal-canvas"></canvas><canvas id="draw-canvas"></canvas></div>
+  </div>
+  <div class="cmbot">
+    <div class="cmb" onclick="mprev()"><i class="fa-solid fa-chevron-left"></i></div>
+    <div class="cmpi"><span id="cm-cp">1</span> / <span id="cm-tp">1</span></div>
+    <div class="cmb" onclick="mnext()"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="cmzi" id="cm-zi">100%</div>
+    <div class="cmb" onclick="mfitW()"><i class="fa-solid fa-arrows-left-right"></i></div>
+    <div class="cmb" onclick="mfitH()"><i class="fa-solid fa-arrows-up-down"></i></div>
+  </div>
+</div>
+
+<!-- SCRATCHPAD -->
+<div id="scratchpad">
+  <div class="sp-header" id="sp-header">
+    <i class="fa-solid fa-pen-to-square" style="color:var(--ac2);font-size:12px"></i>
+    <span class="sp-title">Scratchpad</span>
+    <div class="sp-hbtn" onclick="clearSp()" title="Pulisci"><i class="fa-solid fa-eraser"></i></div>
+    <div class="sp-hbtn" onclick="undoSp()" title="Undo"><i class="fa-solid fa-rotate-left"></i></div>
+    <div class="sp-hbtn" onclick="saveSp()" title="Salva PNG"><i class="fa-solid fa-download"></i></div>
+    <div class="sp-hbtn danger" onclick="closeScratchpad()" title="Chiudi"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div class="sp-tools">
+    <div class="sp-tool sel" id="spt-pen" onclick="setSPTool('pen')" title="Penna"><i class="fa-solid fa-pen"></i></div>
+    <div class="sp-tool" id="spt-hi" onclick="setSPTool('highlight')" title="Evidenziatore"><i class="fa-solid fa-highlighter"></i></div>
+    <div class="sp-tool" id="spt-eraser" onclick="setSPTool('eraser')" title="Gomma"><i class="fa-solid fa-eraser"></i></div>
+    <div style="width:1px;height:22px;background:var(--br2);margin:0 2px"></div>
+    <div class="sp-col sel" style="background:#00d87a" onclick="setSPColor('#00d87a',this)" title="Verde"></div>
+    <div class="sp-col" style="background:#ffffff" onclick="setSPColor('#ffffff',this)" title="Bianco"></div>
+    <div class="sp-col" style="background:#ffb400" onclick="setSPColor('#ffb400',this)" title="Giallo"></div>
+    <div class="sp-col" style="background:#ff1744" onclick="setSPColor('#ff1744',this)" title="Rosso"></div>
+    <div class="sp-col" style="background:#2979ff" onclick="setSPColor('#2979ff',this)" title="Blu"></div>
+    <div class="sp-col" style="background:#a580ff" onclick="setSPColor('#a580ff',this)" title="Viola"></div>
+    <div style="width:1px;height:22px;background:var(--br2);margin:0 2px"></div>
+    <input type="range" id="sp-size" min="1" max="18" value="3" style="width:50px;accent-color:var(--ac)" title="Dimensione">
+    <span style="font-size:9px;color:var(--mu)">dim</span>
+  </div>
+  <canvas id="sp-canvas"></canvas>
+  <div class="sp-resize" id="sp-resize"><i class="fa-solid fa-down-left-and-up-right-to-center" style="font-size:9px"></i></div>
+</div>
+
+<!-- OFP PANEL -->
+<div id="ofp-panel">
+  <div class="ofp-top">
+    <div class="ofp-logo"><i class="fa-solid fa-file-lines"></i></div>
+    <div class="ofp-title">Operational Flight Plan <span>— OFP SimBrief</span></div>
+    <button onclick="openSb()" style="background:rgba(165,128,255,.15);border:1px solid rgba(165,128,255,.35);color:#a580ff;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;margin-right:8px"><i class="fa-solid fa-rotate"></i> Aggiorna</button>
+    <div class="ofp-close" onclick="closeOfp()"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div id="ofp-no-data" style="display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:12px;color:var(--mu)">
+    <i class="fa-solid fa-file-lines" style="font-size:48px;opacity:.2"></i>
+    <div style="font-size:14px">Nessun OFP caricato.</div>
+    <button onclick="closeOfp();openSb()" style="background:rgba(165,128,255,.15);border:1px solid rgba(165,128,255,.3);color:#a580ff;padding:8px 20px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer"><i class="fa-solid fa-route"></i> Carica da SimBrief</button>
+  </div>
+  <div id="ofp-body" style="display:none" class="ofp-body">
+    <div class="ofp-left"><div id="ofp-left-content"></div></div>
+    <div class="ofp-right">
+      <div class="wp-table-hd">
+        <div class="wp-th">Ident</div><div class="wp-th">Tipo</div><div class="wp-th">FL</div><div class="wp-th">Vento</div><div class="wp-th">Dist</div><div class="wp-th">Fuel</div><div class="wp-th">ETE</div>
+      </div>
+      <div id="ofp-wp-table"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIMBRIEF PANEL -->
+<div id="sbp">
+  <div class="sbtop">
+    <div class="sblogo"><i class="fa-solid fa-route"></i></div>
+    <div class="sbtitle">SimBrief <span>OFP Loader</span></div>
+    <div id="sb-pill"><div style="width:5px;height:5px;border-radius:50%;background:var(--grn)"></div>OFP CARICATO</div>
+    <div class="sbcl" onclick="closeSb()"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div class="sbbody">
+    <div class="sbleft">
+      <div class="sbsec">
+        <div class="sblb">Pilot ID / Username SimBrief</div>
+        <div class="sbrow"><input class="sbinp" id="sb-pid" type="text" placeholder="Es: 123456 oppure username"><button class="sbbtn" onclick="loadSb()"><i class="fa-solid fa-cloud-arrow-down"></i> LOAD</button></div>
+        <div class="sbhint">Trovalo su <strong>simbrief.com</strong> &rarr; Account &rarr; Dispatch Settings &rarr; Pilot ID.</div>
+      </div>
+      <div id="sb-loading"><i class="fa-solid fa-spinner fa-spin"></i><div style="font-size:13px;color:var(--mu)">Caricamento OFP da SimBrief...</div></div>
+      <div id="sb-err"><div class="sb-etl"><i class="fa-solid fa-circle-exclamation"></i> Errore</div><div class="sb-emsg" id="sb-emsg">Pilot ID non trovato.</div></div>
+      <div id="sb-data">
+        <div class="sb-rc">
+          <div class="sb-aps">
+            <div class="sb-ap"><div class="sb-ap-code sb-dep-code" id="sb-dep">----</div><div class="sb-ap-nm" id="sb-dep-nm">---</div></div>
+            <div class="sb-mid"><div style="font-size:10px;color:var(--mu)" id="sb-dist">--- nm</div><div class="sb-mid-line"></div><div style="font-size:10px;color:var(--mu)" id="sb-ete">---</div></div>
+            <div class="sb-ap"><div class="sb-ap-code sb-arr-code" id="sb-arr">----</div><div class="sb-ap-nm" id="sb-arr-nm">---</div></div>
+          </div>
+          <div class="sb-tags">
+            <div class="sb-tag"><div class="sb-tl">Callsign</div><div class="sb-tv" style="color:var(--ac2)" id="sb-cs">---</div></div>
+            <div class="sb-tag"><div class="sb-tl">Aeromobile</div><div class="sb-tv" id="sb-ac">---</div></div>
+            <div class="sb-tag"><div class="sb-tl">FL Crociera</div><div class="sb-tv" id="sb-fl">---</div></div>
+            <div class="sb-tag"><div class="sb-tl">Alternato</div><div class="sb-tv" id="sb-altn">---</div></div>
+            <div class="sb-tag"><div class="sb-tl">Passeggeri</div><div class="sb-tv" id="sb-pax">---</div></div>
+            <div class="sb-tag"><div class="sb-tl">Waypoints</div><div class="sb-tv" id="sb-wpc">---</div></div>
+          </div>
+        </div>
+        <div class="sb-fuel-row">
+          <div class="sb-fi"><div class="sb-fil">Fuel Ramp</div><div class="sb-fiv" style="color:var(--amb)" id="sb-fuel">---</div></div>
+          <div class="sb-fi"><div class="sb-fil">Fuel Trip</div><div class="sb-fiv" style="color:var(--ac2)" id="sb-ftrip">---</div></div>
+          <div class="sb-fi"><div class="sb-fil">Riserva</div><div class="sb-fiv" style="color:var(--grn)" id="sb-fres">---</div></div>
+        </div>
+        <div class="sb-procs">
+          <div class="sb-proc sb-dep-proc" id="sb-proc-dep" onclick="openSidSelector()">
+            <div class="sb-plb">SID — Partenza</div>
+            <div class="sb-pnm" id="sb-sid">---</div>
+            <div class="sb-prwy" id="sb-rwd">RWY ---</div>
+            <div style="font-size:9px;color:var(--amb);margin-top:4px"><i class="fa-solid fa-hand-pointer"></i> Tocca per cambiare SID</div>
+          </div>
+          <div class="sb-proc sb-arr-proc" id="sb-proc-arr" onclick="openStarSelector()">
+            <div class="sb-plb">STAR — Arrivo</div>
+            <div class="sb-pnm" id="sb-star">---</div>
+            <div class="sb-prwy" id="sb-rwa">RWY ---</div>
+            <div style="font-size:9px;color:var(--grn);margin-top:4px"><i class="fa-solid fa-hand-pointer"></i> Tocca per cambiare STAR</div>
+          </div>
+        </div>
+        <div style="padding:0 18px 6px"><div style="font-size:9px;font-weight:800;color:#a580ff;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px">Rotta IFR</div></div>
+        <div class="sb-rstr" id="sb-rstr">---</div>
+        <div id="sb-wstrip-hd">
+          <span>Waypoints (<span id="sb-wcount">0</span>)</span>
+          <span style="font-size:10px;color:var(--mu)">TOC = <span id="sb-toc-label" style="color:var(--ac2)">---</span> &middot; TOD = <span id="sb-tod-label" style="color:var(--amb)">---</span></span>
+        </div>
+        <div id="sb-wstrip"></div>
+        <div class="sb-acts">
+          <div class="sb-act sb-act-map" onclick="sbMap2()"><i class="fa-solid fa-map-location-dot"></i>Mostra rotta sulla mappa</div>
+          <div class="sb-act sb-act-ofp" onclick="closeSb();openOfp()"><i class="fa-solid fa-file-lines"></i>Apri OFP completo</div>
+          <div class="sb-act sb-act-trk" onclick="sbTrack()"><i class="fa-solid fa-crosshairs"></i>Imposta DEP + ARR come aeroporti attivi</div>
+          <div class="sb-act sb-act-chr" onclick="sbCharts()"><i class="fa-solid fa-book-atlas"></i>Cerca charts DEP + ARR</div>
+        </div>
+      </div>
+    </div>
+    <div class="sbright">
+      <div id="sb-map"></div>
+      <div class="sb-mhint"><div id="sb-hbox"><i class="fa-solid fa-route"></i>Inserisci il Pilot ID e premi LOAD<br>per visualizzare la rotta OFP</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SID SELECTOR MODAL -->
+<div id="sid-modal" style="display:none;position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,.8);align-items:center;justify-content:center">
+  <div style="background:var(--pn);border:1px solid var(--br2);border-radius:14px;width:400px;max-height:80vh;overflow-y:auto">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--br2);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:14px;font-weight:700;color:white"><i class="fa-solid fa-plane-departure" style="color:var(--amb);margin-right:8px"></i>Seleziona SID</div>
+      <div onclick="document.getElementById('sid-modal').style.display='none'" style="cursor:pointer;color:var(--mu)"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div id="sid-list" style="padding:12px"></div>
+  </div>
+</div>
+
+<!-- STAR SELECTOR MODAL -->
+<div id="star-modal" style="display:none;position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,.8);align-items:center;justify-content:center">
+  <div style="background:var(--pn);border:1px solid var(--br2);border-radius:14px;width:400px;max-height:80vh;overflow-y:auto">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--br2);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:14px;font-weight:700;color:white"><i class="fa-solid fa-plane-arrival" style="color:var(--grn);margin-right:8px"></i>Seleziona STAR</div>
+      <div onclick="document.getElementById('star-modal').style.display='none'" style="cursor:pointer;color:var(--mu)"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div id="star-list" style="padding:12px"></div>
+  </div>
+</div>
+
+<!-- CHART LIBRARY PANEL -->
+<div id="cl-panel">
+  <div class="cl-top">
+    <div class="cl-logo"><i class="fa-solid fa-book-atlas"></i></div>
+    <div class="cl-title">Chart Library <span>— Auto-fetch da fonti ufficiali</span></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:9px;color:var(--mu);background:rgba(0,216,122,.08);border:1px solid rgba(0,216,122,.2);border-radius:8px;padding:4px 10px">
+      <div style="width:5px;height:5px;border-radius:50%;background:var(--grn);animation:pulse2 1.5s infinite"></div>
+      ChartFox &middot; FAA &middot; ENAV &middot; EAD
+    </div>
+    <div class="cl-close" onclick="closeCL()"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div class="cl-body">
+    <div class="cl-left">
+      <div class="cl-search-bar">
+        <input type="text" id="cl-icao-in" class="cl-icao-in" placeholder="ICAO — es. LIMC" maxlength="4">
+        <button class="cl-search-btn" onclick="clSearchCharts()"><i class="fa-solid fa-magnifying-glass"></i> CERCA</button>
+      </div>
+      <div class="cl-progress-bar-wrap" id="cl-progress-wrap">
+        <div class="cl-prog-txt" id="cl-prog-txt">Ricerca in corso...</div>
+        <div class="cl-prog-bg"><div class="cl-prog-fill" id="cl-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div id="cl-stats" class="cl-stat-row" style="display:none"></div>
+      <div class="cl-filters">
+        <div class="cl-flt active" data-flt="ALL" onclick="clSetFilter('ALL',this)">Tutti</div>
+        <div class="cl-flt f-sid" data-flt="SID" onclick="clSetFilter('SID',this)">SID</div>
+        <div class="cl-flt f-star" data-flt="STAR" onclick="clSetFilter('STAR',this)">STAR</div>
+        <div class="cl-flt f-iap" data-flt="IAP" onclick="clSetFilter('IAP',this)">IAP / Approach</div>
+        <div class="cl-flt f-ad" data-flt="AD" onclick="clSetFilter('AD',this)">AD / Airport</div>
+        <div class="cl-flt f-gnd" data-flt="GND" onclick="clSetFilter('GND',this)">Ground</div>
+        <div class="cl-flt" data-flt="VFR" onclick="clSetFilter('VFR',this)">VFR</div>
+      </div>
+      <div class="cl-import-all-btn" id="cl-import-all-btn" onclick="clImportAll()">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Importa tutte le charts PDF
+      </div>
+      <div class="cl-list" id="cl-list">
+        <div class="cl-hint" style="position:relative;padding:40px">
+          <i class="fa-solid fa-book-atlas"></i>
+          <div class="cl-hint-title">Chart Library</div>
+          <div class="cl-hint-sub">Inserisci un codice ICAO e cerca le chart ufficiali.<br><br>Le chart vengono recuperate da:<br><strong style="color:var(--ac)">ChartFox</strong> &middot; <strong style="color:var(--amb)">FAA AeroNav</strong> &middot; <strong style="color:var(--grn)">ENAV AIP</strong> &middot; <strong style="color:#a580ff">Eurocontrol EAD</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="cl-right">
+      <div class="cl-preview-top">
+        <div class="cl-preview-nm" id="cl-preview-nm">Seleziona una chart per il preview</div>
+        <button onclick="if(clPreviewPdf)clPdfZoom(.3)" class="cmb" style="width:30px;height:30px" title="Zoom +"><i class="fa-solid fa-plus" style="font-size:10px"></i></button>
+        <button onclick="if(clPreviewPdf)clPdfZoom(-.3)" class="cmb" style="width:30px;height:30px" title="Zoom -"><i class="fa-solid fa-minus" style="font-size:10px"></i></button>
+      </div>
+      <div class="cl-preview-body" id="cl-preview-body">
+        <div class="cl-hint">
+          <i class="fa-solid fa-book-atlas"></i>
+          <div class="cl-hint-title">Preview Chart</div>
+          <div class="cl-hint-sub">Cerca un ICAO, seleziona una chart dalla lista<br>per visualizzarla qui in anteprima.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ATIS PANEL -->
+<div id="atis-panel">
+  <div class="atis-top">
+    <div style="width:34px;height:34px;border-radius:8px;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.25);display:flex;align-items:center;justify-content:center;color:var(--ac2);font-size:14px"><i class="fa-solid fa-tower-broadcast"></i></div>
+    <div style="font-size:13px;font-weight:700;color:white;flex:1">ATIS <span style="font-weight:400;font-size:11px;color:var(--mu)">— Departure &amp; Arrival</span></div>
+    <div class="cl-close" onclick="closeAtis()"><i class="fa-solid fa-xmark"></i></div>
+  </div>
+  <div class="atis-body" id="atis-body">
+    <div style="text-align:center;padding:40px;color:var(--mu)">
+      <i class="fa-solid fa-tower-broadcast" style="font-size:48px;opacity:.2;display:block;margin-bottom:14px"></i>
+      <div style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:8px">ATIS Information</div>
+      <div style="font-size:12px;line-height:1.7">Cerca un ICAO nell'header e l'ATIS verra mostrato automaticamente.<br>I dati vengono recuperati in tempo reale da VATSIM.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   LOADER
+============================================================ */
+const LD=['Inizializzazione sistema...','Caricamento AIRAC 2504...','Connessione VATSIM...','Sincronizzazione traffico live...','Caricamento moduli chart PDF...','Configurazione layer mappa...','Caricamento SimBrief connector...','Connessione IVAO API...','Inizializzazione ATC overlay...','Sistema EFB pronto. Buon volo!'];
+let ldP=0;
+const ldFill=document.getElementById('ld-fill'),ldMsg=document.getElementById('ld-msg'),ldPct=document.getElementById('ld-pct');
+function tickLd(){
+  const i=Math.floor(ldP/(100/LD.length));
+  ldMsg.textContent=LD[Math.min(i,LD.length-1)];
+  ldFill.style.width=ldP+'%';
+  ldPct.textContent=Math.round(ldP)+'%';
+  if(ldP<100){
+    ldP+=Math.random()*13+3;
+    if(ldP>100)ldP=100;
+    setTimeout(tickLd,Math.random()*280+100);
+  } else {
+    ldFill.style.width='100%';
+    ldMsg.textContent='Sistema EFB pronto. Buon volo!';
+    ldPct.textContent='100%';
+    setTimeout(showApp,700);
+  }
+}
+function showApp(){
+  const L=document.getElementById('loader');
+  L.classList.add('hide');
+  document.getElementById('main-nav').style.display='flex';
+  document.getElementById('app-root').style.display='flex';
+  setTimeout(()=>{L.style.display='none';initMap();},850);
+}
+tickLd();
+
+/* ============================================================
+   GLOBALS
+============================================================ */
+var map,sbMapObj;
+let pMarkers={},pData={},iMarkers={},iData={};
+let activeIcao='',activeNet='vatsim';
+let lyVat=true,lyIvo=false,lyRoute=true;
+let ovOp=.9,charts=[],currentOFP=null;
+let rLayer=null,sbRLayer=null,taxiLayer=null,sbMapInit=false;
+let mPdf=null,mPage=1,mTotal=1,mScale=1.5,mRot=0,mTx=0,mTy=0;
+let mDrag=false,mDx=0,mDy=0,mOx=0,mOy=0;
+let drawMode=false,drawTool='pen',drawColor='#ff1744',drawSize=3;
+let drawHistory=[],isDrawing=false,drawStartX=0,drawStartY=0;
+let selSid='',selStar='';
+let clCharts=[],clFilter='ALL',clPreviewPdf=null,clPreviewPage=1,clPreviewTotal=1,clPreviewScale=1.4;
+const NET_COL={vatsim:'#00d87a',ivao:'#ff6b35',volanta:'#a580ff',batc:'#ffb400'};
+
+/* ============================================================
+   AIRPORT DATABASE (extended)
+============================================================ */
+const APTS={
+  LIMC:[45.63,8.72],LIRF:[41.80,12.23],LIML:[45.44,9.27],LIPZ:[45.50,12.36],
+  LIMF:[45.20,7.65],LIRA:[41.65,12.69],LIME:[45.67,9.70],LIPE:[44.53,11.29],
+  LIPX:[45.40,10.89],LICJ:[38.18,13.09],LICT:[37.47,15.07],LIEE:[39.25,9.05],
+  LIRN:[40.88,14.29],LIRP:[43.68,10.39],LIMJ:[44.41,8.84],LIPQ:[45.83,13.47],
+  LOWS:[47.79,13.00],LOWW:[48.11,16.57],LOWG:[46.99,15.44],LOWI:[47.26,11.34],
+  EDDF:[50.03,8.57],EDDM:[48.35,11.79],EDDB:[52.36,13.51],EDDH:[53.63,9.99],
+  EDDK:[50.87,7.14],EDDL:[51.28,6.77],EDDS:[48.69,9.22],EDDP:[51.42,12.24],
+  EGLL:[51.48,-0.46],EGKK:[51.15,-0.19],EGLC:[51.50,0.055],EGSS:[51.89,0.23],
+  EGCC:[53.35,-2.27],EGGW:[51.87,-0.37],EGBB:[52.45,-1.75],EGPH:[55.95,-3.37],
+  LFPG:[49.01,2.55],LFPO:[48.72,2.36],LFMN:[43.66,7.21],LFLL:[45.72,5.08],
+  LFML:[43.44,5.21],LFBD:[44.83,-0.72],LFBO:[43.63,1.37],LFSB:[47.59,7.53],
+  LEMD:[40.47,-3.56],LEBL:[41.29,2.07],LEPA:[39.55,2.74],LEAL:[38.28,-0.56],
+  LEMG:[36.67,-4.50],LEZL:[37.42,-5.89],LEBB:[43.30,-2.91],LEGE:[41.90,2.76],
+  EHAM:[52.31,4.76],EHRD:[51.96,4.44],EHBK:[50.91,5.77],
+  LSZH:[47.46,8.55],LSGG:[46.24,6.11],LSZA:[46.00,8.91],
+  LYBE:[44.82,20.31],LKPR:[50.10,14.26],LKNO:[49.70,18.11],
+  EPWA:[52.17,20.97],EPKK:[50.08,19.78],EPGD:[54.38,18.47],
+  UUEE:[55.97,37.41],UUDD:[55.41,37.91],ULLI:[59.80,30.26],
+  LTFM:[41.27,28.74],LTAI:[36.90,30.80],LTFJ:[40.90,29.31],
+  OMDB:[25.25,55.36],OMAA:[24.43,54.65],OMDW:[24.90,55.16],
+  VHHH:[22.30,113.92],WSSS:[1.35,103.99],VTBS:[13.69,100.75],
+  KJFK:[40.64,-73.78],KLAX:[33.94,-118.40],KSFO:[37.62,-122.38],
+  KORD:[41.98,-87.90],KATL:[33.64,-84.43],KMIA:[25.79,-80.29],
+  KDEN:[39.86,-104.67],KSEA:[47.45,-122.31],KDFW:[32.90,-97.04],
+  KBOS:[42.36,-71.01],KDCA:[38.85,-77.04],KLAS:[36.08,-115.15],
+  KIAH:[29.98,-95.34],KEWR:[40.69,-74.17],KPHL:[39.87,-75.24],
+  CYYZ:[43.68,-79.63],CYVR:[49.19,-123.18],CYUL:[45.47,-73.74],
+  SBGR:[23.43,-46.47],SBGL:[22.81,-43.25],SCEL:[33.39,-70.79],
+  RJTT:[35.55,139.78],RJAA:[35.76,140.39],RKSI:[37.46,126.44],
+  ZBAA:[40.08,116.58],ZSPD:[31.14,121.81],ZGGG:[23.39,113.30],
+  WMKK:[2.74,101.70],VIDP:[28.55,77.10],VABB:[19.09,72.87],
+  FAOR:[26.14,28.25],HECA:[30.12,31.41],DNMM:[6.58,3.32]
+};
+
+/* TAXI DATABASE */
+const TAXI_DB={
+  LIMC:{
+    rwys:['35L','17R','35R','17L'],
+    gates:{
+      'T1-A01':{path:[[45.6300,8.7181],[45.6290,8.7185],[45.6280,8.7190],[45.6272,8.7205]]},
+      'T1-B04':{path:[[45.6300,8.7181],[45.6295,8.7175],[45.6280,8.7168],[45.6270,8.7175]]},
+      'T2-C12':{path:[[45.6300,8.7181],[45.6305,8.7165],[45.6315,8.7155],[45.6320,8.7148]]},
+      'T2-D20':{path:[[45.6300,8.7181],[45.6308,8.7192],[45.6318,8.7198],[45.6325,8.7210]]},
+      'Cargo-1':{path:[[45.6300,8.7181],[45.6285,8.7172],[45.6278,8.7160],[45.6270,8.7148]]},
+    }
+  },
+  LIRF:{
+    rwys:['07','25','16L','34R','16R','34L'],
+    gates:{
+      'T1-A1':{path:[[41.8005,12.2393],[41.8010,12.2400],[41.8015,12.2410]]},
+      'T1-B8':{path:[[41.8005,12.2393],[41.7998,12.2385],[41.7992,12.2375]]},
+      'T2-E8':{path:[[41.8005,12.2393],[41.8012,12.2378],[41.8020,12.2365]]},
+      'T3-G12':{path:[[41.8005,12.2393],[41.8000,12.2370],[41.7995,12.2355]]},
+      'Cargo':{path:[[41.8005,12.2393],[41.8015,12.2420],[41.8022,12.2435]]},
+    }
+  },
+  EDDF:{
+    rwys:['07C','25C','07L','25R','18','36'],
+    gates:{
+      'B08':{path:[[50.0375,8.5622],[50.0368,8.5615],[50.0360,8.5608]]},
+      'A20':{path:[[50.0375,8.5622],[50.0382,8.5630],[50.0390,8.5638]]},
+      'Z50':{path:[[50.0375,8.5622],[50.0365,8.5635],[50.0358,8.5648]]},
+      'D13':{path:[[50.0375,8.5622],[50.0380,8.5608],[50.0388,8.5598]]},
+      'V200':{path:[[50.0375,8.5622],[50.0360,8.5600],[50.0348,8.5585]]},
+    }
+  },
+  EGLL:{
+    rwys:['09L','27R','09R','27L'],
+    gates:{
+      'T2-A1':{path:[[51.4785,-0.4618],[51.4778,-0.4625],[51.4770,-0.4632]]},
+      'T3-D8':{path:[[51.4785,-0.4618],[51.4790,-0.4628],[51.4795,-0.4640]]},
+      'T4-L15':{path:[[51.4785,-0.4618],[51.4780,-0.4600],[51.4775,-0.4585]]},
+      'T5-F30':{path:[[51.4785,-0.4618],[51.4795,-0.4610],[51.4802,-0.4598]]},
+    }
+  },
+};
+
+/* ============================================================
+   COUNTRY INFO & CHART TYPES
+============================================================ */
+const COUNTRY_INFO = {
+  LI:{name:'Italia',flag:'🇮🇹',src:'ENAV AIP',aip:'https://www.enav.it/en/aip'},
+  ED:{name:'Germania',flag:'🇩🇪',src:'DFS AIP',aip:'https://aip.dfs.de/basicIFR/'},
+  EG:{name:'Regno Unito',flag:'🇬🇧',src:'NATS AIP',aip:'https://nats-uk.ead-it.com/cms-nats/opencms/en/Publications/AIP/'},
+  LF:{name:'Francia',flag:'🇫🇷',src:'SIA AIP',aip:'https://www.sia.aviation-civile.gouv.fr/'},
+  LE:{name:'Spagna',flag:'🇪🇸',src:'ENAIRE AIP',aip:'https://aip.enaire.es/AIP/'},
+  EH:{name:'Paesi Bassi',flag:'🇳🇱',src:'LVNL AIP',aip:'https://www.lvnl.nl/eaip'},
+  LS:{name:'Svizzera',flag:'🇨🇭',src:'Skyguide AIP',aip:'https://www.skyguide.ch/services/aeronautical-information'},
+  LO:{name:'Austria',flag:'🇦🇹',src:'Austro Control AIP',aip:'https://eaip.austrocontrol.at/'},
+  LK:{name:'Repubblica Ceca',flag:'🇨🇿',src:'ANS CR AIP',aip:'https://aim.rlp.cz/'},
+  EP:{name:'Polonia',flag:'🇵🇱',src:'PANSA AIP',aip:'https://www.ais.pansa.pl/aip'},
+  LY:{name:'Serbia',flag:'🇷🇸',src:'SMATSA AIP',aip:''},
+  UU:{name:'Russia',flag:'🇷🇺',src:'AIP Russia',aip:''},
+  LT:{name:'Turchia',flag:'🇹🇷',src:'DHMI AIP',aip:'https://ans.dhmi.gov.tr/'},
+  OM:{name:'EAU',flag:'🇦🇪',src:'GCAA AIP',aip:'https://www.gcaa.gov.ae/en/ais/pages/default.aspx'},
+  VH:{name:'Hong Kong',flag:'🇭🇰',src:'CAD AIP',aip:''},
+  WS:{name:'Singapore',flag:'🇸🇬',src:'CAAS AIP',aip:''},
+  K:{name:'USA',flag:'🇺🇸',src:'FAA AeroNav',aip:'https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/'},
+  CY:{name:'Canada',flag:'🇨🇦',src:'NAV CANADA AIP',aip:'https://www.navcanada.ca/en/aeronautical-information/aip-canada.aspx'},
+  SB:{name:'Brasile',flag:'🇧🇷',src:'DECEA AIP',aip:'https://aisweb.decea.mil.br/'},
+  RJ:{name:'Giappone',flag:'🇯🇵',src:'JCAB AIP',aip:'https://aisjapan.mlit.go.jp/'},
+  RK:{name:'Corea del Sud',flag:'🇰🇷',src:'MOLIT AIP',aip:''},
+  ZB:{name:'Cina',flag:'🇨🇳',src:'CAAC AIP',aip:''},
+  ZS:{name:'Cina',flag:'🇨🇳',src:'CAAC AIP',aip:''},
+  ZG:{name:'Cina',flag:'🇨🇳',src:'CAAC AIP',aip:''},
+  WM:{name:'Malaysia',flag:'🇲🇾',src:'DCA AIP',aip:''},
+  VI:{name:'India',flag:'🇮🇳',src:'AAI AIP',aip:'https://aim-india.aai.aero/'},
+  VA:{name:'India',flag:'🇮🇳',src:'AAI AIP',aip:'https://aim-india.aai.aero/'},
+  FA:{name:'Sudafrica',flag:'🇿🇦',src:'ATNS AIP',aip:''},
+  HE:{name:'Egitto',flag:'🇪🇬',src:'NANSC AIP',aip:''},
+  DN:{name:'Nigeria',flag:'🇳🇬',src:'NAMA AIP',aip:''},
+};
+
+const CHART_TYPE_META = {
+  SID:{cls:'cl-ic-sid',ic:'fa-plane-departure',label:'SID'},
+  STAR:{cls:'cl-ic-star',ic:'fa-plane-arrival',label:'STAR'},
+  IAP:{cls:'cl-ic-iap',ic:'fa-diamond-turn-right',label:'IAP'},
+  AD:{cls:'cl-ic-ad',ic:'fa-tower-cell',label:'AD'},
+  GND:{cls:'cl-ic-gnd',ic:'fa-road',label:'GND'},
+  VFR:{cls:'cl-ic-vfr',ic:'fa-eye',label:'VFR'},
+  OTHER:{cls:'cl-ic-ad',ic:'fa-file-pdf',label:'OTHER'},
+};
+
+function getCountryCode(icao){
+  if(!icao||icao.length<2) return '';
+  if(icao.startsWith('K')) return 'K';
+  return icao.substring(0,2);
+}
+
+/* ============================================================
+   MAP INIT
+============================================================ */
+function initMap(){
+  map=L.map('map',{zoomControl:false,attributionControl:false}).setView([45.46,9.18],5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+  setInterval(syncVatsim,15000);
+  setInterval(()=>{if(lyIvo)syncIvao();},30000);
+  setInterval(()=>{document.getElementById('utc').textContent=new Date().toISOString().substr(11,8)+'Z';},1000);
+  document.getElementById('airport-search').addEventListener('keydown',e=>{if(e.key==='Enter')zoomAirport();});
+  document.getElementById('sb-pid').addEventListener('keydown',e=>{if(e.key==='Enter')loadSb();});
+  document.getElementById('cl-icao-in').addEventListener('keydown',e=>{if(e.key==='Enter')clSearchCharts();});
+  syncVatsim();
+}
+
+/* ============================================================
+   VATSIM
+============================================================ */
+async function syncVatsim(){
+  try{
+    const d=await fetch('https://data.vatsim.net/v3/vatsim-data.json').then(r=>r.json());
+    document.getElementById('pcnt').textContent=d.pilots.length;
+    document.getElementById('ft-cnt').textContent=d.pilots.length;
+    const alive=new Set(d.pilots.map(p=>p.callsign));
+    Object.keys(pMarkers).forEach(cs=>{if(!alive.has(cs)){try{map.removeLayer(pMarkers[cs]);}catch(e){}delete pMarkers[cs];delete pData[cs];}});
+    d.pilots.forEach(p=>{
+      pData[p.callsign]=p;
+      const ic=L.divIcon({className:'',html:`<div style="transform:rotate(${(p.heading||0)-45}deg);color:var(--ac);font-size:14px;"><i class="fa-solid fa-plane"></i></div>`,iconSize:[18,18],iconAnchor:[9,9]});
+      if(!pMarkers[p.callsign]){const m=L.marker([p.latitude,p.longitude],{icon:ic});m.bindTooltip(p.callsign,{permanent:false,direction:'right',className:'plbl',offset:[8,0]});m.on('click',()=>showInfo(p.callsign));if(lyVat)m.addTo(map);pMarkers[p.callsign]=m;}
+      else{pMarkers[p.callsign].setLatLng([p.latitude,p.longitude]);pMarkers[p.callsign].setIcon(ic);}
+    });
+    let ah='',ph='',ac=0,pc=0;
+    if(activeIcao){
+      d.controllers.filter(c=>c.callsign.startsWith(activeIcao)).forEach(c=>{ac++;const ii=c.callsign.includes('GND')?'fa-road':c.callsign.includes('APP')||c.callsign.includes('DEP')?'fa-satellite-dish':'fa-tower-cell';ah+=`<div class="atcc"><div class="atci"><i class="fa-solid ${ii}"></i></div><div><div class="atccs">${c.callsign} <span class="tag tg">${atcT(c.callsign)}</span></div><div class="atcfr">${c.frequency} MHz</div></div></div>`;});
+      d.pilots.filter(p=>p.flight_plan&&(p.flight_plan.departure===activeIcao||p.flight_plan.arrival===activeIcao)).forEach(p=>{pc++;ph+=`<div class="vcard" onclick="focusPl('${p.callsign}')"><div class="vc-h"><span class="vc-cs">${p.callsign}</span><span class="tag t0">${p.aircraft_short||'N/A'}</span></div><div class="vc-rt">${p.flight_plan.departure||'----'} &rarr; ${p.flight_plan.arrival||'----'}</div><div class="vc-in">${(p.altitude||0).toLocaleString()}ft &middot; ${p.groundspeed||0}kt</div><div class="vc-bar"><div class="vc-fill" style="width:${Math.min((p.groundspeed||0)/5,100)}%"></div></div></div>`;});
+    }
+    document.getElementById('v-atcl').innerHTML=ah||`<div class="empty"><i class="fa-solid fa-tower-cell"></i>${activeIcao?'Nessun ATC per '+activeIcao+'.':'Cerca un ICAO.'}</div>`;
+    document.getElementById('v-pltl').innerHTML=ph||`<div class="empty"><i class="fa-solid fa-plane-departure"></i>${activeIcao?'Nessun volo per '+activeIcao+'.':'Cerca un ICAO.'}</div>`;
+    document.getElementById('v-atc').textContent=ac;document.getElementById('v-pc').textContent=pc;
+    updateAtisFromVatsim(d);
+  }catch(e){console.warn('VATSIM:',e);}
+}
+
+async function syncIvao(){
+  try{
+    const d=await fetch('https://api.ivao.aero/v2/tracker/whazzup').then(r=>r.json());
+    const pilots=d.clients?.pilots||[],atcs=d.clients?.atcs||[];
+    const alive=new Set(pilots.map(p=>'IV_'+p.callsign));
+    Object.keys(iMarkers).forEach(k=>{if(!alive.has(k)){try{map.removeLayer(iMarkers[k]);}catch(e){}delete iMarkers[k];delete iData[k];}});
+    pilots.forEach(p=>{const k='IV_'+p.callsign;iData[k]=p;const la=p.lastTrack?.latitude||0,ln=p.lastTrack?.longitude||0;if(!la&&!ln)return;const ic=L.divIcon({className:'',html:`<div style="transform:rotate(${(p.lastTrack?.heading||0)-45}deg);color:#ff6b35;font-size:14px;"><i class="fa-solid fa-plane"></i></div>`,iconSize:[18,18],iconAnchor:[9,9]});if(!iMarkers[k]){const m=L.marker([la,ln],{icon:ic});m.bindTooltip(p.callsign+' [IVAO]',{permanent:false,direction:'right',className:'plbl',offset:[8,0]});m.on('click',()=>showIvaoInfo(k));if(lyIvo)m.addTo(map);iMarkers[k]=m;}else{iMarkers[k].setLatLng([la,ln]);iMarkers[k].setIcon(ic);}});
+    let ah='',ph='',ac=0,pc=0;
+    if(activeIcao){atcs.filter(a=>a.callsign.startsWith(activeIcao)).forEach(a=>{ac++;ah+=`<div class="atcc"><div class="atci" style="background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.3);color:#ff6b35"><i class="fa-solid fa-tower-cell"></i></div><div><div class="atccs">${a.callsign} <span class="tag ti">IVAO</span></div><div class="atcfr" style="color:#ff6b35">${a.atis?.frequency||'---.---'} MHz</div></div></div>`;});pilots.filter(p=>p.flightPlan&&(p.flightPlan.departureId===activeIcao||p.flightPlan.arrivalId===activeIcao)).forEach(p=>{pc++;ph+=`<div class="vcard" onclick="focusIvo('IV_${p.callsign}')"><div class="vc-h"><span class="vc-cs">${p.callsign}</span><span class="tag ti">IVAO</span></div><div class="vc-rt" style="color:#ff6b35">${p.flightPlan.departureId||'----'} &rarr; ${p.flightPlan.arrivalId||'----'}</div><div class="vc-in">${p.lastTrack?.altitude||0}ft &middot; ${p.lastTrack?.groundSpeed||0}kt</div></div>`;});}
+    document.getElementById('i-atcl').innerHTML=ah||`<div class="empty"><i class="fa-solid fa-tower-cell"></i>${activeIcao?'Nessun ATC IVAO.':'Cerca un ICAO.'}</div>`;
+    document.getElementById('i-pltl').innerHTML=ph||`<div class="empty"><i class="fa-solid fa-plane"></i>${activeIcao?'Nessun volo IVAO.':'Cerca un ICAO.'}</div>`;
+    document.getElementById('i-atc').textContent=ac;document.getElementById('i-pc').textContent=pc;
+  }catch(e){document.getElementById('i-atcl').innerHTML=`<div class="empty"><i class="fa-solid fa-triangle-exclamation" style="color:var(--amb)"></i><br><strong style="color:var(--amb)">IVAO API</strong><br><span style="font-size:10px">Usa <a href="https://webeye.ivao.aero" target="_blank" style="color:#ff6b35">IVAO Webeye</a></span></div>`;}
+}
+
+function atcT(cs){if(cs.includes('DEL'))return'DEL';if(cs.includes('GND'))return'GND';if(cs.includes('TWR'))return'TWR';if(cs.includes('APP'))return'APP';if(cs.includes('DEP'))return'DEP';if(cs.includes('CTR')||cs.includes('FIR'))return'CTR';return'ATC';}
+function showInfo(cs){const p=pData[cs];if(!p)return;document.getElementById('ip-cs').textContent=p.callsign;document.getElementById('ip-alt').textContent=(p.altitude||0).toLocaleString()+' ft';document.getElementById('ip-spd').textContent=(p.groundspeed||0)+' kt';document.getElementById('ip-hdg').textContent=(p.heading||0)+'°';document.getElementById('ip-ac').textContent=p.aircraft_short||p.aircraft_faa||'N/A';const rt=document.getElementById('ip-rt'),pg=document.getElementById('ip-pg');if(p.flight_plan){document.getElementById('ip-dep').textContent=p.flight_plan.departure||'----';document.getElementById('ip-arr').textContent=p.flight_plan.arrival||'----';document.getElementById('ip-dl').textContent=p.flight_plan.departure||'DEP';document.getElementById('ip-al').textContent=p.flight_plan.arrival||'ARR';rt.style.display='flex';pg.style.display='block';document.getElementById('ip-pf').style.width=Math.max(5,Math.min(95,(p.altitude/380)*50+(p.groundspeed/500)*20))+'%';}else{rt.style.display='none';pg.style.display='none';}document.getElementById('info-panel').classList.add('active');}
+function showIvaoInfo(k){const p=iData[k];if(!p)return;document.getElementById('ip-cs').textContent=p.callsign+' [IVAO]';document.getElementById('ip-alt').textContent=(p.lastTrack?.altitude||0).toLocaleString()+' ft';document.getElementById('ip-spd').textContent=(p.lastTrack?.groundSpeed||0)+' kt';document.getElementById('ip-hdg').textContent=(p.lastTrack?.heading||0)+'°';document.getElementById('ip-ac').textContent=p.flightPlan?.aircraftId||'N/A';if(p.flightPlan){document.getElementById('ip-dep').textContent=p.flightPlan.departureId||'----';document.getElementById('ip-arr').textContent=p.flightPlan.arrivalId||'----';document.getElementById('ip-rt').style.display='flex';}else document.getElementById('ip-rt').style.display='none';document.getElementById('ip-pg').style.display='none';document.getElementById('info-panel').classList.add('active');}
+function closeInfo(){document.getElementById('info-panel').classList.remove('active');}
+function focusPl(cs){const p=pData[cs];if(p){map.flyTo([p.latitude,p.longitude],11);showInfo(cs);}}
+function focusIvo(k){const p=iData[k];if(p?.lastTrack){map.flyTo([p.lastTrack.latitude,p.lastTrack.longitude],11);showIvaoInfo(k);}}
+function setNet(n){activeNet=n;['vatsim','ivao','volanta','batc'].forEach(x=>{const p=document.getElementById('pill-'+x);if(p){p.classList.toggle('sel',x===n);p.style.borderColor=x===n?NET_COL[n]+'66':'';}});document.getElementById('ft-dot').style.background=NET_COL[n];document.getElementById('ft-net').textContent={vatsim:'VATSIM LIVE',ivao:'IVAO LIVE',volanta:'VOLANTA',batc:'BEYONDATC AI'}[n];switchExTab('vatsim');switchNetTab(n);}
+function switchNetTab(n){['vatsim','ivao','volanta','batc'].forEach(x=>{const t=document.getElementById('ntab-'+x),c=document.getElementById('nc-'+x);if(t){t.style.color=x===n?NET_COL[n]:'var(--mu)';t.style.borderBottomColor=x===n?NET_COL[n]:'transparent';}if(c){c.style.display=x===n?'flex':'none';}});if(n==='ivao'&&lyIvo)syncIvao();}
+function zoomAirport(){const ic=document.getElementById('airport-search').value.toUpperCase().trim();if(!ic)return;activeIcao=ic;document.getElementById('ft-icao').textContent=ic;if(APTS[ic])map.flyTo(APTS[ic],12);syncVatsim();updateWx(ic);updateNotam(ic);if(lyIvo)syncIvao();switchExTab('vatsim');const taxi=document.getElementById('taxi-btn');if(TAXI_DB[ic])taxi.style.display='flex';else taxi.style.display='none';}
+function togLy(n){const b=document.getElementById('ly-'+n);if(b)b.classList.toggle('on');if(n==='vatsim'){lyVat=!lyVat;Object.values(pMarkers).forEach(m=>{try{lyVat?m.addTo(map):map.removeLayer(m);}catch(e){}});}if(n==='ivao'){lyIvo=!lyIvo;Object.values(iMarkers).forEach(m=>{try{lyIvo?m.addTo(map):map.removeLayer(m);}catch(e){}});if(lyIvo)syncIvao();}if(n==='route'){lyRoute=!lyRoute;if(rLayer){try{lyRoute?rLayer.addTo(map):map.removeLayer(rLayer);}catch(e){}}}}
+function switchExTab(n){['charts','vatsim','weather','notam'].forEach(t=>{document.getElementById('tc-'+t).classList.remove('active');document.getElementById('xt-'+t).classList.remove('active');});document.getElementById('tc-'+n).classList.add('active');document.getElementById('xt-'+n).classList.add('active');}
+function switchTab(n,btn){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');switchExTab(n);}
+function recenter(){if(activeIcao&&APTS[activeIcao])map.flyTo(APTS[activeIcao],11);else map.flyTo([45.46,9.18],5);}
+
+/* ============================================================
+   TAXI SELECTION
+============================================================ */
+function toggleTaxi(){const p=document.getElementById('taxi-panel');p.classList.toggle('active');if(p.classList.contains('active'))renderTaxiPanel(activeIcao);}
+function closeTaxi(){document.getElementById('taxi-panel').classList.remove('active');if(taxiLayer){try{map.removeLayer(taxiLayer);}catch(e){}taxiLayer=null;}}
+function renderTaxiPanel(icao){const db=TAXI_DB[icao];if(!db)return;document.getElementById('taxi-icao-lbl').textContent=icao;const rr=document.getElementById('taxi-rwy-row');rr.innerHTML=db.rwys.map(r=>`<div class="rwy-chip" onclick="selectRwy(this,'${r}')">${r}</div>`).join('');const gs=document.getElementById('gate-scroll');gs.innerHTML=Object.keys(db.gates).map(g=>`<div class="gate-btn" onclick="selectGate(this,'${g}','${icao}')">${g}</div>`).join('');}
+function selectRwy(el,rwy){document.querySelectorAll('.rwy-chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');document.getElementById('taxi-status').innerHTML=`Runway <span>${rwy}</span> selezionata. Ora scegli un gate.`;}
+let selGate='';
+function selectGate(el,gate,icao){document.querySelectorAll('.gate-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');selGate=gate;drawTaxiPath(icao,gate);}
+function drawTaxiPath(icao,gate){const db=TAXI_DB[icao];if(!db||!db.gates[gate])return;if(taxiLayer){try{map.removeLayer(taxiLayer);}catch(e){}}const path=db.gates[gate].path;taxiLayer=L.layerGroup();const pl=L.polyline(path,{color:'#00d87a',weight:4,opacity:.9,dashArray:'10,6'});taxiLayer.addLayer(pl);const gm=L.circleMarker(path[path.length-1],{radius:8,fillColor:'#00d87a',fillOpacity:.9,color:'white',weight:2});gm.bindTooltip(`GATE ${gate}`,{permanent:true,direction:'top',className:'plbl'});taxiLayer.addLayer(gm);const sm=L.circleMarker(path[0],{radius:6,fillColor:'#ffb400',fillOpacity:.9,color:'white',weight:2});taxiLayer.addLayer(sm);taxiLayer.addTo(map);map.flyTo(path[Math.floor(path.length/2)],14);document.getElementById('taxi-status').innerHTML=`Percorso taxi verso <span>GATE ${gate}</span> illuminato. ${path.length-1} segmenti.`;}
+
+/* ============================================================
+   WEATHER — Real METAR from AVWX
+============================================================ */
+async function updateWx(ic){
+  document.getElementById('wx-content').innerHTML=`<div class="cl-loading"><i class="fa-solid fa-spinner fa-spin"></i>Caricamento METAR per ${ic}...</div>`;
+  try {
+    const res = await fetch(`https://aviationweather.gov/api/data/metar?ids=${ic}&format=json`);
+    const data = await res.json();
+    if(data && data.length > 0){
+      const m = data[0];
+      const raw = m.rawOb || `${ic} METAR non disponibile`;
+      const wind = m.wdir !== undefined ? `${String(m.wdir).padStart(3,'0')}/${m.wspd}kt${m.wgst?(' G'+m.wgst+'kt'):''}` : '---';
+      const vis = m.visib !== undefined ? (m.visib >= 6 ? '10km+' : m.visib + ' SM') : '---';
+      const clouds = m.clouds && m.clouds.length ? m.clouds.map(c=>`${c.cover}${c.base||''}`).join(' ') : 'CLR';
+      const temp = m.temp !== undefined ? m.temp + '°C' : '---';
+      const dewp = m.dewp !== undefined ? m.dewp + '°C' : '---';
+      const qnh = m.altim !== undefined ? Math.round(m.altim * 33.8639) + ' hPa' : '---';
+      const cat = m.fltcat || 'VFR';
+      const catCol = cat==='VFR'?'var(--grn)':cat==='MVFR'?'var(--ac2)':cat==='IFR'?'var(--wrn)':'#ff1744';
+      const name = m.name || ic;
+      document.getElementById('wx-content').innerHTML=`<div class="wx-box"><div class="wx-top"><div><div class="wx-icao">${ic} <span style="font-size:11px;font-weight:700;color:${catCol};margin-left:6px">${cat}</span></div><div class="wx-nm">${name}</div></div><div style="margin-left:auto;font-size:24px;color:var(--ac2)"><i class="fa-solid fa-cloud-sun"></i></div></div><div class="wx-grid"><div class="wx-it"><div class="wx-lb">Vento</div><div class="wx-vl">${wind}</div></div><div class="wx-it"><div class="wx-lb">Visibilita</div><div class="wx-vl">${vis}</div></div><div class="wx-it"><div class="wx-lb">Nubi</div><div class="wx-vl">${clouds}</div></div><div class="wx-it"><div class="wx-lb">Temperatura</div><div class="wx-vl">${temp}</div></div><div class="wx-it"><div class="wx-lb">Dew Point</div><div class="wx-vl">${dewp}</div></div><div class="wx-it"><div class="wx-lb">QNH</div><div class="wx-vl" style="color:var(--ac2)">${qnh}</div></div></div></div><div class="sh">METAR Raw</div><div class="metar-b">${raw}</div>`;
+    } else {
+      throw new Error('No data');
+    }
+  } catch(e) {
+    document.getElementById('wx-content').innerHTML=`<div class="wx-box"><div class="wx-top"><div><div class="wx-icao">${ic}</div><div class="wx-nm">METAR non disponibile</div></div></div></div><div class="empty"><i class="fa-solid fa-cloud-sun"></i>Impossibile recuperare il METAR per ${ic}.<br>Controlla il codice ICAO.</div>`;
+  }
+}
+
+/* ============================================================
+   NOTAMs
+============================================================ */
+const NOTAMS_DB={LIMC:[{id:"A1234/26",t:"RWY 35R/17L CLSD manutenzione",d:"Runway 35R/17L closed for maintenance 0600-1800 UTC.",mt:"26 APR 0600-1800Z"},{id:"A1235/26",t:"ILS 35L freq aggiornata",d:"ILS CAT III updated to 109.15 MHz.",mt:"Permanente"}],LIRF:[{id:"B0887/26",t:"TWY G CLSD G3-G7",d:"Taxiway G closed between G3 and G7.",mt:"25-30 APR"}],EDDF:[{id:"D0556/26",t:"ILS RWY 25R OTS",d:"ILS RWY 25R out of service.",mt:"15-20 APR"}],EGLL:[{id:"E1109/26",t:"ATIS ore ridotte",d:"ATIS broadcast 0500-2300 UTC.",mt:"14-18 APR"}],LFPG:[{id:"F0034/26",t:"TWY A partially CLSD",d:"Taxiway A closed between A3-A5 for construction.",mt:"01-31 MAY"}],LEBL:[{id:"G0211/26",t:"RWY 07L/25R reduced length",d:"Runway 07L/25R TORA reduced to 2400m.",mt:"10-25 MAY"}]};
+
+function updateNotam(ic){
+  const ns=NOTAMS_DB[ic]||[];
+  document.getElementById('notam-cnt').textContent=ns.length;
+  document.getElementById('notam-list').innerHTML=ns.length?ns.map(n=>`<div class="notam-it"><div class="notam-id"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i> ${n.id} — ${n.t}</div><div class="notam-tx">${n.d}</div><div class="notam-mt"><i class="fa-regular fa-clock" style="font-size:9px"></i> ${n.mt}</div></div>`).join(''):`<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>Nessun NOTAM per ${ic}.</div>`;
+}
+
+/* ============================================================
+   PDF OVERLAY + IMPORT
+============================================================ */
+let ovActive=false;
+function toggleOvl(f){const o=document.getElementById('chart-ovl'),tb=document.getElementById('ovl-tb'),b=document.getElementById('ovl-btn');const on=f!==undefined?f:!ovActive;ovActive=on;if(on){o.classList.add('active');tb.classList.add('active');o.style.opacity=ovOp;b.style.color='var(--ac2)';}else{o.classList.remove('active');tb.classList.remove('active');b.style.color='';}}
+function chgOp(d){ovOp=Math.max(.2,Math.min(1,ovOp+d));document.getElementById('chart-ovl').style.opacity=ovOp;}
+async function handleImport(inp){const f=inp.files[0];if(!f)return;const ic=(prompt("ICAO per questa chart:")||"----").toUpperCase();const nm=f.name.replace('.pdf','');charts.push({icao:ic,name:nm,file:f});renderCharts();inp.value='';openCm(f,nm,ic);}
+function renderCharts(){document.getElementById('chart-cnt').textContent=charts.length;document.getElementById('chart-list').innerHTML=charts.length?charts.map((c,i)=>`<div class="cth" onclick="openCm(charts[${i}].file,'${c.name.replace(/'/g,"\\'")}','${c.icao}')"><div class="cthi"><i class="fa-regular fa-file-pdf"></i></div><div><div class="ctnm">${c.name}</div><div class="ctmt">${c.icao} &middot; PDF</div></div></div>`).join(''):`<div class="empty"><i class="fa-regular fa-file-pdf"></i>Nessuna chart.</div>`;}
+
+/* ============================================================
+   CHART MODAL
+============================================================ */
+let mPdfFile=null;
+async function openCm(file,name,icao){
+  mPdfFile=file;
+  document.getElementById('cm-icao').textContent=icao||'----';
+  document.getElementById('cm-title').textContent=name||'Chart';
+  document.getElementById('cm').classList.add('active');
+  mRot=0;mTx=0;mTy=0;mScale=1.5;
+  if(drawMode) toggleDrawMode(false);
+  const rd=new FileReader();
+  rd.onload=async function(){
+    mPdf=await pdfjsLib.getDocument({data:this.result}).promise;
+    mTotal=mPdf.numPages;mPage=1;
+    document.getElementById('cm-tp').textContent=mTotal;
+    await mRender();mFit();syncDrawCanvas();
+  };
+  rd.readAsArrayBuffer(file);
+}
+async function mRender(){
+  if(!mPdf)return;
+  const pg=await mPdf.getPage(mPage);
+  const vp=pg.getViewport({scale:2.5,rotation:mRot});
+  const c=document.getElementById('modal-canvas');
+  c.width=vp.width;c.height=vp.height;
+  await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+  document.getElementById('cm-cp').textContent=mPage;
+  syncDrawCanvas();mApply();
+}
+function syncDrawCanvas(){
+  const mc=document.getElementById('modal-canvas');
+  const dc=document.getElementById('draw-canvas');
+  dc.width=mc.width;dc.height=mc.height;
+  dc.style.width=mc.style.width||mc.width+'px';dc.style.height=mc.style.height||mc.height+'px';
+  drawHistory=[];
+}
+function mApply(){document.getElementById('mcw').style.transform=`translate(${mTx}px,${mTy}px) scale(${mScale})`;document.getElementById('cm-zi').textContent=Math.round(mScale*100)+'%';}
+function mzoom(d){mScale=Math.max(.25,Math.min(6,mScale+d));mApply();}
+function mreset(){mTx=0;mTy=0;mFit();}
+function mFit(){const v=document.getElementById('cm-vp'),c=document.getElementById('modal-canvas');if(!c.width)return;mScale=Math.min((v.clientWidth-80)/c.width,(v.clientHeight-60)/c.height);mTx=0;mTy=0;mApply();}
+function mfitW(){const v=document.getElementById('cm-vp'),c=document.getElementById('modal-canvas');if(!c.width)return;mScale=(v.clientWidth-60)/c.width;mTx=0;mTy=0;mApply();}
+function mfitH(){const v=document.getElementById('cm-vp'),c=document.getElementById('modal-canvas');if(!c.height)return;mScale=(v.clientHeight-60)/c.height;mTx=0;mTy=0;mApply();}
+async function mrot(){mRot=(mRot+90)%360;await mRender();mFit();}
+async function mnext(){if(mPage<mTotal){mPage++;await mRender();}}
+async function mprev(){if(mPage>1){mPage--;await mRender();}}
+function closeCm(){document.getElementById('cm').classList.remove('active');mPdf=null;if(drawMode)toggleDrawMode(false);}
+
+const cmvp=document.getElementById('cm-vp');
+cmvp.addEventListener('mousedown',e=>{if(drawMode||e.target.closest('.cmb'))return;mDrag=true;mDx=e.clientX;mDy=e.clientY;mOx=mTx;mOy=mTy;cmvp.classList.add('grab');});
+document.addEventListener('mousemove',e=>{if(!mDrag||drawMode)return;mTx=mOx+(e.clientX-mDx);mTy=mOy+(e.clientY-mDy);mApply();});
+document.addEventListener('mouseup',()=>{mDrag=false;cmvp.classList.remove('grab');});
+cmvp.addEventListener('wheel',e=>{e.preventDefault();mzoom(e.deltaY<0?.15:-.15);},{passive:false});
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('cm').classList.contains('active')){if(e.key==='Escape')closeCm();if(e.key==='ArrowRight'||e.key==='PageDown')mnext();if(e.key==='ArrowLeft'||e.key==='PageUp')mprev();if(e.key==='+'||e.key==='=')mzoom(.25);if(e.key==='-')mzoom(-.25);if(e.key==='0')mreset();if(e.key==='d'||e.key==='D')toggleDrawMode();}
+  if(document.getElementById('sbp').classList.contains('open')&&e.key==='Escape')closeSb();
+  if(document.getElementById('ofp-panel').classList.contains('open')&&e.key==='Escape')closeOfp();
+  if(document.getElementById('scratchpad').classList.contains('open')&&e.key==='Escape')closeScratchpad();
+  if(document.getElementById('cl-panel').classList.contains('open')&&e.key==='Escape')closeCL();
+  if(document.getElementById('atis-panel').classList.contains('open')&&e.key==='Escape')closeAtis();
+});
+
+/* ============================================================
+   DRAW ON CHART
+============================================================ */
+function toggleDrawMode(force){
+  drawMode=force!==undefined?force:!drawMode;
+  const btn=document.getElementById('draw-toggle-btn');
+  const tb=document.getElementById('draw-toolbar');
+  const dc=document.getElementById('draw-canvas');
+  const vp=document.getElementById('cm-vp');
+  if(drawMode){btn.classList.add('draw-active');tb.classList.add('visible');dc.classList.add('active');vp.classList.add('draw-mode');}
+  else{btn.classList.remove('draw-active');tb.classList.remove('visible');dc.classList.remove('active');vp.classList.remove('draw-mode');isDrawing=false;}
+}
+function setDrawTool(t){drawTool=t;['pen','hl','arr','circ','eraser'].forEach(x=>{const el=document.getElementById('dt-'+x);if(el)el.classList.remove('draw-active');});const el=document.getElementById('dt-'+t);if(el)el.classList.add('draw-active');}
+function setDrawColor(c,el){drawColor=c;document.querySelectorAll('.dt-col').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function clearDrawing(){const dc=document.getElementById('draw-canvas');dc.getContext('2d').clearRect(0,0,dc.width,dc.height);drawHistory=[];}
+function undoDrawing(){if(!drawHistory.length)return;drawHistory.pop();const dc=document.getElementById('draw-canvas');const ctx=dc.getContext('2d');ctx.clearRect(0,0,dc.width,dc.height);drawHistory.forEach(snap=>ctx.putImageData(snap,0,0));}
+function saveDrawing(){
+  const mc=document.getElementById('modal-canvas');
+  const dc=document.getElementById('draw-canvas');
+  const out=document.createElement('canvas');
+  out.width=mc.width;out.height=mc.height;
+  const octx=out.getContext('2d');
+  octx.drawImage(mc,0,0);octx.drawImage(dc,0,0);
+  const a=document.createElement('a');a.href=out.toDataURL('image/png');a.download='chart-annotated.png';a.click();
+}
+
+const dc=document.getElementById('draw-canvas');
+let drawPath=[];
+dc.addEventListener('mousedown',e=>{
+  if(!drawMode)return;
+  isDrawing=true;
+  const r=dc.getBoundingClientRect();
+  const ox=(e.clientX-r.left)*dc.width/dc.clientWidth,oy=(e.clientY-r.top)*dc.height/dc.clientHeight;
+  drawStartX=ox;drawStartY=oy;drawPath=[[ox,oy]];
+  if(drawTool!=='eraser')drawHistory.push(dc.getContext('2d').getImageData(0,0,dc.width,dc.height));
+});
+dc.addEventListener('mousemove',e=>{
+  if(!isDrawing||!drawMode)return;
+  const r=dc.getBoundingClientRect();
+  const ox=(e.clientX-r.left)*dc.width/dc.clientWidth,oy=(e.clientY-r.top)*dc.height/dc.clientHeight;
+  drawPath.push([ox,oy]);
+  const ctx=dc.getContext('2d');
+  if(drawTool==='pen'||drawTool==='eraser'){
+    ctx.beginPath();
+    const prev=drawPath[drawPath.length-2]||[ox,oy];
+    ctx.moveTo(prev[0],prev[1]);ctx.lineTo(ox,oy);
+    if(drawTool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';}
+    else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=drawColor;}
+    ctx.lineWidth=drawSize*2;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  } else if(drawTool==='highlight'){
+    ctx.globalCompositeOperation='source-over';
+    ctx.strokeStyle=drawColor+'88';
+    ctx.lineWidth=drawSize*8;ctx.lineCap='round';
+    const prev=drawPath[drawPath.length-2]||[ox,oy];
+    ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(ox,oy);ctx.stroke();
+  }
+});
+dc.addEventListener('mouseup',e=>{
+  if(!isDrawing||!drawMode)return;
+  isDrawing=false;
+  const r=dc.getBoundingClientRect();
+  const ox=(e.clientX-r.left)*dc.width/dc.clientWidth,oy=(e.clientY-r.top)*dc.height/dc.clientHeight;
+  const ctx=dc.getContext('2d');
+  ctx.globalCompositeOperation='source-over';
+  if(drawTool==='arrow'){
+    ctx.strokeStyle=drawColor;ctx.fillStyle=drawColor;ctx.lineWidth=drawSize*2;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(drawStartX,drawStartY);ctx.lineTo(ox,oy);ctx.stroke();
+    const angle=Math.atan2(oy-drawStartY,ox-drawStartX);const hl=16;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox-hl*Math.cos(angle-Math.PI/6),oy-hl*Math.sin(angle-Math.PI/6));ctx.lineTo(ox-hl*Math.cos(angle+Math.PI/6),oy-hl*Math.sin(angle+Math.PI/6));ctx.closePath();ctx.fill();
+  } else if(drawTool==='circle'){
+    const rx=Math.abs(ox-drawStartX)/2,ry=Math.abs(oy-drawStartY)/2;
+    const cx=Math.min(drawStartX,ox)+rx,cy=Math.min(drawStartY,oy)+ry;
+    ctx.strokeStyle=drawColor;ctx.lineWidth=drawSize*2;
+    ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.stroke();
+  }
+  drawPath=[];
+});
+dc.addEventListener('mouseleave',()=>{isDrawing=false;drawPath=[];});
+
+/* ============================================================
+   SCRATCHPAD
+============================================================ */
+let spTool='pen',spColor='#00d87a',spHistory=[],spIsDrawing=false,spPath=[],spDx=0,spDy=0,spDragging=false,spRx=0,spRy=0,spResizing=false;
+
+function openScratchpad(){
+  const sp=document.getElementById('scratchpad');
+  sp.classList.add('open');
+  if(!sp.style.left){sp.style.left='100px';sp.style.top='100px';sp.style.width='420px';sp.style.height='320px';}
+  initSpCanvas();
+}
+function closeScratchpad(){document.getElementById('scratchpad').classList.remove('open');}
+function initSpCanvas(){
+  const sp=document.getElementById('scratchpad');
+  const c=document.getElementById('sp-canvas');
+  c.width=sp.offsetWidth;c.height=sp.offsetHeight-42-44;
+}
+function setSPTool(t){spTool=t;['pen','hi','eraser'].forEach(x=>{const el=document.getElementById('spt-'+x);if(el)el.classList.remove('sel');});const el=document.getElementById('spt-'+t);if(el)el.classList.add('sel');}
+function setSPColor(c,el){spColor=c;document.querySelectorAll('.sp-col').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function clearSp(){const c=document.getElementById('sp-canvas');c.getContext('2d').clearRect(0,0,c.width,c.height);spHistory=[];}
+function undoSp(){if(!spHistory.length)return;spHistory.pop();const c=document.getElementById('sp-canvas'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);spHistory.forEach(s=>ctx.putImageData(s,0,0));}
+function saveSp(){const c=document.getElementById('sp-canvas');const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='scratchpad.png';a.click();}
+
+const spc=document.getElementById('sp-canvas');
+spc.addEventListener('mousedown',e=>{spIsDrawing=true;const r=spc.getBoundingClientRect();spPath=[[e.clientX-r.left,e.clientY-r.top]];spHistory.push(spc.getContext('2d').getImageData(0,0,spc.width,spc.height));});
+spc.addEventListener('mousemove',e=>{if(!spIsDrawing)return;const r=spc.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top;spPath.push([ox,oy]);const ctx=spc.getContext('2d');const sz=parseInt(document.getElementById('sp-size').value)||3;const prev=spPath[spPath.length-2]||[ox,oy];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(ox,oy);if(spTool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=sz*5;}else if(spTool==='hi'||spTool==='highlight'){ctx.globalCompositeOperation='source-over';ctx.strokeStyle=spColor+'88';ctx.lineWidth=sz*6;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=spColor;ctx.lineWidth=sz*2;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();});
+spc.addEventListener('mouseup',()=>{spIsDrawing=false;spPath=[];});
+spc.addEventListener('mouseleave',()=>{spIsDrawing=false;});
+spc.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0],r=spc.getBoundingClientRect();spIsDrawing=true;spPath=[[t.clientX-r.left,t.clientY-r.top]];spHistory.push(spc.getContext('2d').getImageData(0,0,spc.width,spc.height));},{passive:false});
+spc.addEventListener('touchmove',e=>{e.preventDefault();if(!spIsDrawing)return;const t=e.touches[0],r=spc.getBoundingClientRect(),ox=t.clientX-r.left,oy=t.clientY-r.top;spPath.push([ox,oy]);const ctx=spc.getContext('2d'),sz=parseInt(document.getElementById('sp-size').value)||3;const prev=spPath[spPath.length-2]||[ox,oy];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(ox,oy);ctx.globalCompositeOperation=spTool==='eraser'?'destination-out':'source-over';ctx.strokeStyle=spTool==='eraser'?'rgba(0,0,0,1)':spTool==='hi'?spColor+'88':spColor;ctx.lineWidth=spTool==='eraser'?sz*5:spTool==='hi'?sz*6:sz*2;ctx.lineCap='round';ctx.stroke();},{passive:false});
+spc.addEventListener('touchend',()=>{spIsDrawing=false;},{passive:false});
+
+const sph=document.getElementById('sp-header');
+sph.addEventListener('mousedown',e=>{if(e.target.closest('.sp-hbtn'))return;const sp=document.getElementById('scratchpad');spDragging=true;spDx=e.clientX-sp.offsetLeft;spDy=e.clientY-sp.offsetTop;});
+document.addEventListener('mousemove',e=>{if(!spDragging)return;const sp=document.getElementById('scratchpad');sp.style.left=Math.max(0,e.clientX-spDx)+'px';sp.style.top=Math.max(0,e.clientY-spDy)+'px';});
+document.addEventListener('mouseup',()=>{spDragging=false;spResizing=false;});
+
+const spr=document.getElementById('sp-resize');
+spr.addEventListener('mousedown',e=>{spResizing=true;const sp=document.getElementById('scratchpad');spRx=e.clientX-sp.offsetWidth;spRy=e.clientY-sp.offsetHeight;e.preventDefault();});
+document.addEventListener('mousemove',e=>{if(!spResizing)return;const sp=document.getElementById('scratchpad');sp.style.width=Math.max(280,e.clientX-spRx)+'px';sp.style.height=Math.max(200,e.clientY-spRy)+'px';initSpCanvas();});
+
+/* ============================================================
+   OFP PANEL
+============================================================ */
+function openOfp(){
+  if(!currentOFP){document.getElementById('ofp-panel').classList.add('open');return;}
+  document.getElementById('ofp-panel').classList.add('open');
+  document.getElementById('ofp-no-data').style.display='none';
+  document.getElementById('ofp-body').style.display='flex';
+}
+function closeOfp(){document.getElementById('ofp-panel').classList.remove('open');}
+
+/* ============================================================
+   SIMBRIEF OFP LOADER
+============================================================ */
+function openSb(){document.getElementById('sbp').classList.add('open');}
+function closeSb(){document.getElementById('sbp').classList.remove('open');}
+
+async function loadSb(){
+  const pid = document.getElementById('sb-pid').value.trim();
+  if(!pid){showToast('Inserisci un Pilot ID SimBrief.','amb');return;}
+  document.getElementById('sb-loading').style.display='flex';
+  document.getElementById('sb-err').style.display='none';
+  document.getElementById('sb-data').style.display='none';
+  try {
+    let d = null;
+    const urls = [
+      `https://www.simbrief.com/api/xml.fetcher.php?username=${encodeURIComponent(pid)}&json=1`,
+      `https://www.simbrief.com/api/xml.fetcher.php?userid=${encodeURIComponent(pid)}&json=1`,
+    ];
+    for(const url of urls){
+      try {
+        const res = await fetch(url);
+        if(!res.ok) continue;
+        const raw = await res.json();
+        if(raw.fetch && raw.fetch.status && raw.fetch.status.startsWith('Error')) continue;
+        if(raw.origin){ d = raw; break; }
+      } catch(e2){ continue; }
+    }
+    if(!d || !d.origin) throw new Error('OFP non trovato. Verifica il Pilot ID o username SimBrief.');
+    currentOFP = d;
+    document.getElementById('sb-loading').style.display='none';
+    document.getElementById('sb-data').style.display='block';
+    document.getElementById('sb-pill').style.display='flex';
+    document.getElementById('sb-ndot').style.display='block';
+    document.getElementById('ofp-ndot').style.display='block';
+    document.getElementById('ft-ofp').style.display='flex';
+
+    document.getElementById('sb-dep').textContent=d.origin.icao_code;
+    document.getElementById('sb-dep-nm').textContent=d.origin.name||'';
+    document.getElementById('sb-arr').textContent=d.destination.icao_code;
+    document.getElementById('sb-arr-nm').textContent=d.destination.name||'';
+    document.getElementById('sb-dist').textContent=(d.general?.route_distance||'---')+' nm';
+    const eteMin=parseInt(d.times?.est_time_enroute||0)/60;
+    document.getElementById('sb-ete').textContent=Math.floor(eteMin/60)+'h '+Math.round(eteMin%60)+'m';
+    document.getElementById('sb-cs').textContent=d.atc?.callsign||d.general?.icao_airline||'---';
+    document.getElementById('sb-ac').textContent=d.aircraft?.icao_code||'---';
+    document.getElementById('sb-fl').textContent='FL'+(d.general?.initial_altitude?Math.round(parseInt(d.general.initial_altitude)/100):'---');
+    document.getElementById('sb-altn').textContent=d.alternate?.icao_code||'---';
+    document.getElementById('sb-pax').textContent=d.weights?.pax_count||'---';
+    const wps=d.navlog?.fix||[];
+    document.getElementById('sb-wpc').textContent=wps.length;
+    document.getElementById('sb-fuel').textContent=(parseInt(d.fuel?.plan_ramp||0)/1000).toFixed(1)+'t';
+    document.getElementById('sb-ftrip').textContent=(parseInt(d.fuel?.enroute_burn||0)/1000).toFixed(1)+'t';
+    document.getElementById('sb-fres').textContent=(parseInt(d.fuel?.reserve||0)/1000).toFixed(1)+'t';
+    document.getElementById('sb-sid').textContent=d.origin?.plan_rwy?'RWY '+d.origin.plan_rwy:'---';
+    document.getElementById('sb-rwd').textContent='RWY '+(d.origin?.plan_rwy||'---');
+    document.getElementById('sb-star').textContent=d.destination?.plan_rwy?'RWY '+d.destination.plan_rwy:'---';
+    document.getElementById('sb-rwa').textContent='RWY '+(d.destination?.plan_rwy||'---');
+    document.getElementById('sb-rstr').textContent=d.general?.route||'---';
+    document.getElementById('ft-ofp-rt').textContent=d.origin.icao_code+' → '+d.destination.icao_code;
+    document.getElementById('sb-wcount').textContent=wps.length;
+
+    let tocWp='---',todWp='---';
+    let whtml='';
+    wps.forEach(w=>{
+      if(w.is_sid_star==='1'&&w.stage==='CLB') tocWp=w.ident;
+      if(w.is_sid_star==='1'&&w.stage==='DSC') todWp=w.ident;
+      whtml+=`<div class="sb-wp"><div style="font-weight:700">${w.ident}</div><div style="font-size:10px;color:var(--mu)">${w.type||''}</div><div>FL${w.altitude_feet?Math.round(parseInt(w.altitude_feet)/100):''}</div><div style="font-size:10px">${w.wind_dir||''}/${w.wind_spd||''}</div><div>${w.distance||''} nm</div></div>`;
+    });
+    document.getElementById('sb-toc-label').textContent=tocWp;
+    document.getElementById('sb-tod-label').textContent=todWp;
+    document.getElementById('sb-wstrip').innerHTML=whtml;
+
+    renderSbMap(d);
+    renderOFPContent(d);
+    showToast('OFP caricato: '+d.origin.icao_code+' → '+d.destination.icao_code,'grn');
+  } catch(e){
+    document.getElementById('sb-loading').style.display='none';
+    document.getElementById('sb-err').style.display='block';
+    document.getElementById('sb-emsg').textContent=e.message||'Errore sconosciuto';
+  }
+}
+
+function renderSbMap(d){
+  const wps=d.navlog?.fix||[];
+  if(!wps.length)return;
+  const hbox=document.getElementById('sb-hbox');
+  if(hbox)hbox.style.display='none';
+  if(!sbMapInit){
+    sbMapObj=L.map('sb-map',{zoomControl:false,attributionControl:false}).setView([45,10],4);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(sbMapObj);
+    sbMapInit=true;
+  }
+  if(sbRLayer){try{sbMapObj.removeLayer(sbRLayer);}catch(e){}}
+  sbRLayer=L.layerGroup();
+  const pts=wps.filter(w=>w.pos_lat&&w.pos_long).map(w=>[parseFloat(w.pos_lat),parseFloat(w.pos_long)]);
+  if(pts.length>1){
+    L.polyline(pts,{color:'#a580ff',weight:3,opacity:.8}).addTo(sbRLayer);
+    L.circleMarker(pts[0],{radius:6,fillColor:'#ffb400',fillOpacity:1,color:'white',weight:2}).bindTooltip(d.origin.icao_code,{permanent:true,className:'plbl'}).addTo(sbRLayer);
+    L.circleMarker(pts[pts.length-1],{radius:6,fillColor:'#00d87a',fillOpacity:1,color:'white',weight:2}).bindTooltip(d.destination.icao_code,{permanent:true,className:'plbl'}).addTo(sbRLayer);
+    sbRLayer.addTo(sbMapObj);
+    sbMapObj.fitBounds(pts,{padding:[30,30]});
+  }
+}
+
+function sbMap2(){
+  if(!currentOFP)return;
+  closeSb();
+  const wps=currentOFP.navlog?.fix||[];
+  const pts=wps.filter(w=>w.pos_lat&&w.pos_long).map(w=>[parseFloat(w.pos_lat),parseFloat(w.pos_long)]);
+  if(rLayer){try{map.removeLayer(rLayer);}catch(e){}}
+  rLayer=L.layerGroup();
+  if(pts.length>1){
+    L.polyline(pts,{color:'#a580ff',weight:3,opacity:.8,dashArray:'8,4'}).addTo(rLayer);
+    L.circleMarker(pts[0],{radius:7,fillColor:'#ffb400',fillOpacity:1,color:'white',weight:2}).bindTooltip(currentOFP.origin.icao_code,{permanent:true,className:'plbl'}).addTo(rLayer);
+    L.circleMarker(pts[pts.length-1],{radius:7,fillColor:'#00d87a',fillOpacity:1,color:'white',weight:2}).bindTooltip(currentOFP.destination.icao_code,{permanent:true,className:'plbl'}).addTo(rLayer);
+    rLayer.addTo(map);
+    map.fitBounds(pts,{padding:[60,60]});
+    if(!lyRoute){lyRoute=true;document.getElementById('ly-route').classList.add('on');}
+  }
+  showToast('Rotta OFP mostrata sulla mappa','ac');
+}
+
+function sbTrack(){
+  if(!currentOFP)return;
+  const dep=currentOFP.origin.icao_code;
+  const arr=currentOFP.destination.icao_code;
+  document.getElementById('airport-search').value=dep;
+  zoomAirport();
+  showToast(`${dep} impostato come aeroporto attivo`,'grn');
+}
+
+function sbCharts(){
+  if(!currentOFP)return;
+  closeSb();
+  openCL(currentOFP.origin.icao_code, currentOFP.destination.icao_code);
+}
+
+function renderOFPContent(d){
+  const lc=document.getElementById('ofp-left-content');
+  lc.innerHTML=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:20px;font-weight:900;color:white;margin-bottom:4px">${d.origin.icao_code} &rarr; ${d.destination.icao_code}</div>
+      <div style="font-size:11px;color:var(--mu)">${d.origin.name||''} &rarr; ${d.destination.name||''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;margin-bottom:2px">Callsign</div><div style="font-size:14px;font-weight:700;color:var(--ac2)">${d.atc?.callsign||'---'}</div></div>
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;margin-bottom:2px">Aircraft</div><div style="font-size:14px;font-weight:700;color:white">${d.aircraft?.icao_code||'---'}</div></div>
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;margin-bottom:2px">Cruise FL</div><div style="font-size:14px;font-weight:700;color:white">FL${d.general?.initial_altitude?Math.round(parseInt(d.general.initial_altitude)/100):''}</div></div>
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;margin-bottom:2px">Distance</div><div style="font-size:14px;font-weight:700;color:white">${d.general?.route_distance||'---'} nm</div></div>
+    </div>
+    <div style="font-size:9px;font-weight:800;color:var(--ac);letter-spacing:1px;margin-bottom:6px">ROUTE</div>
+    <div style="font-family:monospace;font-size:11px;color:var(--ac2);background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px;line-height:1.8;word-break:break-all;margin-bottom:16px">${d.general?.route||'---'}</div>
+    <div style="font-size:9px;font-weight:800;color:var(--ac);letter-spacing:1px;margin-bottom:6px">FUEL</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px;text-align:center"><div style="font-size:9px;color:var(--mu)">Ramp</div><div style="font-size:14px;font-weight:800;color:var(--amb)">${(parseInt(d.fuel?.plan_ramp||0)/1000).toFixed(1)}t</div></div>
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px;text-align:center"><div style="font-size:9px;color:var(--mu)">Trip</div><div style="font-size:14px;font-weight:800;color:var(--ac2)">${(parseInt(d.fuel?.enroute_burn||0)/1000).toFixed(1)}t</div></div>
+      <div style="background:var(--dk);border:1px solid var(--br);border-radius:8px;padding:10px;text-align:center"><div style="font-size:9px;color:var(--mu)">Reserve</div><div style="font-size:14px;font-weight:800;color:var(--grn)">${(parseInt(d.fuel?.reserve||0)/1000).toFixed(1)}t</div></div>
+    </div>`;
+  const wps=d.navlog?.fix||[];
+  document.getElementById('ofp-wp-table').innerHTML=wps.map(w=>`<div class="sb-wp" style="padding:8px 16px"><div style="font-weight:700">${w.ident}</div><div style="font-size:10px;color:var(--mu)">${w.type||''}</div><div>FL${w.altitude_feet?Math.round(parseInt(w.altitude_feet)/100):''}</div><div style="font-size:10px">${w.wind_dir||''}/${w.wind_spd||''}</div><div>${w.distance||''}</div><div>${w.burn_diff||''}</div><div>${w.time_leg?Math.round(parseInt(w.time_leg)/60)+'m':''}</div></div>`).join('');
+}
+
+function openSidSelector(){
+  if(!currentOFP)return;
+  document.getElementById('sid-modal').style.display='flex';
+  document.getElementById('sid-list').innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">Le SID disponibili dipendono dal database AIRAC.<br>Seleziona la SID dal tuo simulatore di volo.</div>';
+}
+
+function openStarSelector(){
+  if(!currentOFP)return;
+  document.getElementById('star-modal').style.display='flex';
+  document.getElementById('star-list').innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">Le STAR disponibili dipendono dal database AIRAC.<br>Seleziona la STAR dal tuo simulatore di volo.</div>';
+}
+
+document.getElementById('sid-modal').addEventListener('click',e=>{if(e.target===document.getElementById('sid-modal'))e.target.style.display='none';});
+document.getElementById('star-modal').addEventListener('click',e=>{if(e.target===document.getElementById('star-modal'))e.target.style.display='none';});
+
+/* ============================================================
+   CHART LIBRARY — AUTO-FETCH
+============================================================ */
+const CORS_PROXY = 'https://corsproxy.io/?';
+
+async function fetchChartFox(icao){
+  const results = [];
+  try {
+    const apiUrl = CORS_PROXY + encodeURIComponent(`https://chartfox.org/api/charts/${icao}`);
+    const res = await fetch(apiUrl, {headers:{'Accept':'application/json'}});
+    if(res.ok){
+      const data = await res.json();
+      const charts = data.charts || data.data || (Array.isArray(data) ? data : []);
+      charts.forEach((ch, idx) => {
+        const type = guessChartType(ch.name || ch.title || '');
+        const pdfUrl = ch.url || ch.pdf_url || ch.link || '';
+        results.push({
+          id: 'cf-' + idx,
+          name: ch.name || ch.title || `${icao} Chart ${idx+1}`,
+          type: type,
+          url: pdfUrl,
+          source: 'ChartFox',
+          sourceBadge: 'csb-cf',
+          icao: icao,
+          inline: !!pdfUrl
+        });
+      });
+    }
+  } catch(e){ console.warn('ChartFox API error:', e); }
+  if(results.length === 0){
+    const pageUrl = `https://chartfox.org/${icao}`;
+    try {
+      const html = await fetch(CORS_PROXY + encodeURIComponent(pageUrl)).then(r => r.text());
+      const pdfLinks = [...html.matchAll(/href="([^"]*\.pdf[^"]*)"/gi)];
+      const seen = new Set();
+      pdfLinks.forEach((m, idx) => {
+        let pdfUrl = m[1];
+        if(pdfUrl.startsWith('/')) pdfUrl = 'https://chartfox.org' + pdfUrl;
+        if(seen.has(pdfUrl)) return;
+        seen.add(pdfUrl);
+        const name = decodeURIComponent(pdfUrl.split('/').pop().replace('.pdf','').replace(/_/g,' '));
+        const type = guessChartType(name);
+        results.push({
+          id: 'cf-' + idx,
+          name: name || `${icao} Chart ${idx+1}`,
+          type: type,
+          url: pdfUrl,
+          source: 'ChartFox',
+          sourceBadge: 'csb-cf',
+          icao: icao,
+          inline: true
+        });
+      });
+    } catch(e2){ console.warn('ChartFox scrape error:', e2); }
+  }
+  if(results.length === 0){
+    ['SID','STAR','IAP','AD','GND'].forEach((t,i)=>{
+      results.push({
+        id:'cf-'+t.toLowerCase(),
+        name:`${icao} ${t} Charts`,
+        type:t,
+        url:`https://chartfox.org/${icao}`,
+        source:'ChartFox',
+        sourceBadge:'csb-cf',
+        icao,
+        inline:false,
+        embedUrl:`https://chartfox.org/${icao}`
+      });
+    });
+  }
+  return results;
+}
+
+function guessChartType(name){
+  const n = name.toUpperCase();
+  if(n.includes('SID')||n.includes('DEPARTURE')) return 'SID';
+  if(n.includes('STAR')||n.includes('ARRIVAL')) return 'STAR';
+  if(n.includes('ILS')||n.includes('LOC')||n.includes('VOR')||n.includes('RNAV')||n.includes('RNP')||n.includes('APPROACH')||n.includes('IAP')||n.includes('NDB')) return 'IAP';
+  if(n.includes('GROUND')||n.includes('TAXI')||n.includes('PARKING')||n.includes('GND')) return 'GND';
+  if(n.includes('VFR')||n.includes('VISUAL')) return 'VFR';
+  return 'AD';
+}
+
+async function fetchFAA(icao){
+  const apt = icao.startsWith('K') ? icao.substring(1) : icao;
+  const results = [];
+  try {
+    const tppUrl = CORS_PROXY + encodeURIComponent(`https://aeronav.faa.gov/d-tpp/current/xml_data?apt=${apt}`);
+    const res = await fetch(tppUrl);
+    if(res.ok){
+      const text = await res.text();
+      const pdfMatches = [...text.matchAll(/pdf_name="([^"]+)"/gi)];
+      pdfMatches.forEach((m,idx)=>{
+        const pdfName = m[1];
+        const type = guessChartType(pdfName);
+        results.push({
+          id:'faa-'+idx,
+          name:`${icao} ${pdfName.replace('.PDF','').replace(/_/g,' ')}`,
+          type:type,
+          url:`https://aeronav.faa.gov/d-tpp/current/${pdfName}`,
+          source:'FAA',
+          sourceBadge:'csb-faa',
+          icao,
+          inline:true
+        });
+      });
+    }
+  } catch(e){}
+  if(results.length === 0){
+    ['IAP','SID','STAR','AD'].forEach((t,i)=>{
+      results.push({
+        id:'faa-'+t.toLowerCase(),
+        name:`${icao} FAA ${t==='IAP'?'Instrument Approaches':t==='SID'?'Departure Procedures':t==='STAR'?'Standard Arrivals':'Airport Diagram'}`,
+        type:t,
+        url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,
+        source:'FAA',
+        sourceBadge:'csb-faa',
+        icao,
+        inline:true
+      });
+    });
+  }
+  return results;
+}
+
+function generateEADLinks(icao){
+  const cc = getCountryCode(icao);
+  const info = COUNTRY_INFO[cc]||{};
+  const results = [];
+  if(info.aip){
+    results.push({id:'aip-main',name:`${icao} AIP — ${info.src||'Official'}`,type:'AD',url:info.aip,source:info.src||'AIP',sourceBadge:'csb-en',icao,embedUrl:info.aip,inline:false});
+  }
+  if(cc==='LI'){
+    const enavUrl = 'https://www.enav.it/en/aip';
+    ['SID','STAR','IAP','AD','GND'].forEach((t,i)=>{
+      results.push({id:'enav-'+t.toLowerCase(),name:`${icao} ENAV ${t} Charts`,type:t,url:enavUrl,source:'ENAV',sourceBadge:'csb-en',icao,embedUrl:enavUrl,inline:false});
+    });
+  }
+  results.push({id:'ead-gen',name:`${icao} Eurocontrol EAD`,type:'AD',url:`https://www.ead.eurocontrol.int/cms-eadbasic/opencms/en/login/`,source:'EAD',sourceBadge:'csb-ec',icao,embedUrl:`https://www.ead.eurocontrol.int/cms-eadbasic/opencms/en/login/`,inline:false});
+  results.push({id:'sv-charts',name:`${icao} SkyVector Charts`,type:'VFR',url:`https://skyvector.com/airport/${icao}`,source:'SkyVector',sourceBadge:'csb-lo',icao,embedUrl:`https://skyvector.com/airport/${icao}`,inline:false});
+  return results;
+}
+
+async function autoFetchCharts(icao){
+  icao = icao.toUpperCase().trim();
+  const cc = getCountryCode(icao);
+  let results = [];
+  let cfSuccess = false;
+  try {
+    const cf = await fetchChartFox(icao);
+    if(cf.length>0){ results = cf; cfSuccess = true; }
+  } catch(e){ console.warn('ChartFox failed:',e.message); }
+  if(icao.startsWith('K') || cc==='K'){
+    try{
+      const faa = await fetchFAA(icao);
+      results = [...results, ...faa];
+    } catch(e){}
+  }
+  const ead = generateEADLinks(icao);
+  results = [...results, ...ead];
+  if(!cfSuccess){
+    results = [
+      {id:'cf-direct',name:`Tutte le chart ${icao} su ChartFox`,type:'AD',url:`https://chartfox.org/${icao}`,source:'ChartFox',sourceBadge:'csb-cf',icao},
+      ...results
+    ];
+  }
+  return results;
+}
+
+function openCL(icao1, icao2){
+  document.getElementById('cl-panel').classList.add('open');
+  const preferred = icao1 || activeIcao || '';
+  if(preferred){
+    document.getElementById('cl-icao-in').value = preferred;
+    clSearchCharts(preferred);
+  }
+  if(icao1 && icao2 && icao1 !== icao2){
+    clSecondIcao = icao2;
+  }
+}
+function closeCL(){ document.getElementById('cl-panel').classList.remove('open'); }
+let clSecondIcao = '';
+
+async function clSearchCharts(icaoOverride){
+  const icao = (icaoOverride || document.getElementById('cl-icao-in').value || '').toUpperCase().trim();
+  if(!icao){ showToast('Inserisci un codice ICAO','amb'); return; }
+  document.getElementById('cl-icao-in').value = icao;
+  clFilter = 'ALL';
+  document.querySelectorAll('.cl-flt').forEach(f=>{ f.classList.remove('active'); if(f.dataset.flt==='ALL') f.classList.add('active'); });
+
+  document.getElementById('cl-list').innerHTML = `<div class="cl-loading"><i class="fa-solid fa-spinner fa-spin"></i>Recupero charts per <strong>${icao}</strong>...<br><small style="margin-top:8px;display:block">ChartFox &middot; FAA &middot; AIP ${getCountryName(icao)}</small></div>`;
+  document.getElementById('cl-import-all-btn').classList.remove('visible');
+
+  const pb = document.getElementById('cl-progress-wrap');
+  const pf = document.getElementById('cl-prog-fill');
+  pb.classList.add('visible');
+  pf.style.width='30%';
+  document.getElementById('cl-prog-txt').textContent = 'Connessione a ChartFox...';
+
+  try {
+    const charts = await autoFetchCharts(icao);
+    pf.style.width='100%';
+    document.getElementById('cl-prog-txt').textContent = `Trovate ${charts.length} charts`;
+    setTimeout(()=>pb.classList.remove('visible'), 1500);
+
+    clCharts = charts;
+    renderClList(charts, icao);
+
+    const sidN = charts.filter(c=>c.type==='SID').length;
+    const starN = charts.filter(c=>c.type==='STAR').length;
+    const iapN = charts.filter(c=>c.type==='IAP').length;
+    const adN = charts.filter(c=>c.type==='AD').length;
+    const gndN = charts.filter(c=>c.type==='GND').length;
+    document.getElementById('cl-stats').innerHTML = `
+      <div class="cl-stat">Tot <span>${charts.length}</span></div>
+      <div class="cl-stat">SID <span>${sidN}</span></div>
+      <div class="cl-stat">STAR <span>${starN}</span></div>
+      <div class="cl-stat">IAP <span>${iapN}</span></div>
+      <div class="cl-stat">AD <span>${adN}</span></div>
+      ${gndN?`<div class="cl-stat">GND <span>${gndN}</span></div>`:''}`;
+    document.getElementById('cl-stats').style.display = 'flex';
+
+    if(charts.filter(c=>c.url).length > 1){
+      document.getElementById('cl-import-all-btn').classList.add('visible');
+    }
+
+    const cc = getCountryCode(icao);
+    const info = COUNTRY_INFO[cc]||{};
+    document.getElementById('cl-preview-nm').textContent = `${icao} — ${info.name||'Aeroporto'} ${info.flag||''}`;
+    showClHint(icao, charts.length, info);
+
+  } catch(e){
+    pf.style.width='100%';
+    pb.classList.remove('visible');
+    document.getElementById('cl-list').innerHTML = `<div class="cl-err"><div class="cl-err-t"><i class="fa-solid fa-circle-exclamation"></i> Errore ricerca</div><div class="cl-err-m">${e.message}</div></div>` + generateSourceLinksHtml(icao);
+  }
+}
+
+function getCountryName(icao){
+  const cc = getCountryCode(icao);
+  return COUNTRY_INFO[cc]?.name || '';
+}
+
+function renderClList(charts, icao){
+  const filtered = clFilter==='ALL' ? charts : charts.filter(c=>c.type===clFilter);
+  if(!filtered.length){
+    document.getElementById('cl-list').innerHTML = `<div class="empty"><i class="fa-solid fa-magnifying-glass"></i>Nessuna chart trovata per ${icao} (filtro: ${clFilter}).</div>${generateSourceLinksHtml(icao)}`;
+    return;
+  }
+  document.getElementById('cl-list').innerHTML = filtered.map((c,i)=>{
+    const mt = CHART_TYPE_META[c.type] || CHART_TYPE_META.OTHER;
+    const hasUrl = !!c.url;
+    const rwy = c.runway ? `<span style="color:var(--amb);font-size:9px">${c.runway}</span>` : '';
+    const rev = c.revision ? `<span style="font-size:9px;color:var(--mu)">Rev ${c.revision}</span>` : '';
+    return `<div class="cl-row" id="clrow-${i}" onclick="clSelectRow(${i})">
+      <div class="cl-row-ic ${mt.cls}"><i class="fa-solid ${mt.ic}"></i></div>
+      <div class="cl-row-info">
+        <div class="cl-row-nm" title="${c.name}">${c.name}</div>
+        <div class="cl-row-mt">
+          <span class="cl-src-badge ${c.sourceBadge||'csb-cf'}">${c.source}</span>
+          <span class="tag" style="font-size:8px;padding:1px 5px;background:rgba(41,121,255,.1);color:var(--mu);border:1px solid var(--br2)">${c.type}</span>
+          ${rwy}${rev}
+        </div>
+      </div>
+      <div class="cl-row-btns">
+        ${hasUrl ? `<div class="cl-row-btn" onclick="event.stopPropagation();clPreviewChart(${i})" title="Preview inline"><i class="fa-solid fa-eye"></i></div>` : ''}
+        <div class="cl-row-btn imp" onclick="event.stopPropagation();clImportChart(${i})" title="Importa nella tua Chart List"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clSetFilter(f, el){
+  clFilter = f;
+  document.querySelectorAll('.cl-flt').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderClList(clCharts, document.getElementById('cl-icao-in').value.toUpperCase());
+}
+
+function clSelectRow(i){
+  document.querySelectorAll('.cl-row').forEach(r=>r.classList.remove('cl-active-row'));
+  const el = document.getElementById('clrow-'+i);
+  if(el) el.classList.add('cl-active-row');
+  clPreviewChart(i);
+}
+
+async function clPreviewChart(i){
+  const c = clCharts[i];
+  if(!c) return;
+  document.getElementById('cl-preview-nm').textContent = c.name;
+  const body = document.getElementById('cl-preview-body');
+
+  if(!c.url){
+    body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-link-slash"></i><div class="cl-hint-title">URL non disponibile</div></div>`;
+    return;
+  }
+
+  body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-spinner fa-spin"></i><div class="cl-hint-title">Caricamento chart...</div><div class="cl-hint-sub">Recupero via proxy...</div></div>`;
+
+  const isPdf = c.url.toLowerCase().includes('.pdf') || c.url.includes('/pdf') || c.inline;
+  const hasEmbed = c.embedUrl;
+
+  if(isPdf && c.url.toLowerCase().includes('.pdf')){
+    const pdfControls = `<div id="cl-pdf-vp" style="overflow:auto;position:absolute;inset:0;background:#1a1a2e;display:flex;align-items:flex-start;justify-content:center;padding:20px">
+        <canvas id="cl-pdf-canvas"></canvas>
+      </div>
+      <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+        <div class="cmb" onclick="clPdfZoom(.3)" style="width:30px;height:30px"><i class="fa-solid fa-plus" style="font-size:11px"></i></div>
+        <div class="cmb" onclick="clPdfZoom(-.3)" style="width:30px;height:30px"><i class="fa-solid fa-minus" style="font-size:11px"></i></div>
+        <div class="cmb" onclick="clPdfPrev()" style="width:30px;height:30px"><i class="fa-solid fa-chevron-left" style="font-size:11px"></i></div>
+        <div id="cl-pdf-pg" style="background:var(--pn);border:1px solid var(--br2);border-radius:8px;padding:0 10px;font-size:11px;display:flex;align-items:center;color:var(--mu)">1/1</div>
+        <div class="cmb" onclick="clPdfNext()" style="width:30px;height:30px"><i class="fa-solid fa-chevron-right" style="font-size:11px"></i></div>
+        <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px" title="Importa"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+      </div>`;
+    try {
+      body.innerHTML = pdfControls;
+      const proxyUrl = CORS_PROXY + encodeURIComponent(c.url);
+      const pdf = await pdfjsLib.getDocument({url:proxyUrl}).promise;
+      clPreviewPdf = pdf;
+      clPreviewPage = 1;
+      clPreviewTotal = pdf.numPages;
+      clPreviewScale = 1.4;
+      await clRenderPdfPage();
+    } catch(e1){
+      try {
+        body.innerHTML = pdfControls;
+        const pdf = await pdfjsLib.getDocument({url:c.url}).promise;
+        clPreviewPdf = pdf;
+        clPreviewPage = 1;
+        clPreviewTotal = pdf.numPages;
+        clPreviewScale = 1.4;
+        await clRenderPdfPage();
+      } catch(e2){
+        body.innerHTML = `<iframe src="${c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+        <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+          <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+        </div>`;
+      }
+    }
+  } else if(hasEmbed || !isPdf){
+    body.innerHTML = `<iframe src="${c.embedUrl||c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+    <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+      <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+    </div>`;
+  } else {
+    body.innerHTML = `<iframe src="${c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+    <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+      <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+    </div>`;
+  }
+}
+
+async function clRenderPdfPage(){
+  const c = document.getElementById('cl-pdf-canvas');
+  if(!c||!clPreviewPdf)return;
+  const pg = await clPreviewPdf.getPage(clPreviewPage);
+  const vp = pg.getViewport({scale:clPreviewScale});
+  c.width=vp.width;c.height=vp.height;
+  await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+  const pgEl=document.getElementById('cl-pdf-pg');
+  if(pgEl)pgEl.textContent=clPreviewPage+'/'+clPreviewTotal;
+}
+function clPdfZoom(d){clPreviewScale=Math.max(.5,Math.min(4,clPreviewScale+d));clRenderPdfPage();}
+async function clPdfNext(){if(clPreviewPage<clPreviewTotal){clPreviewPage++;await clRenderPdfPage();}}
+async function clPdfPrev(){if(clPreviewPage>1){clPreviewPage--;await clRenderPdfPage();}}
+
+async function clImportChart(i){
+  const c = clCharts[i];
+  if(!c||!c.url)return;
+  const btn=document.getElementById('clrow-'+i)?.querySelector('.imp');
+  if(btn){btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>';btn.style.pointerEvents='none';}
+  const fetchUrls = [
+    CORS_PROXY + encodeURIComponent(c.url),
+    c.url
+  ];
+  let success = false;
+  for(const fetchUrl of fetchUrls){
+    try {
+      const res = await fetch(fetchUrl);
+      if(!res.ok) continue;
+      const blob = await res.blob();
+      if(blob.size < 500) continue;
+      const file = new File([blob], `${c.icao||'CHART'}_${c.name.replace(/[^a-zA-Z0-9]/g,'_')}.pdf`, {type:'application/pdf'});
+      charts.push({icao:c.icao||activeIcao||'----',name:c.name,file});
+      renderCharts();
+      if(btn){btn.innerHTML='<i class="fa-solid fa-check"></i>';btn.style.background='var(--grn)';btn.style.color='#000';}
+      setTimeout(()=>{if(btn){btn.innerHTML='<i class="fa-solid fa-cloud-arrow-down"></i>';btn.style.background='';btn.style.color='';btn.style.pointerEvents='';}},2000);
+      showToast(`Chart "${c.name}" importata nella tua lista!`, 'grn');
+      success = true;
+      break;
+    } catch(e){ continue; }
+  }
+  if(!success){
+    if(btn){btn.innerHTML='<i class="fa-solid fa-xmark"></i>';btn.style.background='#c0392b';}
+    setTimeout(()=>{if(btn){btn.innerHTML='<i class="fa-solid fa-cloud-arrow-down"></i>';btn.style.background='';btn.style.color='';btn.style.pointerEvents='';}},2000);
+    showToast('Impossibile importare — prova il preview inline.', 'amb');
+  }
+}
+
+async function clImportAll(){
+  const importable = clCharts.filter(c=>c.url&&c.type!=='AD'&&c.source==='ChartFox');
+  if(!importable.length){ showToast('Nessuna chart importabile automaticamente.','amb'); return;}
+  showToast(`Importazione di ${importable.length} charts...`,'ac');
+  let done=0;
+  for(const c of importable.slice(0,8)){
+    try{await clImportChart(clCharts.indexOf(c));}catch(e){}
+    done++;
+    document.getElementById('cl-prog-txt').textContent=`Importazione ${done}/${importable.length}...`;
+    document.getElementById('cl-prog-fill').style.width=(done/importable.length*100)+'%';
+    document.getElementById('cl-progress-wrap').classList.add('visible');
+  }
+  setTimeout(()=>document.getElementById('cl-progress-wrap').classList.remove('visible'),1500);
+}
+
+function generateSourceLinksHtml(icao){
+  const cc = getCountryCode(icao);
+  const info = COUNTRY_INFO[cc]||{};
+  return `<div class="cl-src-section">
+    <div class="cl-src-hd">Fonti ufficiali per ${icao} ${info.flag||''}</div>
+    <a href="https://chartfox.org/${icao}" target="_blank" class="cl-src-link"><div class="cl-src-link-ic" style="background:rgba(41,121,255,.15);color:var(--ac)"><i class="fa-solid fa-chart-simple"></i></div><div><div class="cl-src-nm">ChartFox</div><div class="cl-src-desc">Aggregatore internazionale gratuito</div></div><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;color:var(--mu);margin-left:auto"></i></a>
+    ${info.aip?`<a href="${info.aip}" target="_blank" class="cl-src-link"><div class="cl-src-link-ic" style="background:rgba(0,216,122,.12);color:var(--grn)"><i class="fa-solid fa-flag"></i></div><div><div class="cl-src-nm">${info.src}</div><div class="cl-src-desc">AIP ufficiale ${info.name||''}</div></div><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;color:var(--mu);margin-left:auto"></i></a>`:''}
+    <a href="https://skyvector.com/airport/${icao}" target="_blank" class="cl-src-link"><div class="cl-src-link-ic" style="background:rgba(165,128,255,.12);color:#a580ff"><i class="fa-solid fa-map"></i></div><div><div class="cl-src-nm">SkyVector</div><div class="cl-src-desc">Charts VFR/IFR gratuiti</div></div><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;color:var(--mu);margin-left:auto"></i></a>
+    <a href="https://openflightmaps.org/" target="_blank" class="cl-src-link"><div class="cl-src-link-ic" style="background:rgba(0,200,255,.12);color:var(--ac2)"><i class="fa-solid fa-map-location-dot"></i></div><div><div class="cl-src-nm">OpenFlightMaps</div><div class="cl-src-desc">Mappe VFR Europa Open Source</div></div><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;color:var(--mu);margin-left:auto"></i></a>
+    ${icao.startsWith('K')?`<a href="https://aeronav.faa.gov/content/aeronav/tpp_pdfs/" target="_blank" class="cl-src-link"><div class="cl-src-link-ic" style="background:rgba(255,180,0,.15);color:var(--amb)"><i class="fa-solid fa-flag-usa"></i></div><div><div class="cl-src-nm">FAA AeroNav</div><div class="cl-src-desc">Terminal Procedures Publications USA</div></div><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;color:var(--mu);margin-left:auto"></i></a>`:''}
+  </div>`;
+}
+
+function showClHint(icao, count, info){
+  const body = document.getElementById('cl-preview-body');
+  body.innerHTML = `<div class="cl-hint">
+    <i class="fa-solid fa-book-atlas"></i>
+    <div class="cl-hint-title">${icao} — ${info.name||''} ${info.flag||''}</div>
+    <div class="cl-hint-sub">
+      ${count} charts trovate<br>
+      Fonte principale: <strong style="color:var(--ac)">${count>3?'ChartFox':'AIP/Link'}</strong><br><br>
+      Clicca una chart per aprire il <strong>preview PDF</strong>.<br>
+      Usa <i class="fa-solid fa-cloud-arrow-down" style="color:var(--grn)"></i> per importarla nella lista locale.
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   ATIS — from VATSIM data
+============================================================ */
+let vatsimAtisData = {};
+function updateAtisFromVatsim(d){
+  if(!d||!d.atis)return;
+  d.atis.forEach(a=>{
+    const icao = a.callsign.split('_')[0];
+    if(!vatsimAtisData[icao]) vatsimAtisData[icao]=[];
+    vatsimAtisData[icao] = vatsimAtisData[icao].filter(x=>x.callsign!==a.callsign);
+    vatsimAtisData[icao].push(a);
+  });
+}
+
+function openAtis(){
+  document.getElementById('atis-panel').classList.add('open');
+  renderAtis();
+}
+function closeAtis(){document.getElementById('atis-panel').classList.remove('open');}
+
+function renderAtis(){
+  const body = document.getElementById('atis-body');
+  if(!activeIcao){
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--mu)"><i class="fa-solid fa-tower-broadcast" style="font-size:48px;opacity:.2;display:block;margin-bottom:14px"></i><div style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:8px">ATIS Information</div><div style="font-size:12px;line-height:1.7">Cerca un ICAO nell'header per visualizzare l'ATIS.</div></div>`;
+    return;
+  }
+  const atisArr = vatsimAtisData[activeIcao]||[];
+  if(!atisArr.length){
+    body.innerHTML=`<div class="atis-section"><div class="atis-section-hd"><i class="fa-solid fa-tower-broadcast" style="color:var(--ac2)"></i>${activeIcao} — ATIS</div><div style="text-align:center;padding:20px;color:var(--mu)"><i class="fa-solid fa-tower-broadcast" style="font-size:36px;opacity:.2;display:block;margin-bottom:12px"></i>Nessun ATIS VATSIM attivo per ${activeIcao}.<br><br><span style="font-size:11px">L'ATIS viene mostrato quando un controllore VATSIM<br>trasmette informazioni ATIS per questo aeroporto.</span></div></div>`;
+    return;
+  }
+  body.innerHTML = atisArr.map(a=>{
+    const lines = a.text_atis||[];
+    const raw = lines.join(' ');
+    return `<div class="atis-section">
+      <div class="atis-section-hd"><i class="fa-solid fa-tower-broadcast" style="color:var(--ac2)"></i>${a.callsign} <span style="font-weight:400;font-size:10px;color:var(--mu);margin-left:8px">${a.frequency} MHz</span></div>
+      <div class="atis-raw">${raw || 'ATIS text non disponibile'}</div>
+      <div style="margin-top:12px;font-size:10px;color:var(--mu)">Ultimo aggiornamento: ${a.last_updated||'---'}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   TOAST NOTIFICATION
+============================================================ */
+function showToast(msg, col='ac'){
+  const t=document.createElement('div');
+  const colors={ac:'rgba(41,121,255,.4)',grn:'rgba(0,216,122,.4)',amb:'rgba(255,180,0,.4)',wrn:'rgba(255,107,53,.4)'};
+  t.style.cssText=`position:fixed;bottom:50px;left:50%;transform:translateX(-50%);background:var(--pn);border:1px solid ${colors[col]||colors.ac};color:white;padding:10px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,.6);white-space:nowrap;animation:fadein .3s ease`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
+}
+</script>
+</body>
+</html>
