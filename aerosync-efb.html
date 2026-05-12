@@ -1378,11 +1378,21 @@ async function loadSb(){
   document.getElementById('sb-err').style.display='none';
   document.getElementById('sb-data').style.display='none';
   try {
-    const url = `https://www.simbrief.com/api/xml.fetcher.php?username=${encodeURIComponent(pid)}&json=1`;
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const d = await res.json();
-    if(!d.origin) throw new Error('OFP non trovato per questo Pilot ID.');
+    let d = null;
+    const urls = [
+      `https://www.simbrief.com/api/xml.fetcher.php?username=${encodeURIComponent(pid)}&json=1`,
+      `https://www.simbrief.com/api/xml.fetcher.php?userid=${encodeURIComponent(pid)}&json=1`,
+    ];
+    for(const url of urls){
+      try {
+        const res = await fetch(url);
+        if(!res.ok) continue;
+        const raw = await res.json();
+        if(raw.fetch && raw.fetch.status && raw.fetch.status.startsWith('Error')) continue;
+        if(raw.origin){ d = raw; break; }
+      } catch(e2){ continue; }
+    }
+    if(!d || !d.origin) throw new Error('OFP non trovato. Verifica il Pilot ID o username SimBrief.');
     currentOFP = d;
     document.getElementById('sb-loading').style.display='none';
     document.getElementById('sb-data').style.display='block';
@@ -1535,29 +1545,126 @@ document.getElementById('star-modal').addEventListener('click',e=>{if(e.target==
 /* ============================================================
    CHART LIBRARY — AUTO-FETCH
 ============================================================ */
+const CORS_PROXY = 'https://corsproxy.io/?';
+
 async function fetchChartFox(icao){
   const results = [];
   try {
+    const apiUrl = CORS_PROXY + encodeURIComponent(`https://chartfox.org/api/charts/${icao}`);
+    const res = await fetch(apiUrl, {headers:{'Accept':'application/json'}});
+    if(res.ok){
+      const data = await res.json();
+      const charts = data.charts || data.data || (Array.isArray(data) ? data : []);
+      charts.forEach((ch, idx) => {
+        const type = guessChartType(ch.name || ch.title || '');
+        const pdfUrl = ch.url || ch.pdf_url || ch.link || '';
+        results.push({
+          id: 'cf-' + idx,
+          name: ch.name || ch.title || `${icao} Chart ${idx+1}`,
+          type: type,
+          url: pdfUrl,
+          source: 'ChartFox',
+          sourceBadge: 'csb-cf',
+          icao: icao,
+          inline: !!pdfUrl
+        });
+      });
+    }
+  } catch(e){ console.warn('ChartFox API error:', e); }
+  if(results.length === 0){
     const pageUrl = `https://chartfox.org/${icao}`;
-    results.push(
-      {id:'cf-sid',name:`${icao} SID Charts`,type:'SID',url:pageUrl,source:'ChartFox',sourceBadge:'csb-cf',icao},
-      {id:'cf-star',name:`${icao} STAR Charts`,type:'STAR',url:pageUrl,source:'ChartFox',sourceBadge:'csb-cf',icao},
-      {id:'cf-iap',name:`${icao} Approach Charts`,type:'IAP',url:pageUrl,source:'ChartFox',sourceBadge:'csb-cf',icao},
-      {id:'cf-ad',name:`${icao} Airport Diagram`,type:'AD',url:pageUrl,source:'ChartFox',sourceBadge:'csb-cf',icao},
-      {id:'cf-gnd',name:`${icao} Ground / Taxi Chart`,type:'GND',url:pageUrl,source:'ChartFox',sourceBadge:'csb-cf',icao}
-    );
-  } catch(e){}
+    try {
+      const html = await fetch(CORS_PROXY + encodeURIComponent(pageUrl)).then(r => r.text());
+      const pdfLinks = [...html.matchAll(/href="([^"]*\.pdf[^"]*)"/gi)];
+      const seen = new Set();
+      pdfLinks.forEach((m, idx) => {
+        let pdfUrl = m[1];
+        if(pdfUrl.startsWith('/')) pdfUrl = 'https://chartfox.org' + pdfUrl;
+        if(seen.has(pdfUrl)) return;
+        seen.add(pdfUrl);
+        const name = decodeURIComponent(pdfUrl.split('/').pop().replace('.pdf','').replace(/_/g,' '));
+        const type = guessChartType(name);
+        results.push({
+          id: 'cf-' + idx,
+          name: name || `${icao} Chart ${idx+1}`,
+          type: type,
+          url: pdfUrl,
+          source: 'ChartFox',
+          sourceBadge: 'csb-cf',
+          icao: icao,
+          inline: true
+        });
+      });
+    } catch(e2){ console.warn('ChartFox scrape error:', e2); }
+  }
+  if(results.length === 0){
+    ['SID','STAR','IAP','AD','GND'].forEach((t,i)=>{
+      results.push({
+        id:'cf-'+t.toLowerCase(),
+        name:`${icao} ${t} Charts`,
+        type:t,
+        url:`https://chartfox.org/${icao}`,
+        source:'ChartFox',
+        sourceBadge:'csb-cf',
+        icao,
+        inline:false,
+        embedUrl:`https://chartfox.org/${icao}`
+      });
+    });
+  }
   return results;
+}
+
+function guessChartType(name){
+  const n = name.toUpperCase();
+  if(n.includes('SID')||n.includes('DEPARTURE')) return 'SID';
+  if(n.includes('STAR')||n.includes('ARRIVAL')) return 'STAR';
+  if(n.includes('ILS')||n.includes('LOC')||n.includes('VOR')||n.includes('RNAV')||n.includes('RNP')||n.includes('APPROACH')||n.includes('IAP')||n.includes('NDB')) return 'IAP';
+  if(n.includes('GROUND')||n.includes('TAXI')||n.includes('PARKING')||n.includes('GND')) return 'GND';
+  if(n.includes('VFR')||n.includes('VISUAL')) return 'VFR';
+  return 'AD';
 }
 
 async function fetchFAA(icao){
   const apt = icao.startsWith('K') ? icao.substring(1) : icao;
-  return [
-    {id:'faa-iap',name:`${icao} FAA Instrument Approach Procedures`,type:'IAP',url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,source:'FAA',sourceBadge:'csb-faa',icao},
-    {id:'faa-sid',name:`${icao} FAA Departure Procedures`,type:'SID',url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,source:'FAA',sourceBadge:'csb-faa',icao},
-    {id:'faa-star',name:`${icao} FAA Standard Arrivals`,type:'STAR',url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,source:'FAA',sourceBadge:'csb-faa',icao},
-    {id:'faa-ad',name:`${icao} FAA Airport Diagram`,type:'AD',url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,source:'FAA',sourceBadge:'csb-faa',icao},
-  ];
+  const results = [];
+  try {
+    const tppUrl = CORS_PROXY + encodeURIComponent(`https://aeronav.faa.gov/d-tpp/current/xml_data?apt=${apt}`);
+    const res = await fetch(tppUrl);
+    if(res.ok){
+      const text = await res.text();
+      const pdfMatches = [...text.matchAll(/pdf_name="([^"]+)"/gi)];
+      pdfMatches.forEach((m,idx)=>{
+        const pdfName = m[1];
+        const type = guessChartType(pdfName);
+        results.push({
+          id:'faa-'+idx,
+          name:`${icao} ${pdfName.replace('.PDF','').replace(/_/g,' ')}`,
+          type:type,
+          url:`https://aeronav.faa.gov/d-tpp/current/${pdfName}`,
+          source:'FAA',
+          sourceBadge:'csb-faa',
+          icao,
+          inline:true
+        });
+      });
+    }
+  } catch(e){}
+  if(results.length === 0){
+    ['IAP','SID','STAR','AD'].forEach((t,i)=>{
+      results.push({
+        id:'faa-'+t.toLowerCase(),
+        name:`${icao} FAA ${t==='IAP'?'Instrument Approaches':t==='SID'?'Departure Procedures':t==='STAR'?'Standard Arrivals':'Airport Diagram'}`,
+        type:t,
+        url:`https://aeronav.faa.gov/d-tpp/current/${apt}.pdf`,
+        source:'FAA',
+        sourceBadge:'csb-faa',
+        icao,
+        inline:true
+      });
+    });
+  }
+  return results;
 }
 
 function generateEADLinks(icao){
@@ -1565,19 +1672,16 @@ function generateEADLinks(icao){
   const info = COUNTRY_INFO[cc]||{};
   const results = [];
   if(info.aip){
-    results.push({id:'aip-main',name:`${icao} AIP — ${info.src||'Official'}`,type:'AD',url:info.aip,source:info.src||'AIP',sourceBadge:'csb-en',icao});
+    results.push({id:'aip-main',name:`${icao} AIP — ${info.src||'Official'}`,type:'AD',url:info.aip,source:info.src||'AIP',sourceBadge:'csb-en',icao,embedUrl:info.aip,inline:false});
   }
   if(cc==='LI'){
-    results.push(
-      {id:'enav-sid',name:`${icao} ENAV SID Charts`,type:'SID',url:`https://www.enav.it/en/aip`,source:'ENAV',sourceBadge:'csb-en',icao},
-      {id:'enav-star',name:`${icao} ENAV STAR Charts`,type:'STAR',url:`https://www.enav.it/en/aip`,source:'ENAV',sourceBadge:'csb-en',icao},
-      {id:'enav-iap',name:`${icao} ENAV Approach Charts`,type:'IAP',url:`https://www.enav.it/en/aip`,source:'ENAV',sourceBadge:'csb-en',icao},
-      {id:'enav-ad',name:`${icao} ENAV Airport Chart`,type:'AD',url:`https://www.enav.it/en/aip`,source:'ENAV',sourceBadge:'csb-en',icao},
-      {id:'enav-gnd',name:`${icao} ENAV Ground Chart`,type:'GND',url:`https://www.enav.it/en/aip`,source:'ENAV',sourceBadge:'csb-en',icao}
-    );
+    const enavUrl = 'https://www.enav.it/en/aip';
+    ['SID','STAR','IAP','AD','GND'].forEach((t,i)=>{
+      results.push({id:'enav-'+t.toLowerCase(),name:`${icao} ENAV ${t} Charts`,type:t,url:enavUrl,source:'ENAV',sourceBadge:'csb-en',icao,embedUrl:enavUrl,inline:false});
+    });
   }
-  results.push({id:'ead-gen',name:`${icao} Eurocontrol EAD`,type:'AD',url:`https://www.ead.eurocontrol.int/cms-eadbasic/opencms/en/login/`,source:'EAD',sourceBadge:'csb-ec',icao});
-  results.push({id:'sv-charts',name:`${icao} SkyVector Charts`,type:'VFR',url:`https://skyvector.com/airport/${icao}`,source:'SkyVector',sourceBadge:'csb-lo',icao});
+  results.push({id:'ead-gen',name:`${icao} Eurocontrol EAD`,type:'AD',url:`https://www.ead.eurocontrol.int/cms-eadbasic/opencms/en/login/`,source:'EAD',sourceBadge:'csb-ec',icao,embedUrl:`https://www.ead.eurocontrol.int/cms-eadbasic/opencms/en/login/`,inline:false});
+  results.push({id:'sv-charts',name:`${icao} SkyVector Charts`,type:'VFR',url:`https://skyvector.com/airport/${icao}`,source:'SkyVector',sourceBadge:'csb-lo',icao,embedUrl:`https://skyvector.com/airport/${icao}`,inline:false});
   return results;
 }
 
@@ -1703,9 +1807,8 @@ function renderClList(charts, icao){
         </div>
       </div>
       <div class="cl-row-btns">
-        ${hasUrl ? `<div class="cl-row-btn" onclick="event.stopPropagation();clPreviewChart(${i})" title="Apri preview"><i class="fa-solid fa-eye"></i></div>` : ''}
-        <a href="${c.url||'#'}" target="_blank" class="cl-row-btn" onclick="event.stopPropagation()" title="Apri in nuova scheda" style="text-decoration:none"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-        <div class="cl-row-btn imp" onclick="event.stopPropagation();clImportChart(${i})" title="Importa nella Chart List"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+        ${hasUrl ? `<div class="cl-row-btn" onclick="event.stopPropagation();clPreviewChart(${i})" title="Preview inline"><i class="fa-solid fa-eye"></i></div>` : ''}
+        <div class="cl-row-btn imp" onclick="event.stopPropagation();clImportChart(${i})" title="Importa nella tua Chart List"><i class="fa-solid fa-cloud-arrow-down"></i></div>
       </div>
     </div>`;
   }).join('');
@@ -1732,17 +1835,17 @@ async function clPreviewChart(i){
   const body = document.getElementById('cl-preview-body');
 
   if(!c.url){
-    body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-link-slash"></i><div class="cl-hint-title">URL non disponibile</div><div class="cl-hint-sub">Questo chart non ha un URL diretto.<br>Visita la fonte ${c.source} manualmente.</div></div>`;
+    body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-link-slash"></i><div class="cl-hint-title">URL non disponibile</div></div>`;
     return;
   }
 
-  body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-spinner fa-spin"></i><div class="cl-hint-title">Caricamento...</div><div class="cl-hint-sub">${c.url}</div></div>`;
+  body.innerHTML = `<div class="cl-hint"><i class="fa-solid fa-spinner fa-spin"></i><div class="cl-hint-title">Caricamento chart...</div><div class="cl-hint-sub">Recupero via proxy...</div></div>`;
 
-  const isPdf = c.url.toLowerCase().includes('.pdf') || c.url.includes('/pdf');
+  const isPdf = c.url.toLowerCase().includes('.pdf') || c.url.includes('/pdf') || c.inline;
+  const hasEmbed = c.embedUrl;
 
-  if(isPdf){
-    try {
-      body.innerHTML = `<div id="cl-pdf-vp" style="overflow:auto;position:absolute;inset:0;background:#1a1a2e;display:flex;align-items:flex-start;justify-content:center;padding:20px">
+  if(isPdf && c.url.toLowerCase().includes('.pdf')){
+    const pdfControls = `<div id="cl-pdf-vp" style="overflow:auto;position:absolute;inset:0;background:#1a1a2e;display:flex;align-items:flex-start;justify-content:center;padding:20px">
         <canvas id="cl-pdf-canvas"></canvas>
       </div>
       <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
@@ -1751,31 +1854,42 @@ async function clPreviewChart(i){
         <div class="cmb" onclick="clPdfPrev()" style="width:30px;height:30px"><i class="fa-solid fa-chevron-left" style="font-size:11px"></i></div>
         <div id="cl-pdf-pg" style="background:var(--pn);border:1px solid var(--br2);border-radius:8px;padding:0 10px;font-size:11px;display:flex;align-items:center;color:var(--mu)">1/1</div>
         <div class="cmb" onclick="clPdfNext()" style="width:30px;height:30px"><i class="fa-solid fa-chevron-right" style="font-size:11px"></i></div>
-        <a href="${c.url}" target="_blank" class="cmb" style="width:30px;height:30px;text-decoration:none"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px"></i></a>
+        <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px" title="Importa"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
       </div>`;
-      const pdf = await pdfjsLib.getDocument({url:c.url}).promise;
+    try {
+      body.innerHTML = pdfControls;
+      const proxyUrl = CORS_PROXY + encodeURIComponent(c.url);
+      const pdf = await pdfjsLib.getDocument({url:proxyUrl}).promise;
       clPreviewPdf = pdf;
       clPreviewPage = 1;
       clPreviewTotal = pdf.numPages;
       clPreviewScale = 1.4;
       await clRenderPdfPage();
-    } catch(e){
-      body.innerHTML = `<div class="cl-hint">
-        <i class="fa-solid fa-arrow-up-right-from-square" style="opacity:.4"></i>
-        <div class="cl-hint-title">${c.name}</div>
-        <div class="cl-hint-sub">Il PDF non puo essere caricato in anteprima (CORS).<br>Clicca per aprire in una nuova scheda.</div>
-        <a href="${c.url}" target="_blank" style="background:var(--ac);color:white;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:12px;margin-top:10px"><i class="fa-solid fa-arrow-up-right-from-square"></i> Apri</a>
-      </div>`;
+    } catch(e1){
+      try {
+        body.innerHTML = pdfControls;
+        const pdf = await pdfjsLib.getDocument({url:c.url}).promise;
+        clPreviewPdf = pdf;
+        clPreviewPage = 1;
+        clPreviewTotal = pdf.numPages;
+        clPreviewScale = 1.4;
+        await clRenderPdfPage();
+      } catch(e2){
+        body.innerHTML = `<iframe src="${c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+        <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+          <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+        </div>`;
+      }
     }
+  } else if(hasEmbed || !isPdf){
+    body.innerHTML = `<iframe src="${c.embedUrl||c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+    <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+      <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
+    </div>`;
   } else {
-    body.innerHTML = `<div class="cl-hint">
-      <i class="fa-solid fa-arrow-up-right-from-square" style="opacity:.4"></i>
-      <div class="cl-hint-title">${c.name}</div>
-      <div class="cl-hint-sub">Questa chart apre su sito esterno.</div>
-      <a href="${c.url}" target="_blank" style="background:var(--ac);color:white;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:12px;margin-top:10px;pointer-events:auto"><i class="fa-solid fa-arrow-up-right-from-square"></i> Apri in nuova scheda</a>
-      <div style="pointer-events:auto;margin-top:8px">
-        <div class="cl-row-btn imp" style="width:auto;padding:0 16px;height:32px;border-radius:8px" onclick="clImportChart(${i})"><i class="fa-solid fa-cloud-arrow-down"></i> Importa nella lista</div>
-      </div>
+    body.innerHTML = `<iframe src="${c.url}" style="width:100%;height:100%;border:none;background:white"></iframe>
+    <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px;z-index:10">
+      <div class="cmb" onclick="clImportChart(${i})" style="width:auto;height:30px;padding:0 12px;gap:6px"><i class="fa-solid fa-cloud-arrow-down" style="font-size:11px;color:var(--grn)"></i><span style="font-size:10px;font-weight:700">Importa</span></div>
     </div>`;
   }
 }
@@ -1799,22 +1913,31 @@ async function clImportChart(i){
   if(!c||!c.url)return;
   const btn=document.getElementById('clrow-'+i)?.querySelector('.imp');
   if(btn){btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>';btn.style.pointerEvents='none';}
-  try {
-    const res = await fetch(c.url);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const blob = await res.blob();
-    const file = new File([blob], `${c.icao||'CHART'}_${c.name.replace(/[^a-zA-Z0-9]/g,'_')}.pdf`, {type:'application/pdf'});
-    charts.push({icao:c.icao||activeIcao||'----',name:c.name,file});
-    renderCharts();
-    switchExTab('charts');
-    if(btn){btn.innerHTML='<i class="fa-solid fa-check"></i>';btn.style.background='var(--grn)';btn.style.color='#000';}
-    setTimeout(()=>{if(btn){btn.innerHTML='<i class="fa-solid fa-cloud-arrow-down"></i>';btn.style.background='';btn.style.color='';btn.style.pointerEvents='';}},2000);
-    showToast(`Chart "${c.name}" importata!`, 'grn');
-  } catch(e){
+  const fetchUrls = [
+    CORS_PROXY + encodeURIComponent(c.url),
+    c.url
+  ];
+  let success = false;
+  for(const fetchUrl of fetchUrls){
+    try {
+      const res = await fetch(fetchUrl);
+      if(!res.ok) continue;
+      const blob = await res.blob();
+      if(blob.size < 500) continue;
+      const file = new File([blob], `${c.icao||'CHART'}_${c.name.replace(/[^a-zA-Z0-9]/g,'_')}.pdf`, {type:'application/pdf'});
+      charts.push({icao:c.icao||activeIcao||'----',name:c.name,file});
+      renderCharts();
+      if(btn){btn.innerHTML='<i class="fa-solid fa-check"></i>';btn.style.background='var(--grn)';btn.style.color='#000';}
+      setTimeout(()=>{if(btn){btn.innerHTML='<i class="fa-solid fa-cloud-arrow-down"></i>';btn.style.background='';btn.style.color='';btn.style.pointerEvents='';}},2000);
+      showToast(`Chart "${c.name}" importata nella tua lista!`, 'grn');
+      success = true;
+      break;
+    } catch(e){ continue; }
+  }
+  if(!success){
     if(btn){btn.innerHTML='<i class="fa-solid fa-xmark"></i>';btn.style.background='#c0392b';}
     setTimeout(()=>{if(btn){btn.innerHTML='<i class="fa-solid fa-cloud-arrow-down"></i>';btn.style.background='';btn.style.color='';btn.style.pointerEvents='';}},2000);
-    window.open(c.url,'_blank');
-    showToast('Download bloccato da CORS. Aperto in nuova scheda.', 'amb');
+    showToast('Impossibile importare — prova il preview inline.', 'amb');
   }
 }
 
