@@ -1,4 +1,2237 @@
 <!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin Console | AlertNet</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#03060b;color:#edf7fb;font-family:Inter,sans-serif;min-height:100vh}.wrap{max-width:1400px;margin:auto;padding:25px}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(25,216,255,.12);padding-bottom:18px}.brand{font-weight:800;letter-spacing:.06em}.brand i{color:#19d8ff;margin-right:9px}.danger{border:1px solid rgba(255,85,112,.22);background:rgba(255,85,112,.06);color:#ff8092;padding:10px 13px;border-radius:10px;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:24px}.card{border:1px solid rgba(25,216,255,.13);border-radius:15px;background:#081019;padding:18px}.label{font:500 9px 'JetBrains Mono';color:#67818c;text-transform:uppercase;letter-spacing:.08em}.num{font-size:30px;font-weight:800;margin:8px 0}.green{color:#26e08a}.cyan{color:#19d8ff}.amber{color:#ffbd4a}.layout{display:grid;grid-template-columns:1.35fr .8fr;gap:13px;margin-top:13px}.log{height:390px;overflow:auto;font:500 10px 'JetBrains Mono';color:#78919c}.line{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}.line b{color:#19d8ff}.menu{display:grid;gap:8px;margin-top:14px}.item{padding:13px;border:1px solid rgba(255,255,255,.05);border-radius:10px;background:rgba(255,255,255,.02);font-size:12px}.item i{width:25px;color:#19d8ff}.item span{color:#6f8791;font:500 9px 'JetBrains Mono';float:right}.hint{color:#637b85;font-size:11px;line-height:1.65;margin-top:15px}@media(max-width:900px){.grid,.layout{grid-template-columns:1fr 1fr}.layout{display:block}.card{margin-bottom:13px}}@media(max-width:600px){.grid{grid-template-columns:1fr}}
-</style></head><body><div class="wrap"><div class="top"><div class="brand"><i class="fa-solid fa-shield-halved"></i> ALERTNET SENTINEL <span style="color:#607983;font:500 9px 'JetBrains Mono'">/ ADMIN CONSOLE</span></div><button class="danger" onclick="logout()"><i class="fa-solid fa-power-off"></i> Logout</button></div><div class="grid"><div class="card"><div class="label">Protected nodes</div><div class="num">128</div><div class="label green">● Nominal</div></div><div class="card"><div class="label">Active incidents</div><div class="num amber">7</div><div class="label">2 high priority</div></div><div class="card"><div class="label">Blocked today</div><div class="num cyan">1,842</div><div class="label green">+12.8%</div></div><div class="card"><div class="label">Trust engine</div><div class="num">98.7%</div><div class="label green">● Operational</div></div></div><div class="layout"><div class="card"><div class="label">Audit stream</div><div class="log" id="log"></div></div><div><div class="card"><div class="label">Quick actions</div><div class="menu"><div class="item"><i class="fa-solid fa-bell"></i> Gestisci incidenti <span>OPEN</span></div><div class="item"><i class="fa-solid fa-shield"></i> Regole firewall <span>POLICY</span></div><div class="item"><i class="fa-solid fa-users"></i> TrustFactor <span>USERS</span></div><div class="item"><i class="fa-solid fa-database"></i> Database shards <span>12/12</span></div><div class="item"><i class="fa-solid fa-chart-line"></i> Analytics <span>LIVE</span></div></div><p class="hint">Questa è la base della console admin. Per renderla realmente operativa, collega ogni modulo alle API del tuo bot/backend AlertNet.</p></div></div></div></div><script>if(sessionStorage.getItem('alertnet_admin')!=='1'){location.href='login.html'}const log=document.getElementById('log');const names=['BOT MANAGER','ANTI-RAID','TRUST ENGINE','API GATEWAY','DATABASE'];function add(){const d=document.createElement('div');d.className='line';d.innerHTML=`<b>${new Date().toLocaleTimeString('it-IT',{hour12:false})}</b> // ${names[Math.floor(Math.random()*names.length)]} // operation completed`;log.prepend(d);while(log.children.length>30)log.lastElementChild.remove()}for(let i=0;i<12;i++)add();setInterval(add,1800);function logout(){sessionStorage.removeItem('alertnet_admin');location.href='login.html'}</script></body></html>
-<
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AlertNet Sentinel | Admin Console</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        :root {
+            --bg: #02050a;
+            --bg-2: #050a11;
+            --panel: rgba(8, 15, 24, 0.90);
+            --panel-2: rgba(5, 11, 18, 0.92);
+
+            --border: rgba(0, 238, 255, 0.13);
+            --border-hover: rgba(0, 238, 255, 0.30);
+
+            --cyan: #00eeff;
+            --cyan-soft: rgba(0, 238, 255, 0.08);
+
+            --purple: #7b2cff;
+            --green: #23e38a;
+            --yellow: #ffca5c;
+            --red: #ff4d67;
+
+            --text: #f5f7fa;
+            --muted: #8190a5;
+
+            --sidebar: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 70% -10%,
+                    rgba(0, 238, 255, 0.08),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    #010204 0%,
+                    #02050a 55%,
+                    #030912 100%
+                );
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.05;
+
+            background-image:
+                linear-gradient(
+                    rgba(0, 238, 255, 0.16) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0, 238, 255, 0.16) 1px,
+                    transparent 1px
+                );
+
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================================
+           LAYOUT
+        ========================================= */
+
+        .app {
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: var(--sidebar);
+
+            padding: 20px 15px;
+
+            border-right: 1px solid var(--border);
+
+            background:
+                rgba(3, 8, 14, 0.94);
+
+            backdrop-filter: blur(16px);
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 30;
+        }
+
+        .main {
+            min-height: 100vh;
+            margin-left: var(--sidebar);
+        }
+
+        /* =========================================
+           BRAND
+        ========================================= */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 5px 7px 22px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 13px;
+
+            display: grid;
+            place-items: center;
+
+            color: var(--cyan);
+
+            background: rgba(0, 238, 255, 0.05);
+
+            border: 1px solid rgba(0, 238, 255, 0.18);
+
+            box-shadow:
+                0 0 22px rgba(0, 238, 255, 0.08),
+                inset 0 0 18px rgba(0, 238, 255, 0.03);
+        }
+
+        .brand-icon i {
+            font-size: 18px;
+        }
+
+        .brand-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            margin-top: 3px;
+            color: var(--muted);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 8px;
+            letter-spacing: 1.2px;
+        }
+
+        /* =========================================
+           SIDEBAR NAV
+        ========================================= */
+
+        .nav-label {
+            padding: 0 8px 8px;
+
+            color: #617188;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 11px 12px;
+
+            border-radius: 10px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+        .nav-item i {
+            width: 16px;
+            text-align: center;
+            color: #617188;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(0, 238, 255, 0.035);
+        }
+
+        .nav-item.active {
+            color: var(--text);
+            background: rgba(0, 238, 255, 0.07);
+            border: 1px solid rgba(0, 238, 255, 0.10);
+        }
+
+        .nav-item.active i {
+            color: var(--cyan);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .system-card {
+            padding: 13px;
+
+            border-radius: 12px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(0, 238, 255, 0.025);
+        }
+
+        .system-card-title {
+            color: var(--muted);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 8px;
+            letter-spacing: 1px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-top: 8px;
+
+            color: var(--green);
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .system-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px rgba(35, 227, 138, 0.75);
+        }
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            border-bottom: 1px solid var(--border);
+
+            background:
+                rgba(2, 5, 10, 0.80);
+
+            backdrop-filter: blur(16px);
+
+            z-index: 20;
+        }
+
+        .page-heading small {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: var(--muted);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+        .page-heading h1 {
+            font-size: 17px;
+            letter-spacing: -0.2px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 11px;
+
+            border-radius: 999px;
+
+            border: 1px solid rgba(35, 227, 138, 0.16);
+
+            background: rgba(35, 227, 138, 0.04);
+
+            color: var(--green);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow: 0 0 10px rgba(35, 227, 138, 0.75);
+
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+        }
+
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 9px 12px;
+
+            border-radius: 10px;
+
+            color: #ff9aaa;
+
+            border: 1px solid rgba(255, 77, 103, 0.14);
+
+            background: rgba(255, 77, 103, 0.04);
+
+            font-size: 10px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            border-color: rgba(255, 77, 103, 0.30);
+            background: rgba(255, 77, 103, 0.08);
+        }
+
+        /* =========================================
+           CONTENT
+        ========================================= */
+
+        .content {
+            padding: 28px;
+        }
+
+        .welcome {
+            margin-bottom: 24px;
+        }
+
+        .welcome h2 {
+            font-size: 25px;
+            letter-spacing: -0.6px;
+        }
+
+        .welcome p {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* =========================================
+           KPI
+        ========================================= */
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .kpi {
+            padding: 18px;
+
+            border-radius: 16px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+
+            transition: 0.2s ease;
+        }
+
+        .kpi:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .kpi-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-label {
+            color: var(--muted);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+
+            letter-spacing: 1.1px;
+
+            text-transform: uppercase;
+        }
+
+        .kpi-icon {
+            width: 30px;
+            height: 30px;
+
+            border-radius: 9px;
+
+            display: grid;
+            place-items: center;
+
+            color: var(--cyan);
+
+            background: var(--cyan-soft);
+        }
+
+        .kpi-value {
+            margin-top: 16px;
+
+            font-size: 28px;
+
+            line-height: 1;
+
+            font-weight: 800;
+        }
+
+        .kpi-footer {
+            margin-top: 9px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        .kpi-footer.positive {
+            color: var(--green);
+        }
+
+        .kpi-footer.warning {
+            color: var(--yellow);
+        }
+
+        .kpi-footer.danger {
+            color: var(--red);
+        }
+
+        /* =========================================
+           GRID
+        ========================================= */
+
+        .dashboard-grid {
+            margin-top: 14px;
+
+            display: grid;
+
+            grid-template-columns: 1.35fr 0.65fr;
+
+            gap: 14px;
+        }
+
+        .panel {
+            padding: 19px;
+
+            border-radius: 16px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .panel-subtitle {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        .panel-badge {
+            color: var(--cyan);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+
+            letter-spacing: 0.8px;
+        }
+
+        /* =========================================
+           ACTIVITY CHART
+        ========================================= */
+
+        .chart {
+            height: 230px;
+
+            display: flex;
+            align-items: flex-end;
+
+            gap: 7px;
+
+            padding:
+                22px 4px 4px;
+        }
+
+        .bar-wrap {
+            flex: 1;
+            height: 100%;
+
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+
+            border-radius:
+                5px 5px 2px 2px;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(123, 44, 255, 0.68),
+                    rgba(0, 238, 255, 0.92)
+                );
+
+            box-shadow:
+                0 0 14px
+                rgba(0, 238, 255, 0.08);
+
+            min-height: 12px;
+
+            animation: chartPulse 2.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes chartPulse {
+            from {
+                opacity: 0.68;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .chart-axis {
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 10px;
+
+            color: #55657a;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+        }
+
+        /* =========================================
+           SYSTEM STATUS
+        ========================================= */
+
+        .status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 11px 12px;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.018);
+
+            border: 1px solid rgba(255, 255, 255, 0.035);
+        }
+
+        .status-name {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-name i {
+            color: var(--muted);
+        }
+
+        .status-tag {
+            padding: 5px 7px;
+
+            border-radius: 6px;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 7px;
+
+            letter-spacing: 0.8px;
+
+            text-transform: uppercase;
+        }
+
+        .status-tag.online {
+            color: var(--green);
+            background: rgba(35, 227, 138, 0.07);
+        }
+
+        .status-tag.maintenance {
+            color: var(--yellow);
+            background: rgba(255, 202, 92, 0.07);
+        }
+
+        .status-tag.offline {
+            color: var(--red);
+            background: rgba(255, 77, 103, 0.07);
+        }
+
+        /* =========================================
+           LOG
+        ========================================= */
+
+        .log-panel {
+            margin-top: 14px;
+        }
+
+        .log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .log-row {
+            display: grid;
+            grid-template-columns: 88px 90px 1fr 72px;
+            gap: 10px;
+
+            padding: 10px 11px;
+
+            border-radius: 9px;
+
+            background: rgba(255, 255, 255, 0.015);
+
+            border: 1px solid rgba(255, 255, 255, 0.03);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+
+            color: #718097;
+        }
+
+        .log-time {
+            color: #56657a;
+        }
+
+        .log-type {
+            color: var(--cyan);
+        }
+
+        .log-message {
+            color: #aab7c8;
+        }
+
+        .log-status {
+            text-align: right;
+            color: var(--green);
+        }
+
+        /* =========================================
+           ADMIN ACTIONS
+        ========================================= */
+
+        .actions-grid {
+            margin-top: 14px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+        }
+
+        .action-btn {
+            padding: 16px;
+
+            border-radius: 14px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+
+            color: var(--text);
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+
+            border-color: var(--border-hover);
+
+            background:
+                rgba(0, 238, 255, 0.035);
+        }
+
+        .action-icon {
+            width: 35px;
+            height: 35px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            color: var(--cyan);
+
+            background: var(--cyan-soft);
+
+            margin-bottom: 12px;
+        }
+
+        .action-title {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .action-desc {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .footer {
+            padding: 22px 0 5px;
+
+            display: flex;
+            justify-content: space-between;
+
+            color: #506078;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+        }
+
+        /* =========================================
+           TOAST
+        ========================================= */
+
+        .toast-container {
+            position: fixed;
+
+            right: 22px;
+            bottom: 22px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            z-index: 100;
+        }
+
+        .toast {
+            min-width: 260px;
+
+            padding: 12px 14px;
+
+            border-radius: 11px;
+
+            border-left:
+                3px solid var(--cyan);
+
+            background:
+                rgba(6, 13, 21, 0.96);
+
+            border-top:
+                1px solid var(--border);
+
+            border-right:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.30);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 9px;
+
+            animation:
+                toastIn
+                0.25s
+                ease-out;
+        }
+
+        .toast strong {
+            display: block;
+
+            color: var(--cyan);
+
+            margin-bottom: 4px;
+
+            font-size: 8px;
+
+            letter-spacing: 0.8px;
+        }
+
+        .toast span {
+            color: #9aa8ba;
+        }
+
+        @keyframes toastIn {
+            from {
+                transform:
+                    translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform:
+                    translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1100px) {
+
+            .kpi-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            :root {
+                --sidebar: 0px;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .nav-item {
+                white-space: nowrap;
+            }
+
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                position: relative;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .content {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .kpi-grid,
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .log-row {
+                grid-template-columns:
+                    70px 70px 1fr;
+            }
+
+            .log-status {
+                display: none;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
+    <aside class="sidebar">
+
+        <a href="/admin" class="brand">
+
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div>
+                <div class="brand-title">
+                    AlertNet Sentinel
+                </div>
+
+                <div class="brand-sub">
+                    Admin Console
+                </div>
+            </div>
+
+        </a>
+
+
+        <div class="nav-label">
+            Console
+        </div>
+
+
+        <nav class="nav">
+
+            <a
+                href="/admin"
+                class="nav-item active"
+            >
+                <i class="fa-solid fa-grid-2"></i>
+                Dashboard
+            </a>
+
+            <a
+                href="#systems"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-server"></i>
+                Sistemi
+            </a>
+
+            <a
+                href="#security"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-shield-halved"></i>
+                Sicurezza
+            </a>
+
+            <a
+                href="#logs"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-terminal"></i>
+                Audit Log
+            </a>
+
+            <a
+                href="#settings"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-sliders"></i>
+                Impostazioni
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-card">
+
+                <div class="system-card-title">
+                    SECURITY STATUS
+                </div>
+
+                <div class="system-status">
+
+                    <span class="system-status-dot"></span>
+
+                    SESSION PROTECTED
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <section class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="page-heading">
+
+                <small>
+                    AlertNet / Administration
+                </small>
+
+                <h1>
+                    Sentinel Control Center
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <div class="live-pill">
+
+                    <span class="live-dot"></span>
+
+                    Secure Session
+
+                </div>
+
+
+                <button
+                    id="logoutButton"
+                    class="logout-btn"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <main class="content">
+
+            <!-- WELCOME -->
+
+            <section class="welcome">
+
+                <h2>
+                    Bentornato, Admin.
+                </h2>
+
+                <p>
+                    Monitoraggio e gestione dell'infrastruttura
+                    AlertNet Sentinel.
+                </p>
+
+            </section>
+
+
+            <!-- KPI -->
+
+            <section class="kpi-grid">
+
+                <div class="kpi">
+
+                    <div class="kpi-top">
+
+                        <div class="kpi-label">
+                            Threats Blocked
+                        </div>
+
+                        <div class="kpi-icon">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value">
+                        12,842
+                    </div>
+
+                    <div class="kpi-footer positive">
+                        +8.4% rispetto a ieri
+                    </div>
+
+                </div>
+
+
+                <div class="kpi">
+
+                    <div class="kpi-top">
+
+                        <div class="kpi-label">
+                            Active Nodes
+                        </div>
+
+                        <div class="kpi-icon">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value">
+                        24
+                    </div>
+
+                    <div class="kpi-footer positive">
+                        Tutti i nodi operativi
+                    </div>
+
+                </div>
+
+
+                <div class="kpi">
+
+                    <div class="kpi-top">
+
+                        <div class="kpi-label">
+                            Open Incidents
+                        </div>
+
+                        <div class="kpi-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value">
+                        3
+                    </div>
+
+                    <div class="kpi-footer warning">
+                        Richiedono attenzione
+                    </div>
+
+                </div>
+
+
+                <div class="kpi">
+
+                    <div class="kpi-top">
+
+                        <div class="kpi-label">
+                            Trust Score
+                        </div>
+
+                        <div class="kpi-icon">
+                            <i class="fa-solid fa-fingerprint"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value">
+                        98.7%
+                    </div>
+
+                    <div class="kpi-footer positive">
+                        Livello di fiducia ottimale
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- DASHBOARD -->
+
+            <section class="dashboard-grid">
+
+                <!-- ACTIVITY -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <div class="panel-title">
+                                Security Activity
+                            </div>
+
+                            <div class="panel-subtitle">
+                                Eventi rilevati nelle ultime 24 ore
+                            </div>
+
+                        </div>
+
+                        <div class="panel-badge">
+                            LIVE STREAM
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="chart"
+                        id="activityChart"
+                    ></div>
+
+
+                    <div class="chart-axis">
+
+                        <span>
+                            00:00
+                        </span>
+
+                        <span>
+                            06:00
+                        </span>
+
+                        <span>
+                            12:00
+                        </span>
+
+                        <span>
+                            18:00
+                        </span>
+
+                        <span>
+                            NOW
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SYSTEMS -->
+
+                <div
+                    class="panel"
+                    id="systems"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <div class="panel-title">
+                                System Status
+                            </div>
+
+                            <div class="panel-subtitle">
+                                Stato dei servizi Sentinel
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-list">
+
+                        <div class="status-row">
+
+                            <div class="status-name">
+                                <i class="fa-solid fa-server"></i>
+                                Core API
+                            </div>
+
+                            <div class="status-tag online">
+                                Online
+                            </div>
+
+                        </div>
+
+
+                        <div class="status-row">
+
+                            <div class="status-name">
+                                <i class="fa-solid fa-database"></i>
+                                Database
+                            </div>
+
+                            <div class="status-tag online">
+                                Online
+                            </div>
+
+                        </div>
+
+
+                        <div class="status-row">
+
+                            <div class="status-name">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                Security Engine
+                            </div>
+
+                            <div class="status-tag online">
+                                Online
+                            </div>
+
+                        </div>
+
+
+                        <div class="status-row">
+
+                            <div class="status-name">
+                                <i class="fa-solid fa-rotate"></i>
+                                Sentinel Sync
+                            </div>
+
+                            <div class="status-tag maintenance">
+                                Maintenance
+                            </div>
+
+                        </div>
+
+
+                        <div class="status-row">
+
+                            <div class="status-name">
+                                <i class="fa-solid fa-bell"></i>
+                                Alert Engine
+                            </div>
+
+                            <div class="status-tag online">
+                                Online
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- LOG -->
+
+            <section
+                class="panel log-panel"
+                id="logs"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Audit Stream
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Eventi recenti dell'infrastruttura
+                        </div>
+
+                    </div>
+
+                    <div class="panel-badge">
+                        AUDIT ENABLED
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="log-list"
+                    id="logList"
+                >
+
+                    <div class="log-row">
+
+                        <span class="log-time">
+                            19:42:11
+                        </span>
+
+                        <span class="log-type">
+                            AUTH
+                        </span>
+
+                        <span class="log-message">
+                            Sessione amministratore autenticata
+                        </span>
+
+                        <span class="log-status">
+                            SUCCESS
+                        </span>
+
+                    </div>
+
+
+                    <div class="log-row">
+
+                        <span class="log-time">
+                            19:40:52
+                        </span>
+
+                        <span class="log-type">
+                            CORE
+                        </span>
+
+                        <span class="log-message">
+                            Sentinel node EU-01 sincronizzato
+                        </span>
+
+                        <span class="log-status">
+                            OK
+                        </span>
+
+                    </div>
+
+
+                    <div class="log-row">
+
+                        <span class="log-time">
+                            19:38:27
+                        </span>
+
+                        <span class="log-type">
+                            SECURITY
+                        </span>
+
+                        <span class="log-message">
+                            Regola firewall aggiornata
+                        </span>
+
+                        <span class="log-status">
+                            APPLIED
+                        </span>
+
+                    </div>
+
+
+                    <div class="log-row">
+
+                        <span class="log-time">
+                            19:35:08
+                        </span>
+
+                        <span class="log-type">
+                            DATABASE
+                        </span>
+
+                        <span class="log-message">
+                            Backup incrementale completato
+                        </span>
+
+                        <span class="log-status">
+                            OK
+                        </span>
+
+                    </div>
+
+
+                    <div class="log-row">
+
+                        <span class="log-time">
+                            19:31:44
+                        </span>
+
+                        <span class="log-type">
+                            MONITOR
+                        </span>
+
+                        <span class="log-message">
+                            Nessuna anomalia critica rilevata
+                        </span>
+
+                        <span class="log-status">
+                            CLEAR
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SECURITY -->
+
+            <section
+                class="panel log-panel"
+                id="security"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Security Overview
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Parametri principali di sicurezza
+                        </div>
+
+                    </div>
+
+                    <div class="panel-badge">
+                        PROTECTED
+                    </div>
+
+                </div>
+
+
+                <div class="status-list">
+
+                    <div class="status-row">
+
+                        <div class="status-name">
+                            <i class="fa-solid fa-lock"></i>
+                            Session Encryption
+                        </div>
+
+                        <div class="status-tag online">
+                            Enabled
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-name">
+                            <i class="fa-solid fa-user-shield"></i>
+                            Admin Authentication
+                        </div>
+
+                        <div class="status-tag online">
+                            Protected
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-name">
+                            <i class="fa-solid fa-clock"></i>
+                            Session Timeout
+                        </div>
+
+                        <div class="status-tag online">
+                            Active
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-name">
+                            <i class="fa-solid fa-shield-virus"></i>
+                            Rate Limiting
+                        </div>
+
+                        <div class="status-tag online">
+                            Enabled
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ACTIONS -->
+
+            <section
+                class="actions-grid"
+                id="settings"
+            >
+
+                <button
+                    class="action-btn"
+                    onclick="showToast(
+                        'SYSTEM',
+                        'Sincronizzazione Sentinel avviata.'
+                    )"
+                >
+
+                    <div class="action-icon">
+                        <i class="fa-solid fa-rotate"></i>
+                    </div>
+
+                    <div class="action-title">
+                        Sincronizza
+                    </div>
+
+                    <div class="action-desc">
+                        Avvia una sincronizzazione manuale
+                        dei nodi Sentinel.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="showToast(
+                        'SECURITY',
+                        'Audit security check eseguito.'
+                    )"
+                >
+
+                    <div class="action-icon">
+                        <i class="fa-solid fa-shield-check"></i>
+                    </div>
+
+                    <div class="action-title">
+                        Security Check
+                    </div>
+
+                    <div class="action-desc">
+                        Esegue una verifica dello stato
+                        dei componenti di sicurezza.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="showToast(
+                        'BACKUP',
+                        'Backup avviato.'
+                    )"
+                >
+
+                    <div class="action-icon">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+
+                    <div class="action-title">
+                        Avvia Backup
+                    </div>
+
+                    <div class="action-desc">
+                        Avvia manualmente un backup
+                        dell'infrastruttura.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="showToast(
+                        'MAINTENANCE',
+                        'Modalità manutenzione pronta.'
+                    )"
+                >
+
+                    <div class="action-icon">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+
+                    <div class="action-title">
+                        Maintenance
+                    </div>
+
+                    <div class="action-desc">
+                        Gestisci lo stato di manutenzione
+                        di AlertNet Sentinel.
+                    </div>
+
+                </button>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="footer">
+
+                <span>
+                    ALERTNET SENTINEL // ADMIN CONSOLE
+                </span>
+
+                <span>
+                    SESSION SECURED
+                </span>
+
+            </footer>
+
+        </main>
+
+    </section>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    id="toastContainer"
+    class="toast-container"
+></div>
+
+
+<script>
+
+    /* =====================================================
+       SESSION CHECK
+    ===================================================== */
+
+    async function verifySession() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/session",
+                    {
+                        method: "GET",
+                        credentials: "include",
+                        cache: "no-store"
+                    }
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Sessione non valida"
+                );
+            }
+
+            const data =
+                await response.json();
+
+            if (
+                !data ||
+                !data.authenticated
+            ) {
+
+                window.location.replace(
+                    "login.html"
+                );
+
+                return false;
+            }
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Errore verifica sessione:",
+                error
+            );
+
+            window.location.replace(
+                "login.html"
+            );
+
+            return false;
+        }
+    }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    document
+        .getElementById("logoutButton")
+        .addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/logout",
+                            {
+                                method: "POST",
+                                credentials: "include",
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+                    if (
+                        response.ok
+                    ) {
+
+                        window.location.replace(
+                            "login.html"
+                        );
+
+                        return;
+                    }
+
+                    showToast(
+                        "AUTH",
+                        "Errore durante il logout."
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    showToast(
+                        "AUTH",
+                        "Impossibile completare il logout."
+                    );
+                }
+
+            }
+        );
+
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+
+    function showToast(
+        title,
+        message
+    ) {
+
+        const container =
+            document.getElementById(
+                "toastContainer"
+            );
+
+        const toast =
+            document.createElement(
+                "div"
+            );
+
+        toast.className =
+            "toast";
+
+        toast.innerHTML = `
+            <strong>${title}</strong>
+            <span>${message}</span>
+        `;
+
+        container.appendChild(
+            toast
+        );
+
+        setTimeout(
+            () => {
+
+                toast.style.opacity =
+                    "0";
+
+                toast.style.transform =
+                    "translateY(10px)";
+
+                toast.style.transition =
+                    "0.2s ease";
+
+                setTimeout(
+                    () => toast.remove(),
+                    200
+                );
+
+            },
+            3500
+        );
+    }
+
+
+    /* =====================================================
+       ACTIVITY CHART
+    ===================================================== */
+
+    function generateChart() {
+
+        const chart =
+            document.getElementById(
+                "activityChart"
+            );
+
+        const values = [
+            34,
+            47,
+            42,
+            65,
+            58,
+            72,
+            81,
+            54,
+            67,
+            76,
+            91,
+            70,
+            62,
+            84,
+            73,
+            60,
+            78,
+            94,
+            82,
+            69,
+            88,
+            76,
+            91,
+            86
+        ];
+
+        values.forEach(
+            (value, index) => {
+
+                const wrap =
+                    document.createElement(
+                        "div"
+                    );
+
+                wrap.className =
+                    "bar-wrap";
+
+
+                const bar =
+                    document.createElement(
+                        "div"
+                    );
+
+                bar.className =
+                    "bar";
+
+                bar.style.height =
+                    value + "%";
+
+                bar.style.animationDelay =
+                    (index * 0.08) + "s";
+
+
+                wrap.appendChild(
+                    bar
+                );
+
+                chart.appendChild(
+                    wrap
+                );
+
+            }
+        );
+    }
+
+
+    /* =====================================================
+       LIVE LOG
+    ===================================================== */
+
+    function addLiveLog() {
+
+        const list =
+            document.getElementById(
+                "logList"
+            );
+
+        const events = [
+
+            {
+                type: "MONITOR",
+                message:
+                    "Heartbeat Sentinel ricevuto"
+            },
+
+            {
+                type: "SECURITY",
+                message:
+                    "Analisi traffico completata"
+            },
+
+            {
+                type: "CORE",
+                message:
+                    "Nodo Sentinel sincronizzato"
+            },
+
+            {
+                type: "NETWORK",
+                message:
+                    "Nuova connessione verificata"
+            }
+
+        ];
+
+        const event =
+            events[
+                Math.floor(
+                    Math.random() *
+                    events.length
+                )
+            ];
+
+
+        const now =
+            new Date();
+
+
+        const time =
+            now.toLocaleTimeString(
+                "it-IT",
+                {
+                    hour12: false
+                }
+            );
+
+
+        const row =
+            document.createElement(
+                "div"
+            );
+
+        row.className =
+            "log-row";
+
+
+        row.innerHTML = `
+            <span class="log-time">
+                ${time}
+            </span>
+
+            <span class="log-type">
+                ${event.type}
+            </span>
+
+            <span class="log-message">
+                ${event.message}
+            </span>
+
+            <span class="log-status">
+                OK
+            </span>
+        `;
+
+
+        list.prepend(
+            row
+        );
+
+
+        while (
+            list.children.length > 8
+        ) {
+
+            list.removeChild(
+                list.lastElementChild
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       INIT
+    ===================================================== */
+
+    async function init() {
+
+        const authenticated =
+            await verifySession();
+
+        if (!authenticated) {
+            return;
+        }
+
+        generateChart();
+
+        /*
+            Simulazione eventi live
+            della console.
+        */
+
+        setInterval(
+            addLiveLog,
+            6000
+        );
+
+    }
+
+
+    init();
+
+</script>
+
+</body>
+</html>
