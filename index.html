@@ -3,263 +3,1448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE OVERHAUL | AlertNet Sentinel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <title>AlertNet Sentinel | Manutenzione</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
     <style>
         :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.4);
-            --bg: #010103;
-            --surface: #07070a;
-            --border: rgba(0, 242, 255, 0.12);
-            --text: #f8fafc;
-            --accent: #7000ff;
+            --bg: #02050a;
+            --panel: rgba(8, 15, 24, 0.88);
+            --border: rgba(0, 238, 255, 0.14);
+
+            --cyan: #00eeff;
+            --cyan-soft: rgba(0, 238, 255, 0.15);
+
+            --purple: #7b2cff;
+
+            --text: #f5f7fa;
+            --muted: #8190a5;
+
+            --danger: #ff4d67;
+            --success: #23e38a;
+
+            --radius: 22px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            background-color: var(--bg);
+            min-height: 100vh;
             color: var(--text);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 50% -10%,
+                    rgba(0, 238, 255, 0.10),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(123, 44, 255, 0.08),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    145deg,
+                    #010204 0%,
+                    #02050a 45%,
+                    #030912 100%
+                );
+
+            overflow-x: hidden;
+        }
+
+        /* GRID DI SFONDO */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.08;
+
+            background-image:
+                linear-gradient(
+                    rgba(0, 238, 255, 0.14) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0, 238, 255, 0.14) 1px,
+                    transparent 1px
+                );
+
+            background-size: 42px 42px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent
+            );
+
+            z-index: 0;
+        }
+
+        /* VIGNETTE */
+
+        body::after {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    transparent 35%,
+                    rgba(0, 0, 0, 0.58) 100%
+                );
+
+            z-index: 10;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .page {
+            position: relative;
+            min-height: 100vh;
+
+            z-index: 2;
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+            width: min(1280px, 90%);
+            margin: 0 auto;
+
+            padding: 24px 0;
+
             display: flex;
-            padding: 20px;
+            justify-content: space-between;
+            align-items: center;
+
             gap: 20px;
-        }
 
-        /* --- BACKGROUND EFFECTS --- */
-        .vignette {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, black 120%);
-            pointer-events: none; z-index: 10;
-        }
-
-        /* --- DASHBOARD LAYOUT --- */
-        .side-panel {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .main-display {
-            flex: 1;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
             position: relative;
+            z-index: 20;
+        }
+
+        .brand {
             display: flex;
-            flex-direction: column;
-            padding: 30px;
-            box-shadow: inset 0 0 50px rgba(0, 242, 255, 0.05);
+            align-items: center;
+
+            gap: 13px;
         }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 20px;
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 14px;
+
+            color: var(--cyan);
+
+            background:
+                rgba(0, 238, 255, 0.06);
+
+            border:
+                1px solid rgba(0, 238, 255, 0.20);
+
+            box-shadow:
+                0 0 25px rgba(0, 238, 255, 0.10),
+                inset 0 0 20px rgba(0, 238, 255, 0.04);
         }
 
-        /* --- WORLD MAP SIMULATION --- */
-        .map-container {
-            flex: 1;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Simple_world_map.svg') no-repeat center;
-            background-size: contain;
-            opacity: 0.1;
-            filter: invert(1) sepia(1) saturate(5) hue-rotate(150deg);
-            position: relative;
+        .brand-icon i {
+            font-size: 20px;
         }
 
-        .ping {
-            position: absolute;
-            width: 4px; height: 4px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
-            animation: ripple 2s infinite;
-        }
+        .brand-name {
+            font-size: 15px;
 
-        @keyframes ripple {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(10); opacity: 0; }
-        }
-
-        /* --- BIO SCANNER --- */
-        .scanner {
-            height: 150px;
-            position: relative;
-            background: rgba(0, 242, 255, 0.02);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .scan-bar {
-            width: 100%; height: 2px;
-            background: var(--primary);
-            position: absolute;
-            top: 0;
-            box-shadow: 0 0 20px var(--primary);
-            animation: scan-move 3s infinite ease-in-out;
-        }
-        @keyframes scan-move {
-            0%, 100% { top: 0%; }
-            50% { top: 100%; }
-        }
-
-        /* --- DATA GRAPHS --- */
-        .graph-line {
-            height: 40px;
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-        }
-        .bar {
-            width: 4px;
-            background: var(--primary);
-            animation: grow 0.5s infinite alternate;
-        }
-        @keyframes grow { from { height: 20%; } to { height: 100%; } }
-
-        /* --- TOAST NOTIFICATIONS --- */
-        #toast-container {
-            position: fixed; top: 30px; right: 30px;
-            display: flex; flex-direction: column; gap: 10px; z-index: 100;
-        }
-        .toast {
-            background: rgba(0, 242, 255, 0.1);
-            border-left: 3px solid var(--primary);
-            padding: 12px 20px;
-            font-size: 11px;
-            font-family: 'JetBrains Mono';
-            backdrop-filter: blur(10px);
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
-        .glitch-text {
             font-weight: 800;
+
+            letter-spacing: 2.5px;
+
             text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--text);
-            text-shadow: 2px 0 var(--accent), -2px 0 var(--primary);
         }
 
+        .brand-subtitle {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 9px;
+
+            letter-spacing: 1.7px;
+
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           HEADER ACTIONS
+        ===================================================== */
+
+        .header-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .music-btn,
+        .admin-btn {
+            min-height: 42px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+
+            padding: 12px 17px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid rgba(0, 238, 255, 0.22);
+
+            background:
+                rgba(0, 238, 255, 0.045);
+
+            color: var(--text);
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .music-btn:hover,
+        .admin-btn:hover {
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(0, 238, 255, 0.45);
+
+            box-shadow:
+                0 0 24px rgba(0, 238, 255, 0.12);
+        }
+
+        .music-btn i,
+        .admin-btn i {
+            color:
+                var(--cyan);
+        }
+
+        /* MUSICA ATTIVA */
+
+        .music-btn.active {
+            border-color:
+                rgba(35, 227, 138, 0.38);
+
+            background:
+                rgba(35, 227, 138, 0.06);
+
+            box-shadow:
+                0 0 22px rgba(35, 227, 138, 0.08);
+        }
+
+        .music-btn.active i {
+            color:
+                var(--success);
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+            width: min(1180px, 90%);
+
+            margin: 0 auto;
+
+            padding:
+                55px 0 35px;
+        }
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            text-align: center;
+        }
+
+        .status-pill {
+            width: fit-content;
+
+            margin:
+                0 auto 24px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(255, 77, 103, 0.055);
+
+            border:
+                1px solid rgba(255, 77, 103, 0.16);
+
+            color:
+                #ff91a1;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                1.7px;
+
+            text-transform:
+                uppercase;
+        }
+
+        .status-dot {
+            width:
+                7px;
+
+            height:
+                7px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--danger);
+
+            box-shadow:
+                0 0 12px
+                rgba(255, 77, 103, 0.80);
+
+            animation:
+                pulse
+                1.7s
+                infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform:
+                    scale(1);
+
+                opacity:
+                    1;
+            }
+
+            50% {
+                transform:
+                    scale(1.45);
+
+                opacity:
+                    0.55;
+            }
+        }
+
+        .hero h1 {
+            max-width:
+                900px;
+
+            margin:
+                0 auto;
+
+            font-size:
+                clamp(42px, 7vw, 84px);
+
+            line-height:
+                0.97;
+
+            letter-spacing:
+                -4px;
+
+            font-weight:
+                800;
+
+            text-transform:
+                uppercase;
+
+            text-shadow:
+                2px 0 rgba(0, 238, 255, 0.22),
+                -2px 0 rgba(123, 44, 255, 0.18);
+        }
+
+        .hero h1 span {
+            color:
+                var(--cyan);
+
+            text-shadow:
+                0 0 35px
+                rgba(0, 238, 255, 0.18);
+        }
+
+        .hero-description {
+            max-width:
+                670px;
+
+            margin:
+                26px auto 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                16px;
+
+            line-height:
+                1.75;
+        }
+
+        /* =====================================================
+           SENTINEL CORE
+        ===================================================== */
+
+        .sentinel-wrap {
+            width:
+                min(860px, 100%);
+
+            margin:
+                52px auto;
+
+            position:
+                relative;
+        }
+
+        .sentinel {
+            min-height:
+                360px;
+
+            position:
+                relative;
+
+            padding:
+                34px;
+
+            overflow:
+                hidden;
+
+            border-radius:
+                var(--radius);
+
+            border:
+                1px solid var(--border);
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0, 238, 255, 0.05),
+                    transparent 52%
+                ),
+                rgba(4, 10, 17, 0.92);
+
+            box-shadow:
+                inset 0 0 50px
+                rgba(0, 238, 255, 0.025),
+
+                0 25px 80px
+                rgba(0, 0, 0, 0.28);
+        }
+
+        .sentinel::before {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                220px;
+
+            height:
+                220px;
+
+            left:
+                50%;
+
+            top:
+                50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius:
+                50%;
+
+            border:
+                1px solid
+                rgba(0, 238, 255, 0.12);
+
+            box-shadow:
+                0 0 0 30px
+                rgba(0, 238, 255, 0.025),
+
+                0 0 0 60px
+                rgba(0, 238, 255, 0.015);
+
+            animation:
+                rotateRing
+                16s
+                linear
+                infinite;
+        }
+
+        .sentinel::after {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            pointer-events:
+                none;
+
+            background:
+                linear-gradient(
+                    transparent 49.7%,
+                    rgba(0, 238, 255, 0.06) 50%,
+                    transparent 50.3%
+                ),
+
+                linear-gradient(
+                    90deg,
+                    transparent 49.7%,
+                    rgba(0, 238, 255, 0.06) 50%,
+                    transparent 50.3%
+                );
+        }
+
+        @keyframes rotateRing {
+
+            from {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(0deg);
+            }
+
+            to {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(360deg);
+            }
+        }
+
+        .sentinel-content {
+            position:
+                relative;
+
+            z-index:
+                3;
+
+            min-height:
+                290px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            text-align:
+                center;
+        }
+
+        .sentinel-core {
+            width:
+                98px;
+
+            height:
+                98px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border-radius:
+                50%;
+
+            border:
+                1px solid
+                rgba(0, 238, 255, 0.40);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0, 238, 255, 0.18),
+                    rgba(0, 238, 255, 0.03) 65%
+                );
+
+            box-shadow:
+                0 0 45px
+                rgba(0, 238, 255, 0.16),
+
+                inset 0 0 25px
+                rgba(0, 238, 255, 0.07);
+
+            animation:
+                breathe
+                3s
+                ease-in-out
+                infinite;
+        }
+
+        .sentinel-core i {
+            color:
+                var(--cyan);
+
+            font-size:
+                38px;
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform:
+                    scale(1);
+            }
+
+            50% {
+                transform:
+                    scale(1.06);
+            }
+        }
+
+        .sentinel-label {
+            margin-top:
+                20px;
+
+            color:
+                var(--cyan);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size:
+                11px;
+
+            letter-spacing:
+                2.5px;
+
+            text-transform:
+                uppercase;
+        }
+
+        .sentinel-sub {
+            margin-top:
+                8px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+        }
+
+        /* =====================================================
+           INFO CARDS
+        ===================================================== */
+
+        .info-grid {
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                17px;
+        }
+
+        .info-card {
+            position:
+                relative;
+
+            padding:
+                24px;
+
+            border-radius:
+                18px;
+
+            background:
+                var(--panel);
+
+            border:
+                1px solid var(--border);
+
+            overflow:
+                hidden;
+
+            transition:
+                0.25s ease;
+        }
+
+        .info-card:hover {
+            transform:
+                translateY(-4px);
+
+            border-color:
+                rgba(0, 238, 255, 0.25);
+
+            box-shadow:
+                0 18px 45px
+                rgba(0, 0, 0, 0.22);
+        }
+
+        .info-card::after {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                90px;
+
+            height:
+                90px;
+
+            right:
+                -35px;
+
+            top:
+                -35px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(0, 238, 255, 0.06);
+
+            filter:
+                blur(4px);
+        }
+
+        .card-icon {
+            width:
+                42px;
+
+            height:
+                42px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border-radius:
+                12px;
+
+            background:
+                var(--cyan-soft);
+
+            color:
+                var(--cyan);
+
+            margin-bottom:
+                17px;
+        }
+
+        .info-card h3 {
+            font-size:
+                14px;
+        }
+
+        .info-card p {
+            margin-top:
+                10px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.7;
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            width:
+                min(1180px, 90%);
+
+            margin:
+                20px auto 0;
+
+            padding:
+                22px 0 28px;
+
+            border-top:
+                1px solid
+                rgba(255, 255, 255, 0.05);
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                18px;
+
+            color:
+                var(--muted);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                0.5px;
+        }
+
+        .footer-status {
+            color:
+                var(--success);
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 860px) {
+
+            .info-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            footer {
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                width:
+                    90%;
+
+                padding:
+                    18px 0;
+            }
+
+            .brand-subtitle {
+                display:
+                    none;
+            }
+
+            .music-btn span,
+            .admin-btn span {
+                display:
+                    none;
+            }
+
+            .music-btn,
+            .admin-btn {
+                width:
+                    42px;
+
+                height:
+                    42px;
+
+                padding:
+                    0;
+            }
+
+            .header-actions {
+                gap:
+                    7px;
+            }
+
+            main {
+                padding-top:
+                    35px;
+            }
+
+            .hero h1 {
+                font-size:
+                    44px;
+
+                letter-spacing:
+                    -2px;
+            }
+
+            .hero-description {
+                font-size:
+                    14px;
+            }
+
+            .sentinel {
+                min-height:
+                    300px;
+
+                padding:
+                    18px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <div class="vignette"></div>
+    <!-- =====================================================
+         AUDIO DI SOTTOFONDO
+         
+         Metti Gueriero.mp3 nella stessa cartella
+         di questo index.html.
+         
+         Il player non è visibile.
+    ====================================================== -->
 
-    <div class="side-panel">
-        <div class="card">
-            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 10px;">AUTH STATUS</h3>
-            <div class="scanner">
-                <div class="scan-bar"></div>
-                <div style="font-size: 10px; padding: 10px; color: var(--primary); opacity: 0.6;">
-                    SCANNING BIO-DATA...<br>IDENT: ADMIN_V3<br>LEVEL: CLEARANCE_RED
+    <audio
+        id="backgroundAudio"
+        src="Guerriero.mp3"
+        preload="auto"
+        loop>
+    </audio>
+
+
+    <div class="page">
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header>
+
+            <a
+                href="index.html"
+                class="brand"
+            >
+
+                <div class="brand-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
                 </div>
+
+
+                <div>
+
+                    <div class="brand-name">
+                        AlertNet Sentinel
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Network Security Infrastructure
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <div class="header-actions">
+
+                <!-- PULSANTE MUSICA -->
+
+                <button
+                    id="musicButton"
+                    class="music-btn"
+                    type="button"
+                >
+
+                    <i
+                        id="musicIcon"
+                        class="fa-solid fa-play"
+                    ></i>
+
+                    <span id="musicText">
+                        Attiva Base
+                    </span>
+
+                </button>
+
+
+                <!-- PULSANTE ADMIN -->
+
+                <a
+                    href="login.html"
+                    class="admin-btn"
+                >
+
+                    <i
+                        class="fa-solid fa-user-shield"
+                    ></i>
+
+                    <span>
+                        Accedi come Admin
+                    </span>
+
+                </a>
+
             </div>
-        </div>
 
-        <div class="card" style="flex: 1;">
-            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 15px;">LIVE TRAFFIC</h3>
-            <div id="traffic-logs" style="font-family: 'JetBrains Mono'; font-size: 10px; color: #64748b;">
+        </header>
+
+
+        <!-- =================================================
+             CONTENUTO PRINCIPALE
+        ================================================== -->
+
+        <main>
+
+            <!-- HERO -->
+
+            <section class="hero">
+
+                <div class="status-pill">
+
+                    <span class="status-dot"></span>
+
+                    Sistema in manutenzione
+
                 </div>
-        </div>
 
-        <div class="card">
-            <h3 style="font-size: 12px; color: var(--primary); margin-bottom: 10px;">CPU LOAD</h3>
-            <div class="graph-line" id="cpu-graph"></div>
-        </div>
-    </div>
 
-    <div class="main-display">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h1>
+
+                    Alertner 
+
+                    <span>
+                        on Maintenance
+                    </span>
+
+                </h1>
+
+
+                <p class="hero-description">
+
+                    AlertNet Sentinel è temporaneamente offline
+                    per un intervento programmato sull'infrastruttura
+                    di sicurezza.
+
+                    I nostri sistemi stanno effettuando aggiornamenti,
+                    ottimizzazioni e verifiche tecniche.
+
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 CORE SENTINEL
+            ================================================== -->
+
+            <section class="sentinel-wrap">
+
+                <div class="sentinel">
+
+                    <div class="sentinel-content">
+
+                        <div class="sentinel-core">
+
+                            <i
+                                class="fa-solid fa-screwdriver-wrench"
+                            ></i>
+
+                        </div>
+
+
+                        <div class="sentinel-label">
+
+                            Maintenance Protocol Active
+
+                        </div>
+
+
+                        <div class="sentinel-sub">
+
+                            Il Sentinel tornerà operativo
+                            al termine delle operazioni.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 INFORMAZIONI
+            ================================================== -->
+
+            <section class="info-grid">
+
+
+                <!-- SICUREZZA -->
+
+                <div class="info-card">
+
+                    <div class="card-icon">
+
+                        <i
+                            class="fa-solid fa-shield-halved"
+                        ></i>
+
+                    </div>
+
+
+                    <h3>
+                        Sicurezza
+                    </h3>
+
+
+                    <p>
+
+                        I sistemi di sicurezza rimangono
+                        sotto monitoraggio durante l'intervento
+                        di manutenzione.
+
+                    </p>
+
+                </div>
+
+
+                <!-- INFRASTRUTTURA -->
+
+                <div class="info-card">
+
+                    <div class="card-icon">
+
+                        <i
+                            class="fa-solid fa-server"
+                        ></i>
+
+                    </div>
+
+
+                    <h3>
+                        Infrastruttura
+                    </h3>
+
+
+                    <p>
+
+                        Stiamo applicando modifiche e aggiornamenti
+                        ai componenti centrali dell'infrastruttura
+                        AlertNet.
+
+                    </p>
+
+                </div>
+
+
+                <!-- PERFORMANCE -->
+
+                <div class="info-card">
+
+                    <div class="card-icon">
+
+                        <i
+                            class="fa-solid fa-gauge-high"
+                        ></i>
+
+                    </div>
+
+
+                    <h3>
+                        Prestazioni
+                    </h3>
+
+
+                    <p>
+
+                        L'intervento è finalizzato a migliorare
+                        stabilità, affidabilità e performance
+                        del servizio.
+
+                    </p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer>
+
             <div>
-                <h1 class="glitch-text" style="font-size: 40px;">System Offline</h1>
-                <p style="color: #64748b; font-family: 'JetBrains Mono';">ALERTNET_SENTINEL_V3.0 // MAINT_MODE</p>
-            </div>
-            <div style="text-align: right;">
-                <div id="clock" style="font-size: 24px; font-weight: 800;">00:00:00</div>
-                <div style="color: var(--primary); font-size: 10px;">UTC/GMT +1</div>
-            </div>
-        </div>
 
-        <div class="map-container" id="map"></div>
+                ALERTNET SENTINEL // CORE MAINTENANCE
 
-        <div style="border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between;">
-            <div style="font-size: 12px; color: #64748b;">
-                <i class="fa-solid fa-circle-notch fa-spin"></i> SINCRONIZZAZIONE NODI GLOBALI...
             </div>
-            <div style="display: flex; gap: 20px;">
-                <span style="font-size: 12px; color: var(--primary);">ENCRYPTION: AES-256</span>
-                <span style="font-size: 12px; color: var(--primary);">SHARDS: 12/12</span>
+
+
+            <div class="footer-status">
+
+                <i class="fa-solid fa-circle"></i>
+
+                SYSTEM SECURED
+
             </div>
-        </div>
+
+        </footer>
+
     </div>
 
-    <div id="toast-container"></div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
 
     <script>
-        // Orologio
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-        }, 1000);
 
-        // Generatore di Grafico CPU
-        const graph = document.getElementById('cpu-graph');
-        for(let i=0; i<40; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'bar';
-            bar.style.animationDelay = `${i * 0.05}s`;
-            graph.appendChild(bar);
+        const audio =
+            document.getElementById(
+                "backgroundAudio"
+            );
+
+        const musicButton =
+            document.getElementById(
+                "musicButton"
+            );
+
+        const musicIcon =
+            document.getElementById(
+                "musicIcon"
+            );
+
+        const musicText =
+            document.getElementById(
+                "musicText"
+            );
+
+
+        /*
+            Volume della base.
+            0.35 = 35%
+        */
+
+        audio.volume = 0.35;
+
+
+        /* =====================================================
+           AGGIORNA IL PULSANTE
+        ===================================================== */
+
+        function updateMusicButton() {
+
+            if (!audio.paused) {
+
+                musicButton.classList.add(
+                    "active"
+                );
+
+                musicIcon.className =
+                    "fa-solid fa-volume-high";
+
+                musicText.textContent =
+                    "Musica attiva";
+
+            } else {
+
+                musicButton.classList.remove(
+                    "active"
+                );
+
+                musicIcon.className =
+                    "fa-solid fa-play";
+
+                musicText.textContent =
+                    "Attiva Base";
+            }
         }
 
-        // Notifiche Toast Casuali
-        const events = [
-            "Firewall rule #882 updated",
-            "Node MILAN-01 synchronized",
-            "DDoS mitigation active",
-            "Database shard encrypted",
-            "Memory buffer cleared"
-        ];
 
-        function createToast() {
-            const container = document.getElementById('toast-container');
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerHTML = `<i class="fa-solid fa-info-circle"></i> ${events[Math.floor(Math.random()*events.length)]}`;
-            container.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
-        }
-        setInterval(createToast, 6000);
+        /* =====================================================
+           PULSANTE MUSICA
+        ===================================================== */
 
-        // Logs di traffico
-        const traffic = document.getElementById('traffic-logs');
-        setInterval(() => {
-            const entry = document.createElement('div');
-            entry.style.marginBottom = "5px";
-            entry.innerHTML = `<span style="color:var(--primary)">[${new Date().toLocaleTimeString()}]</span> REQ_IN: ${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.X.X`;
-            traffic.prepend(entry);
-            if(traffic.childNodes.length > 15) traffic.removeChild(traffic.lastChild);
-        }, 2000);
+        musicButton.addEventListener(
+            "click",
+            async () => {
 
-        // Punti sulla mappa casuali
-        const map = document.getElementById('map');
-        function addPing() {
-            const ping = document.createElement('div');
-            ping.className = 'ping';
-            ping.style.left = Math.random() * 90 + '%';
-            ping.style.top = Math.random() * 90 + '%';
-            map.appendChild(ping);
-            setTimeout(() => ping.remove(), 2000);
-        }
-        setInterval(addPing, 1500);
+                try {
+
+                    if (audio.paused) {
+
+                        await audio.play();
+
+                    } else {
+
+                        audio.pause();
+
+                    }
+
+                    updateMusicButton();
+
+                } catch (error) {
+
+                    console.error(
+                        "Errore nella riproduzione:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           EVENTI AUDIO
+        ===================================================== */
+
+        audio.addEventListener(
+            "play",
+            updateMusicButton
+        );
+
+        audio.addEventListener(
+            "pause",
+            updateMusicButton
+        );
+
+
+        /* =====================================================
+           AUTOPLAY
+        ===================================================== */
+
+        window.addEventListener(
+            "load",
+            async () => {
+
+                try {
+
+                    await audio.play();
+
+                    updateMusicButton();
+
+                } catch (error) {
+
+                    /*
+                        Chrome, Edge e altri browser possono
+                        bloccare l'autoplay con audio.
+
+                        In questo caso rimane disponibile
+                        il pulsante "Attiva Base".
+                    */
+
+                    updateMusicButton();
+
+                    console.log(
+                        "Autoplay bloccato dal browser."
+                    );
+
+                }
+
+            }
+        );
 
     </script>
+
 </body>
 </html>
