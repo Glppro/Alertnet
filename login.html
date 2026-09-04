@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | AlertNet Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:#02050a;color:#edf7fb;font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;overflow:hidden}.bg{position:fixed;inset:0;background:radial-gradient(circle at 50% 20%,rgba(25,216,255,.12),transparent 30%),linear-gradient(rgba(25,216,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(25,216,255,.025) 1px,transparent 1px);background-size:auto,42px 42px,42px 42px;opacity:.85}.orb{position:fixed;width:560px;height:560px;border:1px solid rgba(25,216,255,.08);border-radius:50%;box-shadow:0 0 120px rgba(25,216,255,.05) inset}.orb:before,.orb:after{content:"";position:absolute;inset:38px;border:1px solid rgba(140,92,255,.08);border-radius:50%}.orb:after{inset:105px}.wrap{width:min(1040px,calc(100vw - 30px));display:grid;grid-template-columns:1fr 1fr;position:relative;z-index:2;border:1px solid rgba(89,218,255,.15);background:rgba(6,13,20,.82);backdrop-filter:blur(22px);border-radius:24px;overflow:hidden;box-shadow:0 35px 120px rgba(0,0,0,.5)}.info{padding:52px;border-right:1px solid rgba(89,218,255,.1);display:flex;flex-direction:column;justify-content:space-between;min-height:620px;background:linear-gradient(145deg,rgba(25,216,255,.035),transparent 45%,rgba(140,92,255,.04))}.brand{font-weight:800;letter-spacing:.06em;display:flex;gap:11px;align-items:center}.brand i{color:#19d8ff;font-size:19px}.label{font:600 10px JetBrains Mono;color:#19d8ff;letter-spacing:.14em;text-transform:uppercase}.info h1{font-size:45px;line-height:1.03;letter-spacing:-.045em;margin-top:15px}.info h1 span{color:#19d8ff}.info p{color:#718894;font-size:13px;line-height:1.75;max-width:390px;margin-top:18px}.checks{display:grid;gap:10px;margin-top:26px}.check{display:flex;gap:10px;align-items:center;font:500 10px JetBrains Mono;color:#91a5ad}.check i{color:#26e08a}.meta{display:flex;justify-content:space-between;color:#526a75;font:500 9px JetBrains Mono;text-transform:uppercase}.panel{padding:52px;min-height:620px}.panel h2{font-size:25px;margin:12px 0 7px}.sub{color:#718894;font-size:12px;line-height:1.6}.field{margin-top:20px}.field label{display:block;font:600 9px JetBrains Mono;color:#7d96a0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}.input{width:100%;height:48px;border:1px solid rgba(89,218,255,.14);background:#050c12;border-radius:11px;color:#f4fbff;padding:0 14px;font:500 12px JetBrains Mono;outline:0;transition:.2s}.input:focus{border-color:rgba(25,216,255,.65);box-shadow:0 0 0 4px rgba(25,216,255,.07)}.password{position:relative}.password .input{padding-right:45px}.eye{position:absolute;right:11px;top:14px;border:0;background:none;color:#5f7781;cursor:pointer}.row{display:flex;justify-content:space-between;align-items:center;margin:15px 0 20px}.remember{display:flex;align-items:center;gap:8px;color:#667e88;font:500 10px JetBrains Mono}.remember input{accent-color:#19d8ff}.button{width:100%;height:50px;border:0;border-radius:11px;background:#19d8ff;color:#001116;font-weight:800;cursor:pointer;box-shadow:0 14px 38px rgba(25,216,255,.12);transition:.2s}.button:hover{transform:translateY(-1px);filter:brightness(1.07)}.back{display:block;text-align:center;margin-top:18px;color:#66808a;font:500 10px JetBrains Mono}.security{margin-top:30px;padding:12px 13px;border:1px solid rgba(38,224,138,.12);border-radius:11px;background:rgba(38,224,138,.025);font:500 9px JetBrains Mono;color:#729086}.security i{color:#26e08a;margin-right:7px}.error{display:none;margin-top:13px;padding:10px 12px;border:1px solid rgba(255,85,112,.25);background:rgba(255,85,112,.06);border-radius:9px;color:#ff7890;font:500 9px JetBrains Mono}.show{display:block}@media(max-width:800px){.wrap{grid-template-columns:1fr}.info{display:none}.panel{padding:35px;min-height:auto}}
+  </style>
+</head>
+<body>
+<div class="bg"></div><div class="orb"></div>
+<div class="wrap">
+  <section class="info">
+    <div><div class="brand"><i class="fa-solid fa-shield-halved"></i> ALERTNET SENTINEL</div><div style="margin-top:95px"><div class="label">Restricted console</div><h1>Admin <span>access.</span><br>Nothing gets through.</h1><p>Portale di autenticazione separato per la console amministrativa AlertNet. L'accesso reale deve essere collegato a un backend con sessioni sicure e password hashate.</p><div class="checks"><div class="check"><i class="fa-solid fa-check"></i> MFA / 2FA READY</div><div class="check"><i class="fa-solid fa-check"></i> AUDIT LOGGING</div><div class="check"><i class="fa-solid fa-check"></i> SESSION CONTROL</div></div></div></div>
+    <div class="meta"><span>CORE V4.0</span><span>AUTH GATEWAY // ONLINE</span></div>
+  </section>
+  <section class="panel">
+    <div class="label">Authentication gateway</div><h2>Accedi alla console</h2><p class="sub">Inserisci le credenziali dell'amministratore per continuare.</p>
+    <form id="loginForm" autocomplete="off">
+      <div class="field"><label for="username">Username</label><input class="input" id="username" name="username" required placeholder="admin" autocomplete="username"></div>
+      <div class="field"><label for="password">Password</label><div class="password"><input class="input" id="password" name="password" type="password" required placeholder="••••••••••••" autocomplete="current-password"><button type="button" class="eye" id="toggle" aria-label="Mostra password"><i class="fa-solid fa-eye"></i></button></div></div>
+      <div class="row"><label class="remember"><input type="checkbox" id="remember"> Mantieni sessione</label><span class="label" style="color:#59727c">SECURE CHANNEL</span></div>
+      <button class="button" type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> AUTENTICA</button>
+      <div class="error" id="error"><i class="fa-solid fa-triangle-exclamation"></i> Credenziali non valide. Verifica username e password.</div>
+    </form>
+    <div class="security"><i class="fa-solid fa-lock"></i> TLS / SESSION PROTECTED — questa interfaccia è una base front-end. Per produzione collega il form a un sistema di autenticazione server-side.</div>
+    <a class="back" href="index.html"><i class="fa-solid fa-arrow-left"></i> Torna al Sentinel</a>
+  </section>
+</div>
+<script>
+  const form=document.getElementById('loginForm'), err=document.getElementById('error');
+  document.getElementById('toggle').addEventListener('click',()=>{const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';});
+  form.addEventListener('submit',e=>{e.preventDefault();err.classList.remove('show');
+    // DEMO ONLY: sostituisci questa parte con una chiamata fetch() al tuo backend.
+    const user=document.getElementById('username').value.trim();const pass=document.getElementById('password').value;
+    if(user==='admin' && pass==='AlertNet-Demo-2026!'){sessionStorage.setItem('alertnet_admin','1');location.href='admin.html';}else{err.classList.add('show');}
+  });
+</script>
+</body>
+</html>
