@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="AlertNet Sentinel è temporaneamente offline per manutenzione programmata."
+    >
+
+    <meta name="theme-color" content="#02050a">
+
     <title>AlertNet Sentinel | Manutenzione</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,21 +29,36 @@
     <style>
         :root {
             --bg: #02050a;
-            --panel: rgba(8, 15, 24, 0.88);
+            --bg-secondary: #030912;
+
+            --panel: rgba(8, 15, 24, 0.86);
+            --panel-strong: rgba(6, 13, 21, 0.94);
+
             --border: rgba(0, 238, 255, 0.14);
+            --border-strong: rgba(0, 238, 255, 0.30);
 
             --cyan: #00eeff;
-            --cyan-soft: rgba(0, 238, 255, 0.15);
+            --cyan-soft: rgba(0, 238, 255, 0.08);
+            --cyan-glow: rgba(0, 238, 255, 0.18);
 
             --purple: #7b2cff;
+            --purple-soft: rgba(123, 44, 255, 0.08);
+
+            --danger: #ff4d67;
+            --danger-soft: rgba(255, 77, 103, 0.07);
+
+            --success: #23e38a;
+            --success-soft: rgba(35, 227, 138, 0.07);
 
             --text: #f5f7fa;
             --muted: #8190a5;
+            --muted-light: #b8c3d1;
 
-            --danger: #ff4d67;
-            --success: #23e38a;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --radius-sm: 13px;
 
-            --radius: 22px;
+            --container: 1180px;
         }
 
         * {
@@ -51,13 +73,15 @@
 
         body {
             min-height: 100vh;
+            overflow-x: hidden;
+
             color: var(--text);
             font-family: "Inter", sans-serif;
 
             background:
                 radial-gradient(
                     circle at 50% -10%,
-                    rgba(0, 238, 255, 0.10),
+                    rgba(0, 238, 255, 0.11),
                     transparent 32%
                 ),
                 radial-gradient(
@@ -68,23 +92,21 @@
                 linear-gradient(
                     145deg,
                     #010204 0%,
-                    #02050a 45%,
-                    #030912 100%
+                    var(--bg) 45%,
+                    var(--bg-secondary) 100%
                 );
-
-            overflow-x: hidden;
         }
-
-        /* GRID DI SFONDO */
 
         body::before {
             content: "";
+
             position: fixed;
             inset: 0;
+            z-index: 0;
 
             pointer-events: none;
 
-            opacity: 0.08;
+            opacity: 0.085;
 
             background-image:
                 linear-gradient(
@@ -101,20 +123,25 @@
 
             mask-image: linear-gradient(
                 to bottom,
-                black,
-                transparent
+                black 0%,
+                rgba(0, 0, 0, 0.8) 40%,
+                transparent 100%
             );
 
-            z-index: 0;
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                black 0%,
+                rgba(0, 0, 0, 0.8) 40%,
+                transparent 100%
+            );
         }
-
-        /* VIGNETTE */
 
         body::after {
             content: "";
 
             position: fixed;
             inset: 0;
+            z-index: 1;
 
             pointer-events: none;
 
@@ -124,8 +151,6 @@
                     transparent 35%,
                     rgba(0, 0, 0, 0.58) 100%
                 );
-
-            z-index: 10;
         }
 
         a {
@@ -133,47 +158,55 @@
             text-decoration: none;
         }
 
-        button {
+        button,
+        input {
             font: inherit;
+        }
+
+        button {
+            border: 0;
         }
 
         .page {
             position: relative;
+            z-index: 2;
+
             min-height: 100vh;
 
-            z-index: 2;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* =====================================================
+        /* =========================================
            HEADER
-        ===================================================== */
+        ========================================= */
 
         header {
-            width: min(1280px, 90%);
+            width: min(var(--container), 90%);
             margin: 0 auto;
 
-            padding: 24px 0;
+            padding: 22px 0;
 
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
 
             gap: 20px;
-
-            position: relative;
-            z-index: 20;
         }
 
         .brand {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-
             gap: 13px;
+
+            min-width: 0;
         }
 
         .brand-icon {
             width: 46px;
             height: 46px;
+
+            flex: 0 0 auto;
 
             display: grid;
             place-items: center;
@@ -183,10 +216,13 @@
             color: var(--cyan);
 
             background:
-                rgba(0, 238, 255, 0.06);
+                linear-gradient(
+                    145deg,
+                    rgba(0, 238, 255, 0.09),
+                    rgba(0, 238, 255, 0.025)
+                );
 
-            border:
-                1px solid rgba(0, 238, 255, 0.20);
+            border: 1px solid rgba(0, 238, 255, 0.22);
 
             box-shadow:
                 0 0 25px rgba(0, 238, 255, 0.10),
@@ -199,59 +235,46 @@
 
         .brand-name {
             font-size: 15px;
-
             font-weight: 800;
 
             letter-spacing: 2.5px;
-
             text-transform: uppercase;
+
+            white-space: nowrap;
         }
 
         .brand-subtitle {
-            margin-top: 3px;
+            margin-top: 4px;
 
             color: var(--muted);
 
-            font-family:
-                "JetBrains Mono",
-                monospace;
-
+            font-family: "JetBrains Mono", monospace;
             font-size: 9px;
-
-            letter-spacing: 1.7px;
+            letter-spacing: 1.6px;
 
             text-transform: uppercase;
         }
 
-        /* =====================================================
-           HEADER ACTIONS
-        ===================================================== */
-
         .header-actions {
             display: flex;
-
             align-items: center;
-
-            gap: 10px;
+            gap: 9px;
         }
 
         .music-btn,
         .admin-btn {
-            min-height: 42px;
+            min-height: 44px;
 
             display: inline-flex;
-
             align-items: center;
             justify-content: center;
-
             gap: 9px;
 
-            padding: 12px 17px;
+            padding: 0 16px;
 
             border-radius: 12px;
 
-            border:
-                1px solid rgba(0, 238, 255, 0.22);
+            border: 1px solid rgba(0, 238, 255, 0.20);
 
             background:
                 rgba(0, 238, 255, 0.045);
@@ -259,70 +282,72 @@
             color: var(--text);
 
             font-size: 12px;
-
             font-weight: 700;
 
             cursor: pointer;
 
             transition:
-                transform 0.25s ease,
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                background 0.25s ease;
+                transform 0.22s ease,
+                border-color 0.22s ease,
+                box-shadow 0.22s ease,
+                background 0.22s ease;
         }
 
         .music-btn:hover,
         .admin-btn:hover {
-            transform:
-                translateY(-2px);
+            transform: translateY(-2px);
 
-            border-color:
-                rgba(0, 238, 255, 0.45);
+            border-color: rgba(0, 238, 255, 0.45);
+
+            background:
+                rgba(0, 238, 255, 0.07);
 
             box-shadow:
                 0 0 24px rgba(0, 238, 255, 0.12);
         }
 
-        .music-btn i,
-        .admin-btn i {
-            color:
-                var(--cyan);
+        .music-btn:focus-visible,
+        .admin-btn:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
         }
 
-        /* MUSICA ATTIVA */
+        .music-btn i,
+        .admin-btn i {
+            color: var(--cyan);
+        }
 
         .music-btn.active {
-            border-color:
-                rgba(35, 227, 138, 0.38);
+            border-color: rgba(35, 227, 138, 0.35);
 
             background:
-                rgba(35, 227, 138, 0.06);
+                var(--success-soft);
 
             box-shadow:
                 0 0 22px rgba(35, 227, 138, 0.08);
         }
 
         .music-btn.active i {
-            color:
-                var(--success);
+            color: var(--success);
         }
 
-        /* =====================================================
+        /* =========================================
            MAIN
-        ===================================================== */
+        ========================================= */
 
         main {
-            width: min(1180px, 90%);
-
+            width: min(var(--container), 90%);
             margin: 0 auto;
 
+            flex: 1;
+
             padding:
-                55px 0 35px;
+                clamp(34px, 6vw, 72px) 0 34px;
         }
 
-        /* =====================================================
+        /* =========================================
            HERO
-        ===================================================== */
+        ========================================= */
 
         .hero {
             text-align: center;
@@ -330,112 +355,72 @@
 
         .status-pill {
             width: fit-content;
+            max-width: 100%;
 
-            margin:
-                0 auto 24px;
+            margin: 0 auto 24px;
 
             display: inline-flex;
-
             align-items: center;
-
             gap: 9px;
 
-            padding:
-                8px 13px;
+            padding: 8px 13px;
 
-            border-radius:
-                999px;
+            border-radius: 999px;
 
-            background:
-                rgba(255, 77, 103, 0.055);
+            background: var(--danger-soft);
+            border: 1px solid rgba(255, 77, 103, 0.18);
 
-            border:
-                1px solid rgba(255, 77, 103, 0.16);
+            color: #ff91a1;
 
-            color:
-                #ff91a1;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
 
-            font-family:
-                "JetBrains Mono",
-                monospace;
-
-            font-size:
-                10px;
-
-            font-weight:
-                700;
-
-            letter-spacing:
-                1.7px;
-
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
         }
 
         .status-dot {
-            width:
-                7px;
+            width: 7px;
+            height: 7px;
 
-            height:
-                7px;
+            flex: 0 0 auto;
 
-            border-radius:
-                50%;
+            border-radius: 50%;
 
-            background:
-                var(--danger);
+            background: var(--danger);
 
             box-shadow:
-                0 0 12px
-                rgba(255, 77, 103, 0.80);
+                0 0 12px rgba(255, 77, 103, 0.80);
 
             animation:
-                pulse
-                1.7s
-                infinite;
+                pulse 1.7s ease-in-out infinite;
         }
 
         @keyframes pulse {
-
             0%,
             100% {
-                transform:
-                    scale(1);
-
-                opacity:
-                    1;
+                transform: scale(1);
+                opacity: 1;
             }
 
             50% {
-                transform:
-                    scale(1.45);
-
-                opacity:
-                    0.55;
+                transform: scale(1.45);
+                opacity: 0.55;
             }
         }
 
         .hero h1 {
-            max-width:
-                900px;
+            max-width: 950px;
+            margin: 0 auto;
 
-            margin:
-                0 auto;
+            font-size: clamp(42px, 8vw, 84px);
+            line-height: 0.98;
 
-            font-size:
-                clamp(42px, 7vw, 84px);
+            font-weight: 800;
+            letter-spacing: -4px;
 
-            line-height:
-                0.97;
-
-            letter-spacing:
-                -4px;
-
-            font-weight:
-                800;
-
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
             text-shadow:
                 2px 0 rgba(0, 238, 255, 0.22),
@@ -443,136 +428,103 @@
         }
 
         .hero h1 span {
-            color:
-                var(--cyan);
+            display: block;
+
+            margin-top: 3px;
+
+            color: var(--cyan);
 
             text-shadow:
-                0 0 35px
-                rgba(0, 238, 255, 0.18);
+                0 0 35px rgba(0, 238, 255, 0.18);
         }
 
         .hero-description {
-            max-width:
-                670px;
+            max-width: 700px;
 
-            margin:
-                26px auto 0;
+            margin: 25px auto 0;
 
-            color:
-                var(--muted);
+            color: var(--muted);
 
-            font-size:
-                16px;
-
-            line-height:
-                1.75;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
-        /* =====================================================
-           SENTINEL CORE
-        ===================================================== */
+        /* =========================================
+           SENTINEL
+        ========================================= */
 
         .sentinel-wrap {
-            width:
-                min(860px, 100%);
-
-            margin:
-                52px auto;
-
-            position:
-                relative;
+            width: min(860px, 100%);
+            margin: 52px auto;
         }
 
         .sentinel {
-            min-height:
-                360px;
+            position: relative;
 
-            position:
-                relative;
+            min-height: 360px;
 
-            padding:
-                34px;
+            display: grid;
+            place-items: center;
 
-            overflow:
-                hidden;
+            padding: 30px;
 
-            border-radius:
-                var(--radius);
+            overflow: hidden;
 
-            border:
-                1px solid var(--border);
+            border-radius: var(--radius-lg);
+
+            border: 1px solid var(--border);
 
             background:
                 radial-gradient(
                     circle at center,
-                    rgba(0, 238, 255, 0.05),
+                    rgba(0, 238, 255, 0.055),
                     transparent 52%
                 ),
-                rgba(4, 10, 17, 0.92);
+                linear-gradient(
+                    180deg,
+                    rgba(8, 16, 26, 0.96),
+                    rgba(3, 9, 16, 0.96)
+                );
 
             box-shadow:
-                inset 0 0 50px
-                rgba(0, 238, 255, 0.025),
-
-                0 25px 80px
-                rgba(0, 0, 0, 0.28);
+                inset 0 0 50px rgba(0, 238, 255, 0.025),
+                0 25px 80px rgba(0, 0, 0, 0.28);
         }
 
         .sentinel::before {
-            content:
-                "";
+            content: "";
 
-            position:
-                absolute;
+            position: absolute;
 
-            width:
-                220px;
+            width: 220px;
+            height: 220px;
 
-            height:
-                220px;
-
-            left:
-                50%;
-
-            top:
-                50%;
+            left: 50%;
+            top: 50%;
 
             transform:
                 translate(-50%, -50%);
 
-            border-radius:
-                50%;
+            border-radius: 50%;
 
             border:
-                1px solid
-                rgba(0, 238, 255, 0.12);
+                1px solid rgba(0, 238, 255, 0.12);
 
             box-shadow:
-                0 0 0 30px
-                rgba(0, 238, 255, 0.025),
-
-                0 0 0 60px
-                rgba(0, 238, 255, 0.015);
+                0 0 0 30px rgba(0, 238, 255, 0.025),
+                0 0 0 60px rgba(0, 238, 255, 0.015);
 
             animation:
-                rotateRing
-                16s
-                linear
-                infinite;
+                rotateRing 16s linear infinite;
         }
 
         .sentinel::after {
-            content:
-                "";
+            content: "";
 
-            position:
-                absolute;
+            position: absolute;
+            inset: 0;
 
-            inset:
-                0;
-
-            pointer-events:
-                none;
+            pointer-events: none;
 
             background:
                 linear-gradient(
@@ -580,7 +532,6 @@
                     rgba(0, 238, 255, 0.06) 50%,
                     transparent 50.3%
                 ),
-
                 linear-gradient(
                     90deg,
                     transparent 49.7%,
@@ -590,7 +541,6 @@
         }
 
         @keyframes rotateRing {
-
             from {
                 transform:
                     translate(-50%, -50%)
@@ -605,381 +555,347 @@
         }
 
         .sentinel-content {
-            position:
-                relative;
+            position: relative;
+            z-index: 3;
 
-            z-index:
-                3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
 
-            min-height:
-                290px;
-
-            display:
-                flex;
-
-            flex-direction:
-                column;
-
-            justify-content:
-                center;
-
-            align-items:
-                center;
-
-            text-align:
-                center;
+            text-align: center;
         }
 
         .sentinel-core {
-            width:
-                98px;
+            width: 98px;
+            height: 98px;
 
-            height:
-                98px;
+            display: grid;
+            place-items: center;
 
-            display:
-                grid;
+            border-radius: 50%;
 
-            place-items:
-                center;
-
-            border-radius:
-                50%;
-
-            border:
-                1px solid
-                rgba(0, 238, 255, 0.40);
+            border: 1px solid rgba(0, 238, 255, 0.40);
 
             background:
                 radial-gradient(
                     circle,
                     rgba(0, 238, 255, 0.18),
-                    rgba(0, 238, 255, 0.03) 65%
+                    rgba(0, 238, 255, 0.025) 65%
                 );
 
             box-shadow:
-                0 0 45px
-                rgba(0, 238, 255, 0.16),
-
-                inset 0 0 25px
-                rgba(0, 238, 255, 0.07);
+                0 0 45px rgba(0, 238, 255, 0.16),
+                inset 0 0 25px rgba(0, 238, 255, 0.07);
 
             animation:
-                breathe
-                3s
-                ease-in-out
-                infinite;
+                breathe 3s ease-in-out infinite;
         }
 
         .sentinel-core i {
-            color:
-                var(--cyan);
-
-            font-size:
-                38px;
+            color: var(--cyan);
+            font-size: 38px;
         }
 
         @keyframes breathe {
-
             0%,
             100% {
-                transform:
-                    scale(1);
+                transform: scale(1);
             }
 
             50% {
-                transform:
-                    scale(1.06);
+                transform: scale(1.06);
             }
         }
 
         .sentinel-label {
-            margin-top:
-                20px;
+            margin-top: 20px;
 
-            color:
-                var(--cyan);
+            color: var(--cyan);
 
-            font-family:
-                "JetBrains Mono",
-                monospace;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+            letter-spacing: 2.5px;
 
-            font-size:
-                11px;
-
-            letter-spacing:
-                2.5px;
-
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
         }
 
         .sentinel-sub {
-            margin-top:
-                8px;
+            margin-top: 8px;
 
-            color:
-                var(--muted);
+            color: var(--muted);
 
-            font-size:
-                12px;
+            font-size: 12px;
         }
 
-        /* =====================================================
+        /* =========================================
            INFO CARDS
-        ===================================================== */
+        ========================================= */
 
         .info-grid {
-            display:
-                grid;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
 
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap:
-                17px;
+            gap: 17px;
         }
 
         .info-card {
-            position:
-                relative;
+            position: relative;
 
-            padding:
-                24px;
+            padding: 24px;
 
-            border-radius:
-                18px;
+            overflow: hidden;
 
-            background:
-                var(--panel);
+            border-radius: var(--radius-md);
 
-            border:
-                1px solid var(--border);
+            background: var(--panel);
 
-            overflow:
-                hidden;
+            border: 1px solid var(--border);
+
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.12);
 
             transition:
-                0.25s ease;
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
         }
 
         .info-card:hover {
-            transform:
-                translateY(-4px);
+            transform: translateY(-4px);
 
-            border-color:
-                rgba(0, 238, 255, 0.25);
+            border-color: var(--border-strong);
 
             box-shadow:
-                0 18px 45px
-                rgba(0, 0, 0, 0.22);
+                0 18px 45px rgba(0, 0, 0, 0.22);
         }
 
         .info-card::after {
-            content:
-                "";
+            content: "";
 
-            position:
-                absolute;
+            position: absolute;
 
-            width:
-                90px;
+            width: 90px;
+            height: 90px;
 
-            height:
-                90px;
+            right: -35px;
+            top: -35px;
 
-            right:
-                -35px;
+            border-radius: 50%;
 
-            top:
-                -35px;
+            background: rgba(0, 238, 255, 0.06);
 
-            border-radius:
-                50%;
-
-            background:
-                rgba(0, 238, 255, 0.06);
-
-            filter:
-                blur(4px);
+            filter: blur(4px);
         }
 
         .card-icon {
-            width:
-                42px;
+            width: 42px;
+            height: 42px;
 
-            height:
-                42px;
+            display: grid;
+            place-items: center;
 
-            display:
-                grid;
+            margin-bottom: 17px;
 
-            place-items:
-                center;
+            border-radius: 12px;
 
-            border-radius:
-                12px;
-
-            background:
-                var(--cyan-soft);
-
-            color:
-                var(--cyan);
-
-            margin-bottom:
-                17px;
+            background: var(--cyan-soft);
+            color: var(--cyan);
         }
 
         .info-card h3 {
-            font-size:
-                14px;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .info-card p {
-            margin-top:
-                10px;
+            margin-top: 10px;
 
-            color:
-                var(--muted);
+            color: var(--muted);
 
-            font-size:
-                12px;
-
-            line-height:
-                1.7;
+            font-size: 12px;
+            line-height: 1.7;
         }
 
-        /* =====================================================
+        /* =========================================
            FOOTER
-        ===================================================== */
+        ========================================= */
 
         footer {
-            width:
-                min(1180px, 90%);
+            width: min(var(--container), 90%);
+            margin: 20px auto 0;
 
-            margin:
-                20px auto 0;
+            padding: 22px 0 28px;
 
-            padding:
-                22px 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
 
             border-top:
-                1px solid
-                rgba(255, 255, 255, 0.05);
+                1px solid rgba(255, 255, 255, 0.05);
 
-            display:
-                flex;
+            color: var(--muted);
 
-            justify-content:
-                space-between;
-
-            align-items:
-                center;
-
-            gap:
-                18px;
-
-            color:
-                var(--muted);
-
-            font-family:
-                "JetBrains Mono",
-                monospace;
-
-            font-size:
-                9px;
-
-            letter-spacing:
-                0.5px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 9px;
+            letter-spacing: 0.5px;
         }
 
         .footer-status {
-            color:
-                var(--success);
+            color: var(--success);
         }
 
-        /* =====================================================
+        .footer-status i {
+            margin-right: 4px;
+            font-size: 7px;
+        }
+
+        /* =========================================
            RESPONSIVE
-        ===================================================== */
+        ========================================= */
 
-        @media (max-width: 860px) {
-
+        @media (max-width: 900px) {
             .info-grid {
-                grid-template-columns:
-                    1fr;
+                grid-template-columns: 1fr;
+            }
+
+            .info-card {
+                min-height: 150px;
             }
 
             footer {
-                flex-direction:
-                    column;
-
-                align-items:
-                    flex-start;
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
-        @media (max-width: 600px) {
-
+        @media (max-width: 640px) {
             header {
-                width:
-                    90%;
+                width: 92%;
+                padding: 18px 0;
+            }
 
-                padding:
-                    18px 0;
+            main {
+                width: 92%;
+                padding-top: 34px;
+            }
+
+            footer {
+                width: 92%;
+            }
+
+            .brand-name {
+                font-size: 13px;
+                letter-spacing: 2px;
             }
 
             .brand-subtitle {
-                display:
-                    none;
+                display: none;
             }
 
-            .music-btn span,
-            .admin-btn span {
-                display:
-                    none;
+            .header-actions {
+                gap: 7px;
             }
 
             .music-btn,
             .admin-btn {
-                width:
-                    42px;
-
-                height:
-                    42px;
-
-                padding:
-                    0;
+                width: 42px;
+                height: 42px;
+                min-height: 42px;
+                padding: 0;
             }
 
-            .header-actions {
-                gap:
-                    7px;
-            }
-
-            main {
-                padding-top:
-                    35px;
+            .music-btn span,
+            .admin-btn span {
+                display: none;
             }
 
             .hero h1 {
-                font-size:
-                    44px;
-
-                letter-spacing:
-                    -2px;
+                font-size: clamp(39px, 12vw, 52px);
+                letter-spacing: -2.5px;
             }
 
             .hero-description {
-                font-size:
-                    14px;
+                font-size: 13px;
+                line-height: 1.75;
+            }
+
+            .sentinel-wrap {
+                margin: 38px auto;
             }
 
             .sentinel {
-                min-height:
-                    300px;
+                min-height: 300px;
+                padding: 18px;
+                border-radius: 20px;
+            }
 
-                padding:
-                    18px;
+            .sentinel::before {
+                width: 175px;
+                height: 175px;
+            }
+
+            .sentinel-core {
+                width: 84px;
+                height: 84px;
+            }
+
+            .sentinel-core i {
+                font-size: 31px;
+            }
+
+            .sentinel-label {
+                font-size: 9px;
+                letter-spacing: 1.7px;
+            }
+
+            .sentinel-sub {
+                max-width: 260px;
+                line-height: 1.6;
+            }
+
+            .status-pill {
+                font-size: 9px;
+                letter-spacing: 1.2px;
+            }
+
+            .info-card {
+                padding: 21px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .brand-icon {
+                width: 42px;
+                height: 42px;
+            }
+
+            .brand-name {
+                font-size: 11px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .sentinel-label {
+                font-size: 8px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -987,45 +903,22 @@
 
 <body>
 
-    <!-- =====================================================
-         AUDIO DI SOTTOFONDO
-         
-         Metti Gueriero.mp3 nella stessa cartella
-         di questo index.html.
-         
-         Il player non è visibile.
-    ====================================================== -->
-
     <audio
         id="backgroundAudio"
         src="Guerriero.mp3"
         preload="auto"
-        loop>
-    </audio>
-
+        loop
+    ></audio>
 
     <div class="page">
 
-        <!-- =================================================
-             HEADER
-        ================================================== -->
-
         <header>
-
-            <a
-                href="index.html"
-                class="brand"
-            >
-
+            <a href="index.html" class="brand" aria-label="Torna alla pagina principale">
                 <div class="brand-icon">
-
                     <i class="fa-solid fa-shield-halved"></i>
-
                 </div>
 
-
                 <div>
-
                     <div class="brand-name">
                         AlertNet Sentinel
                     </div>
@@ -1033,131 +926,89 @@
                     <div class="brand-subtitle">
                         Network Security Infrastructure
                     </div>
-
                 </div>
-
             </a>
 
-
             <div class="header-actions">
-
-                <!-- PULSANTE MUSICA -->
 
                 <button
                     id="musicButton"
                     class="music-btn"
                     type="button"
+                    aria-label="Attiva musica"
                 >
-
                     <i
                         id="musicIcon"
                         class="fa-solid fa-play"
+                        aria-hidden="true"
                     ></i>
 
                     <span id="musicText">
                         Attiva Base
                     </span>
-
                 </button>
-
-
-                <!-- PULSANTE ADMIN -->
 
                 <a
                     href="login.html"
                     class="admin-btn"
+                    aria-label="Accedi come amministratore"
                 >
-
                     <i
                         class="fa-solid fa-user-shield"
+                        aria-hidden="true"
                     ></i>
 
                     <span>
                         Accedi come Admin
                     </span>
-
                 </a>
 
             </div>
-
         </header>
-
-
-        <!-- =================================================
-             CONTENUTO PRINCIPALE
-        ================================================== -->
 
         <main>
 
-            <!-- HERO -->
-
-            <section class="hero">
+            <section class="hero" aria-labelledby="maintenance-title">
 
                 <div class="status-pill">
-
-                    <span class="status-dot"></span>
-
+                    <span class="status-dot" aria-hidden="true"></span>
                     Sistema in manutenzione
-
                 </div>
 
-
-                <h1>
-
-                    Alertner 
-
-                    <span>
-                        on Maintenance
-                    </span>
-
+                <h1 id="maintenance-title">
+                    AlertNet
+                    <span>On Maintenance</span>
                 </h1>
 
-
                 <p class="hero-description">
-
-                    AlertNet Sentinel è temporaneamente offline
-                    per un intervento programmato sull'infrastruttura
-                    di sicurezza.
-
+                    AlertNet Sentinel è temporaneamente offline per un
+                    intervento programmato sull'infrastruttura di sicurezza.
                     I nostri sistemi stanno effettuando aggiornamenti,
                     ottimizzazioni e verifiche tecniche.
-
                 </p>
 
             </section>
 
-
-            <!-- =================================================
-                 CORE SENTINEL
-            ================================================== -->
-
-            <section class="sentinel-wrap">
+            <section class="sentinel-wrap" aria-label="Stato del sistema">
 
                 <div class="sentinel">
 
                     <div class="sentinel-content">
 
                         <div class="sentinel-core">
-
                             <i
                                 class="fa-solid fa-screwdriver-wrench"
+                                aria-hidden="true"
                             ></i>
-
                         </div>
-
 
                         <div class="sentinel-label">
-
                             Maintenance Protocol Active
-
                         </div>
 
-
                         <div class="sentinel-sub">
-
-                            Il Sentinel tornerà operativo
-                            al termine delle operazioni.
-
+                            Il Sentinel tornerà operativo al termine
+                            delle operazioni di manutenzione.
                         </div>
 
                     </div>
@@ -1166,284 +1017,147 @@
 
             </section>
 
+            <section
+                class="info-grid"
+                aria-label="Informazioni sulla manutenzione"
+            >
 
-            <!-- =================================================
-                 INFORMAZIONI
-            ================================================== -->
-
-            <section class="info-grid">
-
-
-                <!-- SICUREZZA -->
-
-                <div class="info-card">
-
+                <article class="info-card">
                     <div class="card-icon">
-
                         <i
                             class="fa-solid fa-shield-halved"
+                            aria-hidden="true"
                         ></i>
-
                     </div>
-
 
                     <h3>
                         Sicurezza
                     </h3>
 
-
                     <p>
-
-                        I sistemi di sicurezza rimangono
-                        sotto monitoraggio durante l'intervento
-                        di manutenzione.
-
+                        I sistemi di sicurezza rimangono sotto monitoraggio
+                        durante l'intervento di manutenzione.
                     </p>
+                </article>
 
-                </div>
-
-
-                <!-- INFRASTRUTTURA -->
-
-                <div class="info-card">
-
+                <article class="info-card">
                     <div class="card-icon">
-
                         <i
                             class="fa-solid fa-server"
+                            aria-hidden="true"
                         ></i>
-
                     </div>
-
 
                     <h3>
                         Infrastruttura
                     </h3>
 
-
                     <p>
-
-                        Stiamo applicando modifiche e aggiornamenti
-                        ai componenti centrali dell'infrastruttura
-                        AlertNet.
-
+                        Stiamo applicando modifiche e aggiornamenti ai
+                        componenti centrali dell'infrastruttura AlertNet.
                     </p>
+                </article>
 
-                </div>
-
-
-                <!-- PERFORMANCE -->
-
-                <div class="info-card">
-
+                <article class="info-card">
                     <div class="card-icon">
-
                         <i
                             class="fa-solid fa-gauge-high"
+                            aria-hidden="true"
                         ></i>
-
                     </div>
-
 
                     <h3>
                         Prestazioni
                     </h3>
 
-
                     <p>
-
-                        L'intervento è finalizzato a migliorare
-                        stabilità, affidabilità e performance
-                        del servizio.
-
+                        L'intervento è finalizzato a migliorare stabilità,
+                        affidabilità e performance del servizio.
                     </p>
-
-                </div>
+                </article>
 
             </section>
 
         </main>
 
-
-        <!-- =================================================
-             FOOTER
-        ================================================== -->
-
         <footer>
-
             <div>
-
                 ALERTNET SENTINEL // CORE MAINTENANCE
-
             </div>
-
 
             <div class="footer-status">
-
-                <i class="fa-solid fa-circle"></i>
-
+                <i class="fa-solid fa-circle" aria-hidden="true"></i>
                 SYSTEM SECURED
-
             </div>
-
         </footer>
 
     </div>
 
-
-    <!-- =====================================================
-         JAVASCRIPT
-    ===================================================== -->
-
     <script>
-
-        const audio =
-            document.getElementById(
-                "backgroundAudio"
-            );
-
-        const musicButton =
-            document.getElementById(
-                "musicButton"
-            );
-
-        const musicIcon =
-            document.getElementById(
-                "musicIcon"
-            );
-
-        const musicText =
-            document.getElementById(
-                "musicText"
-            );
-
-
-        /*
-            Volume della base.
-            0.35 = 35%
-        */
+        const audio = document.getElementById("backgroundAudio");
+        const musicButton = document.getElementById("musicButton");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
 
         audio.volume = 0.35;
 
-
-        /* =====================================================
-           AGGIORNA IL PULSANTE
-        ===================================================== */
-
         function updateMusicButton() {
+            const isPlaying = !audio.paused;
 
-            if (!audio.paused) {
+            musicButton.classList.toggle("active", isPlaying);
 
-                musicButton.classList.add(
-                    "active"
+            musicIcon.className = isPlaying
+                ? "fa-solid fa-volume-high"
+                : "fa-solid fa-play";
+
+            musicText.textContent = isPlaying
+                ? "Musica attiva"
+                : "Attiva Base";
+
+            musicButton.setAttribute(
+                "aria-label",
+                isPlaying
+                    ? "Disattiva musica"
+                    : "Attiva musica"
+            );
+        }
+
+        async function toggleMusic() {
+            try {
+                if (audio.paused) {
+                    await audio.play();
+                } else {
+                    audio.pause();
+                }
+
+                updateMusicButton();
+            } catch (error) {
+                console.error(
+                    "Errore nella riproduzione audio:",
+                    error
                 );
 
-                musicIcon.className =
-                    "fa-solid fa-volume-high";
-
-                musicText.textContent =
-                    "Musica attiva";
-
-            } else {
-
-                musicButton.classList.remove(
-                    "active"
-                );
-
-                musicIcon.className =
-                    "fa-solid fa-play";
-
-                musicText.textContent =
-                    "Attiva Base";
+                updateMusicButton();
             }
         }
 
+        musicButton.addEventListener("click", toggleMusic);
 
-        /* =====================================================
-           PULSANTE MUSICA
-        ===================================================== */
+        audio.addEventListener("play", updateMusicButton);
+        audio.addEventListener("pause", updateMusicButton);
+        audio.addEventListener("ended", updateMusicButton);
 
-        musicButton.addEventListener(
-            "click",
-            async () => {
-
-                try {
-
-                    if (audio.paused) {
-
-                        await audio.play();
-
-                    } else {
-
-                        audio.pause();
-
-                    }
-
-                    updateMusicButton();
-
-                } catch (error) {
-
-                    console.error(
-                        "Errore nella riproduzione:",
-                        error
-                    );
-
-                }
-
+        window.addEventListener("load", async () => {
+            try {
+                await audio.play();
+            } catch (error) {
+                console.info(
+                    "Autoplay bloccato dal browser. Usa il pulsante della musica."
+                );
             }
-        );
 
-
-        /* =====================================================
-           EVENTI AUDIO
-        ===================================================== */
-
-        audio.addEventListener(
-            "play",
-            updateMusicButton
-        );
-
-        audio.addEventListener(
-            "pause",
-            updateMusicButton
-        );
-
-
-        /* =====================================================
-           AUTOPLAY
-        ===================================================== */
-
-        window.addEventListener(
-            "load",
-            async () => {
-
-                try {
-
-                    await audio.play();
-
-                    updateMusicButton();
-
-                } catch (error) {
-
-                    /*
-                        Chrome, Edge e altri browser possono
-                        bloccare l'autoplay con audio.
-
-                        In questo caso rimane disponibile
-                        il pulsante "Attiva Base".
-                    */
-
-                    updateMusicButton();
-
-                    console.log(
-                        "Autoplay bloccato dal browser."
-                    );
-
-                }
-
-            }
-        );
-
+            updateMusicButton();
+        });
     </script>
 
 </body>
