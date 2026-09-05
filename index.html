@@ -2,22 +2,59 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta
-        name="description"
-        content="AlertNet Sentinel è temporaneamente offline per manutenzione programmata."
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
-    <meta name="theme-color" content="#02050a">
+    <meta
+        name="theme-color"
+        content="#020205"
+    >
 
-    <title>AlertNet Sentinel | Manutenzione</title>
+    <title id="documentTitle">
+        AlertNet Continuum | The Sovereign Security Layer
+    </title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- =====================================================
+         MAINTENANCE GATE
+    ====================================================== -->
+    <script>
+        (function () {
+            try {
+                const raw =
+                    localStorage.getItem("alertnet_site_config");
+
+                if (!raw) {
+                    return;
+                }
+
+                const config = JSON.parse(raw);
+
+                if (
+                    config?.maintenance?.enabled === true
+                ) {
+                    const target =
+                        config.pages?.maintenance ||
+                        "manutenzione.html";
+
+                    if (
+                        !window.location.pathname.endsWith(target)
+                    ) {
+                        window.location.replace(target);
+                    }
+                }
+            } catch (error) {
+                console.error(
+                    "AlertNet configuration error:",
+                    error
+                );
+            }
+        })();
+    </script>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;500;700&display=swap"
         rel="stylesheet"
     >
 
@@ -28,37 +65,24 @@
 
     <style>
         :root {
-            --bg: #02050a;
-            --bg-secondary: #030912;
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.4);
+            --secondary: #0066ff;
+            --accent: #7000ff;
 
-            --panel: rgba(8, 15, 24, 0.86);
-            --panel-strong: rgba(6, 13, 21, 0.94);
+            --bg-base: #020205;
+            --bg-surface: #0a0a0f;
+            --bg-card: rgba(20, 20, 30, 0.6);
 
-            --border: rgba(0, 238, 255, 0.14);
-            --border-strong: rgba(0, 238, 255, 0.30);
+            --border: rgba(255, 255, 255, 0.08);
 
-            --cyan: #00eeff;
-            --cyan-soft: rgba(0, 238, 255, 0.08);
-            --cyan-glow: rgba(0, 238, 255, 0.18);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dark: #475569;
 
-            --purple: #7b2cff;
-            --purple-soft: rgba(123, 44, 255, 0.08);
-
-            --danger: #ff4d67;
-            --danger-soft: rgba(255, 77, 103, 0.07);
-
-            --success: #23e38a;
-            --success-soft: rgba(35, 227, 138, 0.07);
-
-            --text: #f5f7fa;
-            --muted: #8190a5;
-            --muted-light: #b8c3d1;
-
-            --radius-lg: 24px;
-            --radius-md: 18px;
-            --radius-sm: 13px;
-
-            --container: 1180px;
+            --success: #10b981;
+            --error: #ff4757;
+            --warning: #f1c40f;
         }
 
         * {
@@ -73,829 +97,1119 @@
 
         body {
             min-height: 100vh;
-            overflow-x: hidden;
-
-            color: var(--text);
-            font-family: "Inter", sans-serif;
 
             background:
                 radial-gradient(
                     circle at 50% -10%,
-                    rgba(0, 238, 255, 0.11),
+                    rgba(0, 242, 255, 0.06),
                     transparent 32%
                 ),
-                radial-gradient(
-                    circle at 85% 20%,
-                    rgba(123, 44, 255, 0.08),
-                    transparent 25%
-                ),
-                linear-gradient(
-                    145deg,
-                    #010204 0%,
-                    var(--bg) 45%,
-                    var(--bg-secondary) 100%
-                );
-        }
+                var(--bg-base);
 
-        body::before {
-            content: "";
+            color: var(--text-main);
 
-            position: fixed;
-            inset: 0;
-            z-index: 0;
+            font-family:
+                "Plus Jakarta Sans",
+                sans-serif;
 
-            pointer-events: none;
+            overflow-x: hidden;
 
-            opacity: 0.085;
-
-            background-image:
-                linear-gradient(
-                    rgba(0, 238, 255, 0.14) 1px,
-                    transparent 1px
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(0, 238, 255, 0.14) 1px,
-                    transparent 1px
-                );
-
-            background-size: 42px 42px;
-
-            mask-image: linear-gradient(
-                to bottom,
-                black 0%,
-                rgba(0, 0, 0, 0.8) 40%,
-                transparent 100%
-            );
-
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                black 0%,
-                rgba(0, 0, 0, 0.8) 40%,
-                transparent 100%
-            );
-        }
-
-        body::after {
-            content: "";
-
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-
-            pointer-events: none;
-
-            background:
-                radial-gradient(
-                    circle at center,
-                    transparent 35%,
-                    rgba(0, 0, 0, 0.58) 100%
-                );
+            line-height: 1.7;
         }
 
         a {
             color: inherit;
-            text-decoration: none;
         }
 
         button,
-        input {
+        input,
+        textarea,
+        select {
             font: inherit;
         }
 
-        button {
-            border: 0;
-        }
+        .container {
+            width: min(1440px, calc(100% - 80px));
 
-        .page {
-            position: relative;
-            z-index: 2;
-
-            min-height: 100vh;
-
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* =========================================
-           HEADER
-        ========================================= */
-
-        header {
-            width: min(var(--container), 90%);
             margin: 0 auto;
-
-            padding: 22px 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 20px;
         }
 
-        .brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 13px;
+        .section {
+            padding: 120px 0;
 
-            min-width: 0;
+            position: relative;
         }
 
-        .brand-icon {
-            width: 46px;
-            height: 46px;
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
 
-            flex: 0 0 auto;
-
-            display: grid;
-            place-items: center;
-
-            border-radius: 14px;
-
-            color: var(--cyan);
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(0, 238, 255, 0.09),
-                    rgba(0, 238, 255, 0.025)
-                );
-
-            border: 1px solid rgba(0, 238, 255, 0.22);
-
-            box-shadow:
-                0 0 25px rgba(0, 238, 255, 0.10),
-                inset 0 0 20px rgba(0, 238, 255, 0.04);
+            transition:
+                opacity 0.8s ease-out,
+                transform 0.8s ease-out;
         }
 
-        .brand-icon i {
-            font-size: 20px;
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .brand-name {
-            font-size: 15px;
-            font-weight: 800;
+        /* =============================================
+           BUTTONS
+        ============================================== */
 
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
+        .btn {
+            min-height: 48px;
 
-            white-space: nowrap;
-        }
-
-        .brand-subtitle {
-            margin-top: 4px;
-
-            color: var(--muted);
-
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-            letter-spacing: 1.6px;
-
-            text-transform: uppercase;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-        }
-
-        .music-btn,
-        .admin-btn {
-            min-height: 44px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-
-            padding: 0 16px;
+            padding: 13px 28px;
 
             border-radius: 12px;
 
-            border: 1px solid rgba(0, 238, 255, 0.20);
-
-            background:
-                rgba(0, 238, 255, 0.045);
-
-            color: var(--text);
-
-            font-size: 12px;
             font-weight: 700;
 
             cursor: pointer;
 
             transition:
-                transform 0.22s ease,
-                border-color 0.22s ease,
-                box-shadow 0.22s ease,
-                background 0.22s ease;
-        }
+                0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-        .music-btn:hover,
-        .admin-btn:hover {
-            transform: translateY(-2px);
-
-            border-color: rgba(0, 238, 255, 0.45);
-
-            background:
-                rgba(0, 238, 255, 0.07);
-
-            box-shadow:
-                0 0 24px rgba(0, 238, 255, 0.12);
-        }
-
-        .music-btn:focus-visible,
-        .admin-btn:focus-visible {
-            outline: 2px solid var(--cyan);
-            outline-offset: 3px;
-        }
-
-        .music-btn i,
-        .admin-btn i {
-            color: var(--cyan);
-        }
-
-        .music-btn.active {
-            border-color: rgba(35, 227, 138, 0.35);
-
-            background:
-                var(--success-soft);
-
-            box-shadow:
-                0 0 22px rgba(35, 227, 138, 0.08);
-        }
-
-        .music-btn.active i {
-            color: var(--success);
-        }
-
-        /* =========================================
-           MAIN
-        ========================================= */
-
-        main {
-            width: min(var(--container), 90%);
-            margin: 0 auto;
-
-            flex: 1;
-
-            padding:
-                clamp(34px, 6vw, 72px) 0 34px;
-        }
-
-        /* =========================================
-           HERO
-        ========================================= */
-
-        .hero {
-            text-align: center;
-        }
-
-        .status-pill {
-            width: fit-content;
-            max-width: 100%;
-
-            margin: 0 auto 24px;
+            text-decoration: none;
 
             display: inline-flex;
             align-items: center;
-            gap: 9px;
+            justify-content: center;
+            gap: 10px;
 
-            padding: 8px 13px;
+            font-size: 14px;
 
-            border-radius: 999px;
-
-            background: var(--danger-soft);
-            border: 1px solid rgba(255, 77, 103, 0.18);
-
-            color: #ff91a1;
-
-            font-family: "JetBrains Mono", monospace;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-
-            text-transform: uppercase;
+            border: none;
         }
 
-        .status-dot {
-            width: 7px;
-            height: 7px;
+        .btn-glass {
+            background:
+                rgba(255,255,255,0.03);
 
-            flex: 0 0 auto;
+            color: #fff;
 
-            border-radius: 50%;
+            border:
+                1px solid var(--border);
 
-            background: var(--danger);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-glass:hover {
+            background:
+                rgba(255,255,255,0.08);
+
+            border-color:
+                var(--primary);
+        }
+
+        .btn-cyan {
+            background:
+                var(--primary);
+
+            color: #000;
 
             box-shadow:
-                0 0 12px rgba(255, 77, 103, 0.80);
-
-            animation:
-                pulse 1.7s ease-in-out infinite;
+                0 10px 20px var(--primary-glow);
         }
 
-        @keyframes pulse {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        .btn-cyan:hover {
+            transform: translateY(-2px);
 
-            50% {
-                transform: scale(1.45);
-                opacity: 0.55;
-            }
+            box-shadow:
+                0 15px 30px var(--primary-glow);
         }
 
-        .hero h1 {
-            max-width: 950px;
-            margin: 0 auto;
+        /* =============================================
+           NAV
+        ============================================== */
 
-            font-size: clamp(42px, 8vw, 84px);
-            line-height: 0.98;
+        nav {
+            position: fixed;
 
-            font-weight: 800;
-            letter-spacing: -4px;
+            top: 0;
+            left: 0;
 
-            text-transform: uppercase;
+            width: 100%;
 
-            text-shadow:
-                2px 0 rgba(0, 238, 255, 0.22),
-                -2px 0 rgba(123, 44, 255, 0.18);
+            z-index: 9999;
+
+            padding: 30px 0;
+
+            transition:
+                0.4s ease;
         }
 
-        .hero h1 span {
+        nav.sticky {
+            padding: 15px 0;
+
+            background:
+                rgba(2, 2, 5, 0.82);
+
+            backdrop-filter:
+                blur(20px);
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .nav-content {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 24px;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: 900;
+
+            color: #fff;
+
+            text-decoration: none;
+
+            letter-spacing: -1px;
+
+            white-space: nowrap;
+        }
+
+        .nav-logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+
+            align-items: center;
+
+            gap: 26px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid var(--border);
+
+            background:
+                rgba(255,255,255,0.03);
+
+            color: #fff;
+
+            cursor: pointer;
+        }
+
+        /* =============================================
+           MOBILE NAV
+        ============================================== */
+
+        .mobile-menu {
+            display: none;
+
+            position: fixed;
+
+            top: 80px;
+            left: 15px;
+            right: 15px;
+
+            z-index: 9998;
+
+            padding: 15px;
+
+            background:
+                rgba(5, 7, 12, 0.97);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 16px;
+
+            backdrop-filter:
+                blur(25px);
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.4);
+        }
+
+        .mobile-menu.open {
+            display: block;
+        }
+
+        .mobile-menu a {
             display: block;
 
-            margin-top: 3px;
+            padding: 12px;
 
-            color: var(--cyan);
+            color: var(--text-muted);
 
-            text-shadow:
-                0 0 35px rgba(0, 238, 255, 0.18);
+            text-decoration: none;
+
+            border-radius: 9px;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+
+            background:
+                rgba(0,242,255,0.04);
+        }
+
+        /* =============================================
+           HERO
+        ============================================== */
+
+        .hero {
+            min-height: 860px;
+
+            display: flex;
+            align-items: center;
+
+            position: relative;
+        }
+
+        .hero-mesh {
+            position: absolute;
+
+            inset: 0;
+
+            z-index: -1;
+
+            background-image:
+                radial-gradient(
+                    at 0% 0%,
+                    hsla(185,100%,50%,0.10) 0,
+                    transparent 50%
+                ),
+                radial-gradient(
+                    at 100% 0%,
+                    hsla(220,100%,50%,0.10) 0,
+                    transparent 50%
+                );
+        }
+
+        .hero-content {
+            max-width: 950px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 8px;
+
+            margin-bottom: 22px;
+
+            padding: 6px 12px;
+
+            border-radius: 7px;
+
+            background:
+                rgba(0,242,255,0.08);
+
+            color: var(--primary);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 10px;
+
+            letter-spacing: 0.7px;
+
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size:
+                clamp(50px, 8vw, 110px);
+
+            font-weight: 800;
+
+            line-height: 0.92;
+
+            letter-spacing: -5px;
+
+            margin-bottom: 30px;
+        }
+
+        .hero-title span {
+            display: block;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #fff,
+                    var(--primary)
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-description {
-            max-width: 700px;
+            font-size:
+                clamp(16px, 1.6vw, 20px);
 
-            margin: 25px auto 0;
+            color: var(--text-muted);
 
-            color: var(--muted);
+            max-width: 730px;
 
-            font-size: 15px;
-            line-height: 1.8;
+            margin-bottom: 40px;
         }
 
-        /* =========================================
-           SENTINEL
-        ========================================= */
+        .hero-buttons {
+            display: flex;
 
-        .sentinel-wrap {
-            width: min(860px, 100%);
-            margin: 52px auto;
+            flex-wrap: wrap;
+
+            gap: 14px;
         }
 
-        .sentinel {
-            position: relative;
+        /* =============================================
+           STATUS
+        ============================================== */
 
-            min-height: 360px;
-
-            display: grid;
-            place-items: center;
-
-            padding: 30px;
-
-            overflow: hidden;
-
-            border-radius: var(--radius-lg);
-
-            border: 1px solid var(--border);
-
+        .status-section {
             background:
-                radial-gradient(
-                    circle at center,
-                    rgba(0, 238, 255, 0.055),
-                    transparent 52%
-                ),
-                linear-gradient(
-                    180deg,
-                    rgba(8, 16, 26, 0.96),
-                    rgba(3, 9, 16, 0.96)
-                );
-
-            box-shadow:
-                inset 0 0 50px rgba(0, 238, 255, 0.025),
-                0 25px 80px rgba(0, 0, 0, 0.28);
+                rgba(255,255,255,0.01);
         }
 
-        .sentinel::before {
-            content: "";
+        .section-heading {
+            text-align: center;
 
-            position: absolute;
+            margin-bottom: 60px;
+        }
 
-            width: 220px;
-            height: 220px;
+        .section-heading h2 {
+            font-size:
+                clamp(28px, 4vw, 46px);
 
-            left: 50%;
-            top: 50%;
+            letter-spacing: -1.5px;
+        }
 
-            transform:
-                translate(-50%, -50%);
+        .section-heading p {
+            margin-top: 8px;
 
-            border-radius: 50%;
+            color: var(--text-muted);
+        }
+
+        .status-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 20px;
+        }
+
+        .status-card {
+            background:
+                var(--bg-card);
 
             border:
-                1px solid rgba(0, 238, 255, 0.12);
+                1px solid var(--border);
 
-            box-shadow:
-                0 0 0 30px rgba(0, 238, 255, 0.025),
-                0 0 0 60px rgba(0, 238, 255, 0.015);
+            padding: 25px;
 
-            animation:
-                rotateRing 16s linear infinite;
+            border-radius: 20px;
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease;
         }
 
-        .sentinel::after {
-            content: "";
+        .status-card:hover {
+            transform:
+                translateY(-4px);
 
-            position: absolute;
-            inset: 0;
+            border-color:
+                rgba(0,242,255,0.24);
+        }
 
-            pointer-events: none;
+        .status-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 15px;
+
+            font-size: 11px;
+
+            color: var(--text-muted);
+
+            text-transform:
+                uppercase;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+
+            border-radius: 50%;
+        }
+
+        .status-online {
+            background:
+                var(--success);
+
+            box-shadow:
+                0 0 10px var(--success);
+        }
+
+        .status-warning {
+            background:
+                var(--warning);
+
+            box-shadow:
+                0 0 10px var(--warning);
+        }
+
+        .status-offline {
+            background:
+                var(--error);
+
+            box-shadow:
+                0 0 10px var(--error);
+        }
+
+        .status-value {
+            font-size: 22px;
+
+            font-weight: 800;
+        }
+
+        .status-meta {
+            margin-top: 9px;
+
+            font-size: 11px;
+
+            color: var(--text-dark);
+        }
+
+        /* =============================================
+           AFFILIATE
+        ============================================== */
+
+        .affiliate-box {
+            display: flex;
+
+            align-items: center;
+
+            gap: 50px;
+
+            padding: 60px;
+
+            border-radius: 30px;
 
             background:
                 linear-gradient(
-                    transparent 49.7%,
-                    rgba(0, 238, 255, 0.06) 50%,
-                    transparent 50.3%
-                ),
-                linear-gradient(
-                    90deg,
-                    transparent 49.7%,
-                    rgba(0, 238, 255, 0.06) 50%,
-                    transparent 50.3%
+                    135deg,
+                    rgba(112,0,255,0.1),
+                    rgba(0,102,255,0.1)
                 );
+
+            border:
+                1px solid var(--border);
         }
 
-        @keyframes rotateRing {
-            from {
-                transform:
-                    translate(-50%, -50%)
-                    rotate(0deg);
-            }
-
-            to {
-                transform:
-                    translate(-50%, -50%)
-                    rotate(360deg);
-            }
+        .affiliate-content {
+            flex: 1;
         }
 
-        .sentinel-content {
-            position: relative;
-            z-index: 3;
+        .affiliate-content h2 {
+            font-size:
+                clamp(30px, 4vw, 42px);
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .affiliate-content p {
+            color: var(--text-muted);
+
+            margin-bottom: 28px;
+        }
+
+        .affiliate-stats {
+            flex: 1;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 20px;
+        }
+
+        .affiliate-stat {
+            background:
+                rgba(255,255,255,0.05);
+
+            padding: 25px;
+
+            border-radius: 20px;
 
             text-align: center;
         }
 
-        .sentinel-core {
-            width: 98px;
-            height: 98px;
+        .affiliate-stat strong {
+            display: block;
 
-            display: grid;
-            place-items: center;
+            font-size: 30px;
 
-            border-radius: 50%;
-
-            border: 1px solid rgba(0, 238, 255, 0.40);
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(0, 238, 255, 0.18),
-                    rgba(0, 238, 255, 0.025) 65%
-                );
-
-            box-shadow:
-                0 0 45px rgba(0, 238, 255, 0.16),
-                inset 0 0 25px rgba(0, 238, 255, 0.07);
-
-            animation:
-                breathe 3s ease-in-out infinite;
+            color: var(--primary);
         }
 
-        .sentinel-core i {
-            color: var(--cyan);
-            font-size: 38px;
-        }
-
-        @keyframes breathe {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.06);
-            }
-        }
-
-        .sentinel-label {
-            margin-top: 20px;
-
-            color: var(--cyan);
-
-            font-family: "JetBrains Mono", monospace;
+        .affiliate-stat span {
             font-size: 11px;
-            letter-spacing: 2.5px;
 
-            text-transform: uppercase;
+            color: var(--text-muted);
         }
 
-        .sentinel-sub {
-            margin-top: 8px;
+        /* =============================================
+           CAREERS
+        ============================================== */
 
-            color: var(--muted);
-
-            font-size: 12px;
+        .jobs-heading {
+            margin-bottom: 55px;
         }
 
-        /* =========================================
-           INFO CARDS
-        ========================================= */
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-
-            gap: 17px;
+        .jobs-heading h2 {
+            font-size:
+                clamp(32px, 5vw, 48px);
         }
 
-        .info-card {
-            position: relative;
-
-            padding: 24px;
-
-            overflow: hidden;
-
-            border-radius: var(--radius-md);
-
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            box-shadow:
-                0 12px 35px rgba(0, 0, 0, 0.12);
-
-            transition:
-                transform 0.25s ease,
-                border-color 0.25s ease,
-                box-shadow 0.25s ease;
+        .jobs-heading p {
+            color: var(--text-muted);
         }
 
-        .info-card:hover {
-            transform: translateY(-4px);
-
-            border-color: var(--border-strong);
-
-            box-shadow:
-                0 18px 45px rgba(0, 0, 0, 0.22);
-        }
-
-        .info-card::after {
-            content: "";
-
-            position: absolute;
-
-            width: 90px;
-            height: 90px;
-
-            right: -35px;
-            top: -35px;
-
-            border-radius: 50%;
-
-            background: rgba(0, 238, 255, 0.06);
-
-            filter: blur(4px);
-        }
-
-        .card-icon {
-            width: 42px;
-            height: 42px;
-
-            display: grid;
-            place-items: center;
-
-            margin-bottom: 17px;
-
-            border-radius: 12px;
-
-            background: var(--cyan-soft);
-            color: var(--cyan);
-        }
-
-        .info-card h3 {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .info-card p {
-            margin-top: 10px;
-
-            color: var(--muted);
-
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        /* =========================================
-           FOOTER
-        ========================================= */
-
-        footer {
-            width: min(var(--container), 90%);
-            margin: 20px auto 0;
-
-            padding: 22px 0 28px;
-
+        .job-card {
             display: flex;
+
             align-items: center;
             justify-content: space-between;
 
-            gap: 18px;
+            gap: 25px;
+
+            padding: 28px;
+
+            margin-bottom: 16px;
+
+            background:
+                var(--bg-surface);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 22px;
+
+            transition:
+                0.3s ease;
+        }
+
+        .job-card:hover {
+            border-color:
+                var(--primary);
+
+            background:
+                rgba(255,255,255,0.02);
+        }
+
+        .job-card h4 {
+            font-size: 19px;
+        }
+
+        .job-tags {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 4px 11px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            background:
+                var(--border);
+
+            color: var(--text-muted);
+        }
+
+        /* =============================================
+           GLOSSARY
+        ============================================== */
+
+        .glossary-section {
+            background:
+                rgba(0,0,0,0.30);
+        }
+
+        .glossary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 30px;
+        }
+
+        .glossary-item {
+            padding: 5px 0;
+        }
+
+        .glossary-item h4 {
+            color: var(--primary);
+
+            margin-bottom: 9px;
+
+            font-size: 16px;
+        }
+
+        .glossary-item p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+        /* =============================================
+           COOKIE
+        ============================================== */
+
+        #cookie-banner {
+            position: fixed;
+
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+
+            z-index: 10000;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 22px;
+
+            background:
+                rgba(10,10,15,0.95);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            backdrop-filter:
+                blur(20px);
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.5);
+
+            transform:
+                translateY(200px);
+
+            transition:
+                0.6s ease;
+        }
+
+        #cookie-banner.show {
+            transform:
+                translateY(0);
+        }
+
+        .cookie-content {
+            max-width: 720px;
+        }
+
+        .cookie-content h4 {
+            margin-bottom: 5px;
+        }
+
+        .cookie-content p {
+            font-size: 12px;
+
+            color: var(--text-muted);
+        }
+
+        .cookie-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* =============================================
+           FOOTER
+        ============================================== */
+
+        footer {
+            padding:
+                90px 0 40px;
 
             border-top:
-                1px solid rgba(255, 255, 255, 0.05);
+                1px solid var(--border);
 
-            color: var(--muted);
-
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-            letter-spacing: 0.5px;
+            background:
+                #010103;
         }
 
-        .footer-status {
-            color: var(--success);
+        .footer-cols {
+            display: grid;
+
+            grid-template-columns:
+                2fr repeat(3, 1fr);
+
+            gap: 40px;
         }
 
-        .footer-status i {
-            margin-right: 4px;
-            font-size: 7px;
+        .footer-brand {
+            grid-column:
+                span 1;
         }
 
-        /* =========================================
+        .footer-logo {
+            font-size: 27px;
+
+            font-weight: 900;
+
+            margin-bottom: 18px;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+
+            max-width: 380px;
+        }
+
+        .footer-socials {
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 25px;
+        }
+
+        .social-btn {
+            width: 43px;
+            height: 43px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,0.03);
+
+            border:
+                1px solid var(--border);
+
+            color: #fff;
+
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            border-color:
+                var(--primary);
+
+            color: var(--primary);
+        }
+
+        .footer-col h5 {
+            margin-bottom: 18px;
+
+            font-size: 12px;
+
+            text-transform:
+                uppercase;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col a {
+            color: var(--text-muted);
+
+            text-decoration: none;
+
+            font-size: 12px;
+        }
+
+        .footer-col a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            margin-top: 60px;
+
+            padding-top: 25px;
+
+            border-top:
+                1px solid var(--border);
+
+            text-align: center;
+
+            color: var(--text-dark);
+
+            font-size: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 22px;
+
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            color: inherit;
+
+            text-decoration: none;
+        }
+
+        /* =============================================
            RESPONSIVE
-        ========================================= */
+        ============================================== */
 
-        @media (max-width: 900px) {
-            .info-grid {
-                grid-template-columns: 1fr;
+        @media (max-width: 1100px) {
+            .container {
+                width:
+                    min(100% - 40px, 1440px);
             }
 
-            .info-card {
-                min-height: 150px;
+            .nav-links,
+            .nav-actions {
+                display: none;
             }
 
-            footer {
+            .mobile-menu-btn {
+                display:
+                    grid;
+
+                place-items:
+                    center;
+            }
+
+            .status-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .glossary-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+            .section {
+                padding: 80px 0;
+            }
+
+            .hero {
+                min-height: 760px;
+            }
+
+            .hero-title {
+                font-size:
+                    clamp(45px, 13vw, 75px);
+
+                letter-spacing:
+                    -3px;
+            }
+
+            .affiliate-box {
                 flex-direction: column;
+
                 align-items: flex-start;
+
+                padding: 38px;
+
+                gap: 32px;
+            }
+
+            .affiliate-stats {
+                width: 100%;
+            }
+
+            .footer-cols {
+                grid-template-columns:
+                    1fr 1fr;
             }
         }
 
-        @media (max-width: 640px) {
-            header {
-                width: 92%;
-                padding: 18px 0;
+        @media (max-width: 620px) {
+            nav {
+                padding:
+                    18px 0;
             }
 
-            main {
-                width: 92%;
-                padding-top: 34px;
+            nav.sticky {
+                padding:
+                    13px 0;
             }
 
-            footer {
-                width: 92%;
+            .container {
+                width:
+                    calc(100% - 28px);
             }
 
-            .brand-name {
-                font-size: 13px;
-                letter-spacing: 2px;
+            .status-grid {
+                grid-template-columns:
+                    1fr;
             }
 
-            .brand-subtitle {
-                display: none;
+            .glossary-grid {
+                grid-template-columns:
+                    1fr;
             }
 
-            .header-actions {
-                gap: 7px;
+            .hero {
+                min-height:
+                    690px;
             }
 
-            .music-btn,
-            .admin-btn {
-                width: 42px;
-                height: 42px;
-                min-height: 42px;
-                padding: 0;
+            .hero-buttons {
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
             }
 
-            .music-btn span,
-            .admin-btn span {
-                display: none;
+            .hero-buttons .btn {
+                width: 100%;
             }
 
-            .hero h1 {
-                font-size: clamp(39px, 12vw, 52px);
-                letter-spacing: -2.5px;
+            .job-card {
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
             }
 
-            .hero-description {
-                font-size: 13px;
-                line-height: 1.75;
+            .job-card .btn {
+                width: 100%;
             }
 
-            .sentinel-wrap {
-                margin: 38px auto;
+            .affiliate-box {
+                padding:
+                    28px 20px;
             }
 
-            .sentinel {
-                min-height: 300px;
+            .affiliate-stats {
+                grid-template-columns:
+                    1fr;
+            }
+
+            #cookie-banner {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
                 padding: 18px;
-                border-radius: 20px;
             }
 
-            .sentinel::before {
-                width: 175px;
-                height: 175px;
+            .cookie-content {
+                max-width: 100%;
             }
 
-            .sentinel-core {
-                width: 84px;
-                height: 84px;
+            .cookie-actions {
+                width: 100%;
+
+                flex-direction:
+                    column;
             }
 
-            .sentinel-core i {
-                font-size: 31px;
+            .cookie-actions .btn {
+                width: 100%;
             }
 
-            .sentinel-label {
-                font-size: 9px;
-                letter-spacing: 1.7px;
+            .footer-cols {
+                grid-template-columns:
+                    1fr;
             }
 
-            .sentinel-sub {
-                max-width: 260px;
-                line-height: 1.6;
-            }
-
-            .status-pill {
-                font-size: 9px;
-                letter-spacing: 1.2px;
-            }
-
-            .info-card {
-                padding: 21px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .brand-icon {
-                width: 42px;
-                height: 42px;
-            }
-
-            .brand-name {
-                font-size: 11px;
-            }
-
-            .hero h1 {
-                font-size: 36px;
-            }
-
-            .sentinel-label {
-                font-size: 8px;
+            .footer-brand {
+                grid-column:
+                    auto;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            html {
-                scroll-behavior: auto;
-            }
-
             *,
             *::before,
             *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+                animation: none !important;
+
+                scroll-behavior:
+                    auto !important;
+
+                transition-duration:
+                    0.01ms !important;
             }
         }
     </style>
@@ -903,261 +1217,1319 @@
 
 <body>
 
-    <audio
-        id="backgroundAudio"
-        src="Guerriero.mp3"
-        preload="auto"
-        loop
-    ></audio>
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
 
-    <div class="page">
+    <nav id="mainNav">
 
-        <header>
-            <a href="index.html" class="brand" aria-label="Torna alla pagina principale">
-                <div class="brand-icon">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
+        <div class="container nav-content">
 
-                <div>
-                    <div class="brand-name">
-                        AlertNet Sentinel
-                    </div>
-
-                    <div class="brand-subtitle">
-                        Network Security Infrastructure
-                    </div>
-                </div>
+            <a
+                href="index.html"
+                class="nav-logo"
+            >
+                ALERT<span>NET</span>
             </a>
 
-            <div class="header-actions">
+            <div class="nav-links">
 
-                <button
-                    id="musicButton"
-                    class="music-btn"
-                    type="button"
-                    aria-label="Attiva musica"
-                >
-                    <i
-                        id="musicIcon"
-                        class="fa-solid fa-play"
-                        aria-hidden="true"
-                    ></i>
+                <a href="#status">
+                    Network Status
+                </a>
 
-                    <span id="musicText">
-                        Attiva Base
-                    </span>
-                </button>
+                <a href="#affiliate">
+                    Partners
+                </a>
 
-                <a
-                    href="login.html"
-                    class="admin-btn"
-                    aria-label="Accedi come amministratore"
-                >
-                    <i
-                        class="fa-solid fa-user-shield"
-                        aria-hidden="true"
-                    ></i>
+                <a href="#careers">
+                    Careers
+                </a>
 
-                    <span>
-                        Accedi come Admin
-                    </span>
+                <a href="#glossary">
+                    Glossary
+                </a>
+
+                <a href="#support">
+                    Help Desk
                 </a>
 
             </div>
-        </header>
 
-        <main>
+            <div class="nav-actions">
 
-            <section class="hero" aria-labelledby="maintenance-title">
+                <a
+                    href="#support"
+                    class="btn btn-glass"
+                >
+                    Support Server
+                </a>
 
-                <div class="status-pill">
-                    <span class="status-dot" aria-hidden="true"></span>
-                    Sistema in manutenzione
-                </div>
+                <a
+                    href="#status"
+                    class="btn btn-cyan"
+                >
+                    Dashboard
+                </a>
 
-                <h1 id="maintenance-title">
-                    AlertNet
-                    <span>On Maintenance</span>
-                </h1>
+            </div>
 
-                <p class="hero-description">
-                    AlertNet Sentinel è temporaneamente offline per un
-                    intervento programmato sull'infrastruttura di sicurezza.
-                    I nostri sistemi stanno effettuando aggiornamenti,
-                    ottimizzazioni e verifiche tecniche.
-                </p>
-
-            </section>
-
-            <section class="sentinel-wrap" aria-label="Stato del sistema">
-
-                <div class="sentinel">
-
-                    <div class="sentinel-content">
-
-                        <div class="sentinel-core">
-                            <i
-                                class="fa-solid fa-screwdriver-wrench"
-                                aria-hidden="true"
-                            ></i>
-                        </div>
-
-                        <div class="sentinel-label">
-                            Maintenance Protocol Active
-                        </div>
-
-                        <div class="sentinel-sub">
-                            Il Sentinel tornerà operativo al termine
-                            delle operazioni di manutenzione.
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-            <section
-                class="info-grid"
-                aria-label="Informazioni sulla manutenzione"
+            <button
+                type="button"
+                id="mobileMenuBtn"
+                class="mobile-menu-btn"
+                aria-label="Apri menu"
             >
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-                <article class="info-card">
-                    <div class="card-icon">
-                        <i
-                            class="fa-solid fa-shield-halved"
-                            aria-hidden="true"
-                        ></i>
-                    </div>
+        </div>
 
-                    <h3>
-                        Sicurezza
-                    </h3>
+    </nav>
 
-                    <p>
-                        I sistemi di sicurezza rimangono sotto monitoraggio
-                        durante l'intervento di manutenzione.
-                    </p>
-                </article>
+    <div
+        id="mobileMenu"
+        class="mobile-menu"
+    >
 
-                <article class="info-card">
-                    <div class="card-icon">
-                        <i
-                            class="fa-solid fa-server"
-                            aria-hidden="true"
-                        ></i>
-                    </div>
+        <a href="#status">
+            Network Status
+        </a>
 
-                    <h3>
-                        Infrastruttura
-                    </h3>
+        <a href="#affiliate">
+            Partners
+        </a>
 
-                    <p>
-                        Stiamo applicando modifiche e aggiornamenti ai
-                        componenti centrali dell'infrastruttura AlertNet.
-                    </p>
-                </article>
+        <a href="#careers">
+            Careers
+        </a>
 
-                <article class="info-card">
-                    <div class="card-icon">
-                        <i
-                            class="fa-solid fa-gauge-high"
-                            aria-hidden="true"
-                        ></i>
-                    </div>
+        <a href="#glossary">
+            Glossary
+        </a>
 
-                    <h3>
-                        Prestazioni
-                    </h3>
-
-                    <p>
-                        L'intervento è finalizzato a migliorare stabilità,
-                        affidabilità e performance del servizio.
-                    </p>
-                </article>
-
-            </section>
-
-        </main>
-
-        <footer>
-            <div>
-                ALERTNET SENTINEL // CORE MAINTENANCE
-            </div>
-
-            <div class="footer-status">
-                <i class="fa-solid fa-circle" aria-hidden="true"></i>
-                SYSTEM SECURED
-            </div>
-        </footer>
+        <a href="#support">
+            Help Desk
+        </a>
 
     </div>
 
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <header class="hero">
+
+        <div class="hero-mesh"></div>
+
+        <div class="container">
+
+            <div class="hero-content reveal">
+
+                <span
+                    id="heroBadge"
+                    class="hero-badge"
+                >
+                    NEXUS UPDATE LIVE
+                </span>
+
+                <h1
+                    id="heroTitle"
+                    class="hero-title"
+                >
+                    Your Community,
+                    <span>Unbreakable.</span>
+                </h1>
+
+                <p
+                    id="heroDescription"
+                    class="hero-description"
+                >
+                    L'unica suite di sicurezza per Discord con
+                    protezione Anycast, crittografia end-to-end
+                    dei log e AI generativa per il rilevamento
+                    istantaneo delle minacce.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="#"
+                        class="btn btn-cyan"
+                    >
+                        <i class="fa-brands fa-discord"></i>
+                        Add to Server
+                    </a>
+
+                    <a
+                        href="#status"
+                        class="btn btn-glass"
+                    >
+                        System Status
+                        <span
+                            style="color:var(--success)"
+                        >
+                            ●
+                        </span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- =====================================================
+         STATUS
+    ====================================================== -->
+
+    <section
+        class="section status-section"
+        id="status"
+    >
+
+        <div class="container">
+
+            <div class="section-heading reveal">
+
+                <h2>
+                    Global Infrastructure Status
+                </h2>
+
+                <p>
+                    Monitoraggio in tempo reale dei nostri
+                    nodi di calcolo globali.
+                </p>
+
+            </div>
+
+            <div
+                id="statusGrid"
+                class="status-grid reveal"
+            >
+
+                <div class="status-card">
+
+                    <div class="status-header">
+                        Core API Gateway
+
+                        <div
+                            id="apiIndicator"
+                            class="status-indicator status-online"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="apiValue"
+                        class="status-value"
+                    >
+                        Operational
+                    </div>
+
+                    <div
+                        id="apiMeta"
+                        class="status-meta"
+                    >
+                        Latency: 14ms | Uptime: 100%
+                    </div>
+
+                </div>
+
+                <div class="status-card">
+
+                    <div class="status-header">
+                        Neural Engine
+
+                        <div
+                            id="neuralIndicator"
+                            class="status-indicator status-online"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="neuralValue"
+                        class="status-value"
+                    >
+                        Operational
+                    </div>
+
+                    <div
+                        id="neuralMeta"
+                        class="status-meta"
+                    >
+                        Load: 12% | Analysis: 0.2ms
+                    </div>
+
+                </div>
+
+                <div class="status-card">
+
+                    <div class="status-header">
+                        Shard Clusters
+
+                        <div
+                            id="shardIndicator"
+                            class="status-indicator status-online"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="shardValue"
+                        class="status-value"
+                    >
+                        Operational
+                    </div>
+
+                    <div
+                        id="shardMeta"
+                        class="status-meta"
+                    >
+                        Active Shards: 1,024/1,024
+                    </div>
+
+                </div>
+
+                <div class="status-card">
+
+                    <div class="status-header">
+                        Backup Vaults
+
+                        <div
+                            id="backupIndicator"
+                            class="status-indicator status-online"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="backupValue"
+                        class="status-value"
+                    >
+                        Operational
+                    </div>
+
+                    <div
+                        id="backupMeta"
+                        class="status-meta"
+                    >
+                        Sync: 0.1s ago | Region: EU-WEST
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         PARTNER
+    ====================================================== -->
+
+    <section
+        class="section"
+        id="affiliate"
+    >
+
+        <div class="container">
+
+            <div class="affiliate-box reveal">
+
+                <div class="affiliate-content">
+
+                    <h2>
+                        Partner Program
+                    </h2>
+
+                    <p>
+                        Guadagna il 20% su ogni abbonamento Premium
+                        generato tramite il tuo link. Unisciti alla
+                        rete di AlertNet e aiuta a rendere Discord
+                        più sicuro.
+                    </p>
+
+                    <a
+                        href="#"
+                        class="btn btn-cyan"
+                    >
+                        Diventa Partner
+                    </a>
+
+                </div>
+
+                <div class="affiliate-stats">
+
+                    <div class="affiliate-stat">
+                        <strong>20%</strong>
+                        <span>Lifetime Commission</span>
+                    </div>
+
+                    <div class="affiliate-stat">
+                        <strong>Payout</strong>
+                        <span>Monthly (Crypto/Bank)</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         CAREERS
+    ====================================================== -->
+
+    <section
+        class="section"
+        id="careers"
+    >
+
+        <div class="container">
+
+            <div class="jobs-heading reveal">
+
+                <h2>
+                    Join the Defense.
+                </h2>
+
+                <p>
+                    Stiamo costruendo il futuro della sicurezza
+                    digitale. Vuoi farne parte?
+                </p>
+
+            </div>
+
+            <div class="reveal">
+
+                <div class="job-card">
+
+                    <div>
+
+                        <h4>
+                            Senior Rust / Systems Engineer
+                        </h4>
+
+                        <div class="job-tags">
+
+                            <span class="tag">
+                                Remote
+                            </span>
+
+                            <span class="tag">
+                                Full-time
+                            </span>
+
+                            <span class="tag">
+                                Infrastructure
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="#"
+                        class="btn btn-glass"
+                    >
+                        Apply Now
+                    </a>
+
+                </div>
+
+                <div class="job-card">
+
+                    <div>
+
+                        <h4>
+                            AI Security Specialist
+                        </h4>
+
+                        <div class="job-tags">
+
+                            <span class="tag">
+                                Remote / NYC
+                            </span>
+
+                            <span class="tag">
+                                Full-time
+                            </span>
+
+                            <span class="tag">
+                                R&amp;D
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="#"
+                        class="btn btn-glass"
+                    >
+                        Apply Now
+                    </a>
+
+                </div>
+
+                <div class="job-card">
+
+                    <div>
+
+                        <h4>
+                            Developer Relations (DevRel)
+                        </h4>
+
+                        <div class="job-tags">
+
+                            <span class="tag">
+                                Remote
+                            </span>
+
+                            <span class="tag">
+                                Contract
+                            </span>
+
+                            <span class="tag">
+                                Growth
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="#"
+                        class="btn btn-glass"
+                    >
+                        Apply Now
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         GLOSSARY
+    ====================================================== -->
+
+    <section
+        class="section glossary-section"
+        id="glossary"
+    >
+
+        <div class="container">
+
+            <div class="section-heading reveal">
+
+                <h2>
+                    Security Glossary
+                </h2>
+
+                <p>
+                    I concetti fondamentali della nostra
+                    tecnologia spiegati semplicemente.
+                </p>
+
+            </div>
+
+            <div class="glossary-grid reveal">
+
+                <div class="glossary-item">
+                    <h4>Nuking</h4>
+                    <p>
+                        L'azione malevola di distruggere un server
+                        eliminando massivamente canali, ruoli e ban
+                        degli utenti.
+                    </p>
+                </div>
+
+                <div class="glossary-item">
+                    <h4>Anycast</h4>
+                    <p>
+                        Una metodologia di routing che indirizza
+                        i dati al nodo fisicamente più vicino,
+                        minimizzando la latenza.
+                    </p>
+                </div>
+
+                <div class="glossary-item">
+                    <h4>Machine Learning</h4>
+                    <p>
+                        L'algoritmo che impara dai raid passati
+                        per prevedere e bloccare attacchi futuri
+                        in autonomia.
+                    </p>
+                </div>
+
+                <div class="glossary-item">
+                    <h4>Token Grabbing</h4>
+                    <p>
+                        Un tipo di attacco phishing mirato a rubare
+                        l'accesso dell'account Discord tramite link
+                        contraffatti.
+                    </p>
+                </div>
+
+                <div class="glossary-item">
+                    <h4>SLA (Service Level Agreement)</h4>
+                    <p>
+                        Il contratto che garantisce la disponibilità
+                        minima del servizio.
+                    </p>
+                </div>
+
+                <div class="glossary-item">
+                    <h4>Honeypot</h4>
+                    <p>
+                        Un sistema esca progettato per attirare i bot
+                        malevoli e bloccarli a livello di sicurezza.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         SUPPORT
+    ====================================================== -->
+
+    <section
+        class="section"
+        id="support"
+    >
+
+        <div class="container">
+
+            <div
+                class="section-heading reveal"
+            >
+
+                <h2>
+                    Need Help?
+                </h2>
+
+                <p>
+                    Il nostro sistema di supporto è disponibile
+                    per assistenza tecnica e segnalazioni.
+                </p>
+
+                <div
+                    style="
+                        margin-top:25px;
+                        display:flex;
+                        justify-content:center;
+                        gap:12px;
+                        flex-wrap:wrap;
+                    "
+                >
+                    <a
+                        href="#"
+                        class="btn btn-cyan"
+                    >
+                        <i class="fa-brands fa-discord"></i>
+                        Support Server
+                    </a>
+
+                    <a
+                        href="mailto:support@example.com"
+                        class="btn btn-glass"
+                    >
+                        <i class="fa-solid fa-envelope"></i>
+                        Contact Support
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         COOKIE
+    ====================================================== -->
+
+    <div id="cookie-banner">
+
+        <div class="cookie-content">
+
+            <h4>
+                Privacy &amp; Sicurezza
+            </h4>
+
+            <p>
+                Utilizziamo cookie tecnici e storage locale
+                per garantire la migliore esperienza e proteggere
+                le preferenze della sessione.
+            </p>
+
+        </div>
+
+        <div class="cookie-actions">
+
+            <button
+                type="button"
+                class="btn btn-glass"
+                onclick="closeCookieBanner()"
+                style="
+                    padding:10px 18px;
+                    font-size:11px;
+                "
+            >
+                Chiudi
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-cyan"
+                onclick="acceptCookies()"
+                style="
+                    padding:10px 18px;
+                    font-size:11px;
+                "
+            >
+                Accetto
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <div class="container">
+
+            <div class="footer-cols">
+
+                <div class="footer-brand">
+
+                    <div class="footer-logo">
+                        ALERT<span>NET</span>
+                    </div>
+
+                    <p>
+                        Oltre la moderazione. Una corazza digitale
+                        per le tue passioni. Proteggiamo il futuro
+                        delle community online.
+                    </p>
+
+                    <div class="footer-socials">
+
+                        <a
+                            href="#"
+                            class="social-btn"
+                            aria-label="Discord"
+                        >
+                            <i class="fa-brands fa-discord"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="social-btn"
+                            aria-label="GitHub"
+                        >
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="social-btn"
+                            aria-label="X"
+                        >
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="footer-col">
+
+                    <h5>
+                        Infrastruttura
+                    </h5>
+
+                    <ul>
+
+                        <li>
+                            <a href="#status">
+                                Global Nodes
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#status">
+                                Edge Computing
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#status">
+                                Security Vaults
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#status">
+                                System Status
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="footer-col">
+
+                    <h5>
+                        Sviluppatori
+                    </h5>
+
+                    <ul>
+
+                        <li>
+                            <a href="#">
+                                Documentation
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                API Reference
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                GitHub
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                Open Source
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="footer-col">
+
+                    <h5>
+                        Supporto
+                    </h5>
+
+                    <ul>
+
+                        <li>
+                            <a href="#support">
+                                Support Server
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#support">
+                                Help Center
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                Bug Bounty
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="mailto:support@example.com">
+                                Contact Us
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+                    &copy; 2026 AlertNet Continuum Platform.
+                    Made in EU.
+                </p>
+
+                <div class="footer-links">
+
+                    <a href="#">
+                        Privacy Policy
+                    </a>
+
+                    <a href="#">
+                        Terms of Service
+                    </a>
+
+                    <a href="#">
+                        Cookie Settings
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
     <script>
-        const audio = document.getElementById("backgroundAudio");
-        const musicButton = document.getElementById("musicButton");
-        const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
+        "use strict";
 
-        audio.volume = 0.35;
+        /* =====================================================
+           CONFIG
+        ====================================================== */
 
-        function updateMusicButton() {
-            const isPlaying = !audio.paused;
+        const CONFIG_KEY =
+            "alertnet_site_config";
 
-            musicButton.classList.toggle("active", isPlaying);
+        /* =====================================================
+           NAV
+        ====================================================== */
 
-            musicIcon.className = isPlaying
-                ? "fa-solid fa-volume-high"
-                : "fa-solid fa-play";
+        const mainNav =
+            document.getElementById(
+                "mainNav"
+            );
 
-            musicText.textContent = isPlaying
-                ? "Musica attiva"
-                : "Attiva Base";
+        window.addEventListener(
+            "scroll",
+            () => {
+                mainNav.classList.toggle(
+                    "sticky",
+                    window.scrollY > 50
+                );
+            }
+        );
 
-            musicButton.setAttribute(
-                "aria-label",
-                isPlaying
-                    ? "Disattiva musica"
-                    : "Attiva musica"
+        /* =====================================================
+           MOBILE MENU
+        ====================================================== */
+
+        const mobileMenuBtn =
+            document.getElementById(
+                "mobileMenuBtn"
+            );
+
+        const mobileMenu =
+            document.getElementById(
+                "mobileMenu"
+            );
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            () => {
+                mobileMenu.classList.toggle(
+                    "open"
+                );
+            }
+        );
+
+        mobileMenu
+            .querySelectorAll("a")
+            .forEach(link => {
+                link.addEventListener(
+                    "click",
+                    () => {
+                        mobileMenu.classList.remove(
+                            "open"
+                        );
+                    }
+                );
+            });
+
+        /* =====================================================
+           REVEAL
+        ====================================================== */
+
+        const revealObserver =
+            new IntersectionObserver(
+                entries => {
+                    entries.forEach(entry => {
+                        if (
+                            entry.isIntersecting
+                        ) {
+                            entry.target.classList.add(
+                                "active"
+                            );
+
+                            revealObserver.unobserve(
+                                entry.target
+                            );
+                        }
+                    });
+                },
+                {
+                    threshold: 0.1
+                }
+            );
+
+        document
+            .querySelectorAll(".reveal")
+            .forEach(element => {
+                revealObserver.observe(
+                    element
+                );
+            });
+
+        /* =====================================================
+           COOKIE
+        ====================================================== */
+
+        function acceptCookies() {
+            localStorage.setItem(
+                "cookiesAccepted",
+                "true"
+            );
+
+            closeCookieBanner();
+        }
+
+        function closeCookieBanner() {
+            const banner =
+                document.getElementById(
+                    "cookie-banner"
+                );
+
+            banner.classList.remove(
+                "show"
             );
         }
 
-        async function toggleMusic() {
+        window.setTimeout(
+            () => {
+                if (
+                    !localStorage.getItem(
+                        "cookiesAccepted"
+                    )
+                ) {
+                    document
+                        .getElementById(
+                            "cookie-banner"
+                        )
+                        .classList.add(
+                            "show"
+                        );
+                }
+            },
+            1500
+        );
+
+        /* =====================================================
+           LOAD ADMIN CONFIG
+        ====================================================== */
+
+        function getConfig() {
             try {
-                if (audio.paused) {
-                    await audio.play();
-                } else {
-                    audio.pause();
+                const raw =
+                    localStorage.getItem(
+                        CONFIG_KEY
+                    );
+
+                if (!raw) {
+                    return null;
                 }
 
-                updateMusicButton();
+                return JSON.parse(raw);
+
             } catch (error) {
                 console.error(
-                    "Errore nella riproduzione audio:",
+                    "Unable to load AlertNet config:",
                     error
                 );
 
-                updateMusicButton();
+                return null;
             }
         }
 
-        musicButton.addEventListener("click", toggleMusic);
+        function setIndicator(
+            element,
+            status
+        ) {
+            element.className =
+                "status-indicator";
 
-        audio.addEventListener("play", updateMusicButton);
-        audio.addEventListener("pause", updateMusicButton);
-        audio.addEventListener("ended", updateMusicButton);
-
-        window.addEventListener("load", async () => {
-            try {
-                await audio.play();
-            } catch (error) {
-                console.info(
-                    "Autoplay bloccato dal browser. Usa il pulsante della musica."
+            if (status === "online") {
+                element.classList.add(
+                    "status-online"
+                );
+            } else if (
+                status === "warning"
+            ) {
+                element.classList.add(
+                    "status-warning"
+                );
+            } else {
+                element.classList.add(
+                    "status-offline"
                 );
             }
+        }
 
-            updateMusicButton();
-        });
+        function applyConfig() {
+            const config =
+                getConfig();
+
+            if (!config) {
+                return;
+            }
+
+            /* ---------------------------------
+               HERO
+            --------------------------------- */
+
+            if (
+                config.homepage?.hero
+            ) {
+                const hero =
+                    config.homepage.hero;
+
+                if (hero.badge) {
+                    document
+                        .getElementById(
+                            "heroBadge"
+                        )
+                        .textContent =
+                            hero.badge;
+                }
+
+                if (hero.title) {
+                    document
+                        .getElementById(
+                            "heroTitle"
+                        )
+                        .innerHTML =
+                            hero.title;
+                }
+
+                if (hero.description) {
+                    document
+                        .getElementById(
+                            "heroDescription"
+                        )
+                        .textContent =
+                            hero.description;
+                }
+            }
+
+            /* ---------------------------------
+               STATUS
+            --------------------------------- */
+
+            if (
+                config.status
+            ) {
+
+                const status =
+                    config.status;
+
+                if (
+                    status.api
+                ) {
+                    document.getElementById(
+                        "apiValue"
+                    ).textContent =
+                        status.api.value;
+
+                    document.getElementById(
+                        "apiMeta"
+                    ).textContent =
+                        status.api.meta;
+
+                    setIndicator(
+                        document.getElementById(
+                            "apiIndicator"
+                        ),
+                        status.api.status
+                    );
+                }
+
+                if (
+                    status.neural
+                ) {
+                    document.getElementById(
+                        "neuralValue"
+                    ).textContent =
+                        status.neural.value;
+
+                    document.getElementById(
+                        "neuralMeta"
+                    ).textContent =
+                        status.neural.meta;
+
+                    setIndicator(
+                        document.getElementById(
+                            "neuralIndicator"
+                        ),
+                        status.neural.status
+                    );
+                }
+
+                if (
+                    status.shard
+                ) {
+                    document.getElementById(
+                        "shardValue"
+                    ).textContent =
+                        status.shard.value;
+
+                    document.getElementById(
+                        "shardMeta"
+                    ).textContent =
+                        status.shard.meta;
+
+                    setIndicator(
+                        document.getElementById(
+                            "shardIndicator"
+                        ),
+                        status.shard.status
+                    );
+                }
+
+                if (
+                    status.backup
+                ) {
+                    document.getElementById(
+                        "backupValue"
+                    ).textContent =
+                        status.backup.value;
+
+                    document.getElementById(
+                        "backupMeta"
+                    ).textContent =
+                        status.backup.meta;
+
+                    setIndicator(
+                        document.getElementById(
+                            "backupIndicator"
+                        ),
+                        status.backup.status
+                    );
+                }
+            }
+
+            /* ---------------------------------
+               SECTION VISIBILITY
+            --------------------------------- */
+
+            const visibility =
+                config.homepage?.visibility;
+
+            if (!visibility) {
+                return;
+            }
+
+            const sections = {
+                affiliate:
+                    document.getElementById(
+                        "affiliate"
+                    ),
+
+                careers:
+                    document.getElementById(
+                        "careers"
+                    ),
+
+                glossary:
+                    document.getElementById(
+                        "glossary"
+                    ),
+
+                support:
+                    document.getElementById(
+                        "support"
+                    )
+            };
+
+            Object.keys(sections)
+                .forEach(key => {
+
+                    if (
+                        sections[key]
+                    ) {
+                        sections[key].style.display =
+                            visibility[key] === false
+                                ? "none"
+                                : "";
+                    }
+
+                });
+
+            /* ---------------------------------
+               DOCUMENT TITLE
+            --------------------------------- */
+
+            if (
+                config.homepage?.siteTitle
+            ) {
+                document.title =
+                    config.homepage.siteTitle;
+            }
+        }
+
+        applyConfig();
+
+        /* =====================================================
+           SIMULATED API LATENCY
+        ====================================================== */
+
+        window.setInterval(
+            () => {
+
+                const apiMeta =
+                    document.getElementById(
+                        "apiMeta"
+                    );
+
+                const config =
+                    getConfig();
+
+                if (
+                    !config ||
+                    !config.status?.api
+                ) {
+                    return;
+                }
+
+                const latency =
+                    Math.floor(
+                        Math.random() * 5
+                    ) + 12;
+
+                if (
+                    config.status.api.status ===
+                    "online"
+                ) {
+                    apiMeta.textContent =
+                        `Latency: ${latency}ms | Uptime: 100%`;
+                }
+            },
+            3000
+        );
     </script>
 
 </body>
