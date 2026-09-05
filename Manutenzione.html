@@ -1,91 +1,1277 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Pagina di manutenzione programmata di AlertNet Sentinel.">
-  <meta name="theme-color" content="#03070d">
-  <title>AlertNet Sentinel | Manutenzione</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css">
-  <link rel="stylesheet" href="assets/maintenance.css">
-</head>
-<body>
-  <div class="maintenance-shell">
-    <header class="site-header">
-      <a class="brand" href="index.html" aria-label="AlertNet Sentinel, pagina principale">
-        <span class="brand-mark" aria-hidden="true">
-          <svg><use href="assets/icons.svg#icon-shield"></use></svg>
-        </span>
-        <span>
-          <span class="brand-name">AlertNet Sentinel</span>
-          <span class="brand-subtitle">Network security infrastructure</span>
-        </span>
-      </a>
+    <meta charset="UTF-8">
 
-      <div class="header-actions">
-        <button id="musicButton" class="button music-button" type="button" aria-pressed="false" aria-label="Avvia la musica di sottofondo">
-          <svg id="musicIcon" aria-hidden="true"><use href="assets/icons.svg#icon-play"></use></svg>
-          <span id="musicText">Attiva musica</span>
-        </button>
-        <a class="button" href="login.html">
-          <svg aria-hidden="true"><use href="assets/icons.svg#icon-user"></use></svg>
-          <span>Area Admin</span>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#02050a"
+    >
+
+    <title>
+        AlertNet Sentinel | Manutenzione
+    </title>
+
+    <!-- =====================================================
+         MAINTENANCE REDIRECT
+    ====================================================== -->
+
+    <script>
+        (function () {
+            try {
+                const raw =
+                    localStorage.getItem(
+                        "alertnet_site_config"
+                    );
+
+                if (!raw) {
+                    return;
+                }
+
+                const config =
+                    JSON.parse(raw);
+
+                if (
+                    config?.maintenance?.enabled === false
+                ) {
+                    const target =
+                        config.pages?.normal ||
+                        "index.html";
+
+                    window.location.replace(
+                        target
+                    );
+                }
+
+            } catch (error) {
+                console.error(
+                    "AlertNet configuration error:",
+                    error
+                );
+            }
+        })();
+    </script>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        :root {
+            --bg: #02050a;
+            --panel: rgba(8, 15, 24, 0.88);
+
+            --border:
+                rgba(0, 238, 255, 0.14);
+
+            --cyan:
+                #00eeff;
+
+            --cyan-soft:
+                rgba(0, 238, 255, 0.15);
+
+            --text:
+                #f5f7fa;
+
+            --muted:
+                #8190a5;
+
+            --danger:
+                #ff4d67;
+
+            --success:
+                #23e38a;
+
+            --radius:
+                22px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            color: var(--text);
+
+            font-family:
+                "Inter",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 50% -10%,
+                    rgba(0,238,255,0.10),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(123,44,255,0.08),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    145deg,
+                    #010204 0%,
+                    #02050a 45%,
+                    #030912 100%
+                );
+
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.08;
+
+            background-image:
+                linear-gradient(
+                    rgba(0,238,255,0.14) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0,238,255,0.14) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                42px 42px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .page {
+            position: relative;
+
+            min-height: 100vh;
+
+            z-index: 2;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                0 auto;
+
+            padding:
+                22px 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 14px;
+
+            color: var(--cyan);
+
+            background:
+                rgba(0,238,255,0.06);
+
+            border:
+                1px solid
+                rgba(0,238,255,0.20);
+
+            box-shadow:
+                0 0 25px
+                rgba(0,238,255,0.10);
+        }
+
+        .brand-name {
+            font-size: 14px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 8px;
+
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-button {
+            min-height: 42px;
+
+            padding:
+                0 15px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid
+                rgba(0,238,255,0.18);
+
+            background:
+                rgba(0,238,255,0.04);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-button i {
+            color: var(--cyan);
+        }
+
+        main {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                0 auto;
+
+            flex: 1;
+
+            padding:
+                55px 0 35px;
+        }
+
+        .hero {
+            text-align: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            margin-bottom:
+                24px;
+
+            padding:
+                8px 13px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255,77,103,0.055);
+
+            border:
+                1px solid
+                rgba(255,77,103,0.16);
+
+            color:
+                #ff91a1;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--danger);
+
+            box-shadow:
+                0 0 12px
+                rgba(255,77,103,0.80);
+
+            animation:
+                pulse 1.7s
+                ease-in-out
+                infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform:
+                    scale(1);
+
+                opacity: 1;
+            }
+
+            50% {
+                transform:
+                    scale(1.45);
+
+                opacity: 0.55;
+            }
+        }
+
+        .hero h1 {
+            margin: 0 auto;
+
+            max-width: 900px;
+
+            font-size:
+                clamp(
+                    42px,
+                    8vw,
+                    84px
+                );
+
+            font-weight: 800;
+
+            line-height: 0.97;
+
+            letter-spacing: -4px;
+
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: var(--cyan);
+
+            text-shadow:
+                0 0 35px
+                rgba(0,238,255,0.18);
+        }
+
+        .hero-description {
+            max-width: 700px;
+
+            margin:
+                25px auto 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.8;
+        }
+
+        .sentinel-wrap {
+            width:
+                min(860px, 100%);
+
+            margin:
+                52px auto;
+        }
+
+        .sentinel {
+            position: relative;
+
+            min-height: 350px;
+
+            display: grid;
+            place-items: center;
+
+            overflow: hidden;
+
+            padding: 30px;
+
+            border-radius:
+                var(--radius);
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0,238,255,0.05),
+                    transparent 52%
+                ),
+                rgba(4,10,17,0.92);
+
+            box-shadow:
+                inset 0 0 50px
+                rgba(0,238,255,0.025),
+
+                0 25px 80px
+                rgba(0,0,0,0.28);
+        }
+
+        .sentinel::before {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            left: 50%;
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(0,238,255,0.12);
+
+            box-shadow:
+                0 0 0 30px
+                rgba(0,238,255,0.025),
+
+                0 0 0 60px
+                rgba(0,238,255,0.015);
+
+            animation:
+                rotateRing 16s
+                linear
+                infinite;
+        }
+
+        .sentinel::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    transparent 49.7%,
+                    rgba(0,238,255,0.06) 50%,
+                    transparent 50.3%
+                ),
+                linear-gradient(
+                    90deg,
+                    transparent 49.7%,
+                    rgba(0,238,255,0.06) 50%,
+                    transparent 50.3%
+                );
+        }
+
+        @keyframes rotateRing {
+            from {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(0deg);
+            }
+
+            to {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(360deg);
+            }
+        }
+
+        .sentinel-content {
+            position: relative;
+
+            z-index: 3;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            text-align: center;
+        }
+
+        .sentinel-core {
+            width: 98px;
+            height: 98px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(0,238,255,0.40);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0,238,255,0.18),
+                    rgba(0,238,255,0.03) 65%
+                );
+
+            box-shadow:
+                0 0 45px
+                rgba(0,238,255,0.16),
+
+                inset 0 0 25px
+                rgba(0,238,255,0.07);
+
+            animation:
+                breathe 3s
+                ease-in-out
+                infinite;
+        }
+
+        .sentinel-core i {
+            color: var(--cyan);
+
+            font-size: 38px;
+        }
+
+        @keyframes breathe {
+            0%,
+            100% {
+                transform:
+                    scale(1);
+            }
+
+            50% {
+                transform:
+                    scale(1.06);
+            }
+        }
+
+        .sentinel-label {
+            margin-top: 20px;
+
+            color: var(--cyan);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 11px;
+
+            letter-spacing: 2.5px;
+
+            text-transform: uppercase;
+        }
+
+        .sentinel-sub {
+            margin-top: 8px;
+
+            max-width: 600px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 17px;
+        }
+
+        .info-card {
+            padding: 24px;
+
+            border-radius: 18px;
+
+            background:
+                var(--panel);
+
+            border:
+                1px solid
+                var(--border);
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 17px;
+
+            border-radius: 12px;
+
+            background:
+                var(--cyan-soft);
+
+            color:
+                var(--cyan);
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+        }
+
+        .info-card p {
+            margin-top: 9px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.7;
+        }
+
+        footer {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                20px auto 0;
+
+            padding:
+                22px 0 28px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.05);
+
+            color: var(--muted);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 9px;
+        }
+
+        .footer-status {
+            color: var(--success);
+        }
+
+        @media (max-width: 860px) {
+            .info-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            footer {
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                width: 92%;
+            }
+
+            main {
+                width: 92%;
+                padding-top: 35px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .header-button {
+                width: 42px;
+                height: 42px;
+
+                padding: 0;
+            }
+
+            .header-button span {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size:
+                    43px;
+
+                letter-spacing:
+                    -2.5px;
+            }
+
+            .hero-description {
+                font-size: 13px;
+            }
+
+            .sentinel {
+                min-height: 300px;
+
+                padding: 18px;
+            }
+
+            .sentinel::before {
+                width: 175px;
+                height: 175px;
+            }
+
+            .sentinel-core {
+                width: 84px;
+                height: 84px;
+            }
+
+            .sentinel-core i {
+                font-size: 31px;
+            }
+
+            .sentinel-label {
+                font-size: 9px;
+                letter-spacing: 1.7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration:
+                    0.01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header>
+
+        <a
+            href="index.html"
+            class="brand"
+            aria-label="AlertNet Sentinel"
+        >
+
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    AlertNet Sentinel
+                </div>
+
+                <div class="brand-subtitle">
+                    Network Security Infrastructure
+                </div>
+
+            </div>
+
         </a>
-      </div>
+
+        <div class="header-actions">
+
+            <button
+                id="musicButton"
+                type="button"
+                class="header-button"
+                aria-label="Attiva musica"
+            >
+                <i
+                    id="musicIcon"
+                    class="fa-solid fa-play"
+                ></i>
+
+                <span id="musicText">
+                    Attiva Base
+                </span>
+            </button>
+
+            <a
+                href="login.html"
+                class="header-button"
+                aria-label="Accedi come admin"
+            >
+                <i class="fa-solid fa-user-shield"></i>
+
+                <span>
+                    Admin
+                </span>
+            </a>
+
+        </div>
+
     </header>
 
-    <main class="maintenance-main">
-      <section class="hero" aria-labelledby="maintenanceTitle">
-        <div class="status-pill">
-          <span class="status-dot" aria-hidden="true"></span>
-          Sistema in manutenzione
-        </div>
-        <h1 id="maintenanceTitle">Manutenzione <span>programmata</span></h1>
-        <p class="hero-description">
-          AlertNet Sentinel è temporaneamente offline per un intervento sull’infrastruttura di sicurezza. Stiamo applicando aggiornamenti e verifiche tecniche per migliorare affidabilità e prestazioni.
-        </p>
-      </section>
+    <main>
 
-      <section class="sentinel glass-panel" aria-label="Stato manutenzione">
-        <span class="sentinel-scan" aria-hidden="true"></span>
-        <div class="sentinel-content">
-          <div class="sentinel-core" aria-hidden="true">
-            <svg><use href="assets/icons.svg#icon-tools"></use></svg>
-          </div>
-          <div class="sentinel-title mono">Maintenance protocol active</div>
-          <p class="sentinel-copy">Il servizio tornerà operativo al termine delle attività.</p>
-        </div>
-      </section>
+        <section
+            class="hero"
+            aria-labelledby="maintenanceTitle"
+        >
 
-      <section class="info-grid" aria-label="Dettagli dell'intervento">
-        <article class="info-card">
-          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-shield"></use></svg></span>
-          <h2>Sicurezza presidiata</h2>
-          <p>I sistemi critici rimangono sotto monitoraggio per tutta la durata dell’intervento.</p>
-        </article>
-        <article class="info-card">
-          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-server"></use></svg></span>
-          <h2>Infrastruttura aggiornata</h2>
-          <p>Stiamo verificando e aggiornando i componenti centrali della piattaforma AlertNet.</p>
-        </article>
-        <article class="info-card">
-          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-gauge"></use></svg></span>
-          <h2>Prestazioni ottimizzate</h2>
-          <p>L’attività è finalizzata a migliorare stabilità, affidabilità e tempi di risposta.</p>
-        </article>
-      </section>
+            <div class="status-pill">
+
+                <span
+                    class="status-dot"
+                    aria-hidden="true"
+                ></span>
+
+                Sistema in manutenzione
+
+            </div>
+
+            <h1 id="maintenanceTitle">
+                AlertNet
+                <span>On Maintenance</span>
+            </h1>
+
+            <p
+                id="maintenanceMessage"
+                class="hero-description"
+            >
+                AlertNet Sentinel è temporaneamente offline
+                per un intervento programmato sull'infrastruttura
+                di sicurezza.
+            </p>
+
+        </section>
+
+        <section class="sentinel-wrap">
+
+            <div class="sentinel">
+
+                <div class="sentinel-content">
+
+                    <div class="sentinel-core">
+
+                        <i
+                            class="fa-solid fa-screwdriver-wrench"
+                        ></i>
+
+                    </div>
+
+                    <div
+                        id="sentinelLabel"
+                        class="sentinel-label"
+                    >
+                        Maintenance Protocol Active
+                    </div>
+
+                    <div
+                        id="sentinelSub"
+                        class="sentinel-sub"
+                    >
+                        Il Sentinel tornerà operativo al termine
+                        delle operazioni.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="info-grid">
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i
+                        class="fa-solid fa-shield-halved"
+                    ></i>
+                </div>
+
+                <h3>
+                    Sicurezza
+                </h3>
+
+                <p>
+                    I sistemi di sicurezza rimangono sotto
+                    monitoraggio durante l'intervento.
+                </p>
+
+            </article>
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+
+                <h3>
+                    Infrastruttura
+                </h3>
+
+                <p>
+                    Stiamo applicando modifiche e aggiornamenti
+                    ai componenti centrali dell'infrastruttura.
+                </p>
+
+            </article>
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i
+                        class="fa-solid fa-gauge-high"
+                    ></i>
+                </div>
+
+                <h3>
+                    Prestazioni
+                </h3>
+
+                <p>
+                    L'intervento è finalizzato a migliorare
+                    stabilità, affidabilità e performance.
+                </p>
+
+            </article>
+
+        </section>
+
     </main>
 
-    <footer class="site-footer footer-copy">
-      <span>ALERTNET SENTINEL // CORE MAINTENANCE</span>
-      <span class="footer-state"><span class="status-dot" aria-hidden="true"></span>SYSTEM SECURED</span>
-    </footer>
-  </div>
+    <footer>
 
-  <audio id="backgroundAudio" src="Guerriero.mp3" preload="metadata" loop></audio>
-  <script src="assets/maintenance.js" defer></script>
+        <div>
+            ALERTNET SENTINEL // CORE MAINTENANCE
+        </div>
+
+        <div class="footer-status">
+            <i class="fa-solid fa-circle"></i>
+            SYSTEM SECURED
+        </div>
+
+    </footer>
+
+</div>
+
+<audio
+    id="backgroundAudio"
+    src="Guerriero.mp3"
+    preload="auto"
+    loop
+></audio>
+
+<script>
+    "use strict";
+
+    const CONFIG_KEY =
+        "alertnet_site_config";
+
+    const audio =
+        document.getElementById(
+            "backgroundAudio"
+        );
+
+    const musicButton =
+        document.getElementById(
+            "musicButton"
+        );
+
+    const musicIcon =
+        document.getElementById(
+            "musicIcon"
+        );
+
+    const musicText =
+        document.getElementById(
+            "musicText"
+        );
+
+    function getConfig() {
+        try {
+            const raw =
+                localStorage.getItem(
+                    CONFIG_KEY
+                );
+
+            return raw
+                ? JSON.parse(raw)
+                : null;
+
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    function updateMusicButton() {
+        const playing =
+            !audio.paused;
+
+        musicButton.classList.toggle(
+            "active",
+            playing
+        );
+
+        musicIcon.className =
+            playing
+                ? "fa-solid fa-volume-high"
+                : "fa-solid fa-play";
+
+        musicText.textContent =
+            playing
+                ? "Musica attiva"
+                : "Attiva Base";
+    }
+
+    musicButton.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (audio.paused) {
+                    await audio.play();
+                } else {
+                    audio.pause();
+                }
+
+                updateMusicButton();
+
+            } catch (error) {
+
+                console.error(
+                    "Errore audio:",
+                    error
+                );
+
+            }
+        }
+    );
+
+    audio.addEventListener(
+        "play",
+        updateMusicButton
+    );
+
+    audio.addEventListener(
+        "pause",
+        updateMusicButton
+    );
+
+    function applyMaintenanceConfig() {
+
+        const config =
+            getConfig();
+
+        if (!config) {
+            return;
+        }
+
+        if (
+            config.maintenance?.title
+        ) {
+            document.getElementById(
+                "maintenanceTitle"
+            ).innerHTML =
+                config.maintenance.title;
+        }
+
+        if (
+            config.maintenance?.message
+        ) {
+            document.getElementById(
+                "maintenanceMessage"
+            ).textContent =
+                config.maintenance.message;
+        }
+
+        if (
+            config.maintenance?.mode
+        ) {
+
+            const mode =
+                config.maintenance.mode;
+
+            const label =
+                document.getElementById(
+                    "sentinelLabel"
+                );
+
+            const sub =
+                document.getElementById(
+                    "sentinelSub"
+                );
+
+            if (mode === "emergency") {
+
+                label.textContent =
+                    "Emergency Protocol Active";
+
+                sub.textContent =
+                    "Il sistema è temporaneamente isolato per motivi di sicurezza.";
+
+            } else if (
+                mode === "offline"
+            ) {
+
+                label.textContent =
+                    "Service Offline";
+
+                sub.textContent =
+                    "Il servizio non è attualmente disponibile.";
+
+            } else {
+
+                label.textContent =
+                    "Maintenance Protocol Active";
+
+                sub.textContent =
+                    "Il Sentinel tornerà operativo al termine delle operazioni.";
+            }
+        }
+
+        if (
+            config.appearance?.musicVolume
+            !== undefined
+        ) {
+            const volume =
+                Number(
+                    config.appearance.musicVolume
+                );
+
+            audio.volume =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        volume
+                    )
+                ) / 100;
+        }
+
+        updateMusicButton();
+    }
+
+    applyMaintenanceConfig();
+
+    window.setInterval(
+        () => {
+
+            const config =
+                getConfig();
+
+            if (
+                config?.maintenance?.enabled ===
+                false
+            ) {
+                window.location.replace(
+                    config.pages?.normal ||
+                    "index.html"
+                );
+            }
+
+        },
+        5000
+    );
+</script>
+
 </body>
 </html>
