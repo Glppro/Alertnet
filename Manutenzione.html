@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pagina di manutenzione programmata di AlertNet Sentinel.">
+  <meta name="theme-color" content="#03070d">
+  <title>AlertNet Sentinel | Manutenzione</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/maintenance.css">
+</head>
+<body>
+  <div class="maintenance-shell">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="AlertNet Sentinel, pagina principale">
+        <span class="brand-mark" aria-hidden="true">
+          <svg><use href="assets/icons.svg#icon-shield"></use></svg>
+        </span>
+        <span>
+          <span class="brand-name">AlertNet Sentinel</span>
+          <span class="brand-subtitle">Network security infrastructure</span>
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <button id="musicButton" class="button music-button" type="button" aria-pressed="false" aria-label="Avvia la musica di sottofondo">
+          <svg id="musicIcon" aria-hidden="true"><use href="assets/icons.svg#icon-play"></use></svg>
+          <span id="musicText">Attiva musica</span>
+        </button>
+        <a class="button" href="login.html">
+          <svg aria-hidden="true"><use href="assets/icons.svg#icon-user"></use></svg>
+          <span>Area Admin</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="maintenance-main">
+      <section class="hero" aria-labelledby="maintenanceTitle">
+        <div class="status-pill">
+          <span class="status-dot" aria-hidden="true"></span>
+          Sistema in manutenzione
+        </div>
+        <h1 id="maintenanceTitle">Manutenzione <span>programmata</span></h1>
+        <p class="hero-description">
+          AlertNet Sentinel è temporaneamente offline per un intervento sull’infrastruttura di sicurezza. Stiamo applicando aggiornamenti e verifiche tecniche per migliorare affidabilità e prestazioni.
+        </p>
+      </section>
+
+      <section class="sentinel glass-panel" aria-label="Stato manutenzione">
+        <span class="sentinel-scan" aria-hidden="true"></span>
+        <div class="sentinel-content">
+          <div class="sentinel-core" aria-hidden="true">
+            <svg><use href="assets/icons.svg#icon-tools"></use></svg>
+          </div>
+          <div class="sentinel-title mono">Maintenance protocol active</div>
+          <p class="sentinel-copy">Il servizio tornerà operativo al termine delle attività.</p>
+        </div>
+      </section>
+
+      <section class="info-grid" aria-label="Dettagli dell'intervento">
+        <article class="info-card">
+          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-shield"></use></svg></span>
+          <h2>Sicurezza presidiata</h2>
+          <p>I sistemi critici rimangono sotto monitoraggio per tutta la durata dell’intervento.</p>
+        </article>
+        <article class="info-card">
+          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-server"></use></svg></span>
+          <h2>Infrastruttura aggiornata</h2>
+          <p>Stiamo verificando e aggiornando i componenti centrali della piattaforma AlertNet.</p>
+        </article>
+        <article class="info-card">
+          <span class="info-icon" aria-hidden="true"><svg><use href="assets/icons.svg#icon-gauge"></use></svg></span>
+          <h2>Prestazioni ottimizzate</h2>
+          <p>L’attività è finalizzata a migliorare stabilità, affidabilità e tempi di risposta.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer footer-copy">
+      <span>ALERTNET SENTINEL // CORE MAINTENANCE</span>
+      <span class="footer-state"><span class="status-dot" aria-hidden="true"></span>SYSTEM SECURED</span>
+    </footer>
+  </div>
+
+  <audio id="backgroundAudio" src="Guerriero.mp3" preload="metadata" loop></audio>
+  <script src="assets/maintenance.js" defer></script>
+</body>
+</html>
