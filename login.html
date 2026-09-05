@@ -1,955 +1,947 @@
 <!DOCTYPE html>
-
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-<title>AlertNet Sentinel | Admin Login</title>
+    <meta
+        name="description"
+        content="Accesso amministrativo ad AlertNet Sentinel."
+    >
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="theme-color" content="#02050a">
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
-    rel="stylesheet"
->
+    <title>AlertNet Sentinel | Admin Login</title>
 
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<style>
-    :root {
-        --bg: #02050a;
-        --panel: rgba(7, 14, 23, 0.90);
-        --panel-soft: rgba(10, 19, 30, 0.72);
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
 
-        --border: rgba(0, 238, 255, 0.15);
-        --border-hover: rgba(0, 238, 255, 0.38);
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
 
-        --cyan: #00eeff;
-        --cyan-soft: rgba(0, 238, 255, 0.08);
+    <style>
+        :root {
+            --bg: #02050a;
+            --bg-secondary: #030912;
 
-        --purple: #7b2cff;
+            --panel: rgba(7, 14, 23, 0.92);
+            --panel-soft: rgba(10, 19, 30, 0.72);
 
-        --text: #f5f7fa;
-        --muted: #8090a5;
+            --border: rgba(0, 238, 255, 0.15);
+            --border-hover: rgba(0, 238, 255, 0.38);
 
-        --danger: #ff4d67;
-        --success: #23e38a;
+            --cyan: #00eeff;
+            --cyan-dark: #008e9a;
+            --cyan-soft: rgba(0, 238, 255, 0.08);
 
-        --radius: 22px;
-    }
+            --text: #f5f7fa;
+            --muted: #8090a5;
+            --muted-light: #b8c3d1;
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+            --danger: #ff4d67;
+            --success: #23e38a;
 
-    body {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        padding: 30px;
-
-        color: var(--text);
-
-        font-family:
-            "Inter",
-            sans-serif;
-
-        background:
-            radial-gradient(
-                circle at 50% 15%,
-                rgba(0, 238, 255, 0.10),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 20% 80%,
-                rgba(123, 44, 255, 0.08),
-                transparent 24%
-            ),
-            linear-gradient(
-                145deg,
-                #010204 0%,
-                #02050a 45%,
-                #030912 100%
-            );
-
-        overflow: hidden;
-    }
-
-    /* BACKGROUND GRID */
-
-    body::before {
-        content: "";
-
-        position: fixed;
-        inset: 0;
-
-        pointer-events: none;
-
-        opacity: 0.08;
-
-        background-image:
-            linear-gradient(
-                rgba(0, 238, 255, 0.14) 1px,
-                transparent 1px
-            ),
-            linear-gradient(
-                90deg,
-                rgba(0, 238, 255, 0.14) 1px,
-                transparent 1px
-            );
-
-        background-size: 42px 42px;
-
-        mask-image:
-            linear-gradient(
-                to bottom,
-                black,
-                transparent
-            );
-    }
-
-    /* VIGNETTE */
-
-    body::after {
-        content: "";
-
-        position: fixed;
-        inset: 0;
-
-        pointer-events: none;
-
-        background:
-            radial-gradient(
-                circle at center,
-                transparent 30%,
-                rgba(0, 0, 0, 0.62) 100%
-            );
-    }
-
-    .login-page {
-        width: 100%;
-        max-width: 460px;
-
-        position: relative;
-        z-index: 2;
-    }
-
-    /* TOP BRAND */
-
-    .brand {
-        text-align: center;
-
-        margin-bottom: 24px;
-    }
-
-    .brand-icon {
-        width: 66px;
-        height: 66px;
-
-        margin: 0 auto 16px;
-
-        display: grid;
-        place-items: center;
-
-        border-radius: 18px;
-
-        color: var(--cyan);
-
-        background:
-            rgba(0, 238, 255, 0.06);
-
-        border:
-            1px solid
-            rgba(0, 238, 255, 0.22);
-
-        box-shadow:
-            0 0 35px
-            rgba(0, 238, 255, 0.12),
-
-            inset 0 0 25px
-            rgba(0, 238, 255, 0.05);
-    }
-
-    .brand-icon i {
-        font-size: 27px;
-    }
-
-    .brand-title {
-        font-size: 19px;
-
-        font-weight: 800;
-
-        letter-spacing: 3px;
-
-        text-transform: uppercase;
-    }
-
-    .brand-subtitle {
-        margin-top: 6px;
-
-        color: var(--muted);
-
-        font-family:
-            "JetBrains Mono",
-            monospace;
-
-        font-size: 9px;
-
-        letter-spacing: 1.8px;
-
-        text-transform: uppercase;
-    }
-
-    /* LOGIN CARD */
-
-    .login-card {
-        position: relative;
-
-        padding: 32px;
-
-        border-radius:
-            var(--radius);
-
-        border:
-            1px solid
-            var(--border);
-
-        background:
-            linear-gradient(
-                180deg,
-                rgba(10, 19, 30, 0.94),
-                rgba(4, 10, 17, 0.94)
-            );
-
-        box-shadow:
-            0 30px 100px
-            rgba(0, 0, 0, 0.42),
-
-            inset 0 0 60px
-            rgba(0, 238, 255, 0.018);
-    }
-
-    .login-card::before {
-        content: "";
-
-        position: absolute;
-
-        left: 28px;
-        right: 28px;
-        top: 0;
-
-        height: 1px;
-
-        background:
-            linear-gradient(
-                90deg,
-                transparent,
-                rgba(0, 238, 255, 0.65),
-                transparent
-            );
-
-        box-shadow:
-            0 0 14px
-            rgba(0, 238, 255, 0.35);
-    }
-
-    .security-status {
-        display: flex;
-
-        align-items: center;
-
-        gap: 9px;
-
-        margin-bottom: 22px;
-
-        color:
-            var(--success);
-
-        font-family:
-            "JetBrains Mono",
-            monospace;
-
-        font-size: 9px;
-
-        letter-spacing: 1.4px;
-
-        text-transform: uppercase;
-    }
-
-    .security-status .dot {
-        width: 7px;
-        height: 7px;
-
-        border-radius: 50%;
-
-        background:
-            var(--success);
-
-        box-shadow:
-            0 0 12px
-            rgba(35, 227, 138, 0.7);
-    }
-
-    .login-heading {
-        margin-bottom: 7px;
-
-        font-size: 24px;
-
-        font-weight: 800;
-
-        letter-spacing: -0.5px;
-    }
-
-    .login-description {
-        margin-bottom: 28px;
-
-        color: var(--muted);
-
-        font-size: 12px;
-
-        line-height: 1.7;
-    }
-
-    /* FORM */
-
-    .form-group {
-        margin-bottom: 18px;
-    }
-
-    .form-label {
-        display: block;
-
-        margin-bottom: 8px;
-
-        color:
-            #b8c3d1;
-
-        font-family:
-            "JetBrains Mono",
-            monospace;
-
-        font-size: 10px;
-
-        font-weight: 700;
-
-        letter-spacing: 1.2px;
-
-        text-transform: uppercase;
-    }
-
-    .input-wrap {
-        position: relative;
-    }
-
-    .input-icon {
-        position: absolute;
-
-        left: 15px;
-        top: 50%;
-
-        transform:
-            translateY(-50%);
-
-        color:
-            var(--cyan);
-
-        font-size: 13px;
-
-        pointer-events: none;
-    }
-
-    input {
-        width: 100%;
-
-        height: 48px;
-
-        padding:
-            0 44px;
-
-        border:
-            1px solid
-            rgba(0, 238, 255, 0.12);
-
-        border-radius:
-            12px;
-
-        outline: none;
-
-        background:
-            rgba(0, 238, 255, 0.025);
-
-        color:
-            var(--text);
-
-        font-size:
-            13px;
-
-        font-family:
-            "Inter",
-            sans-serif;
-
-        transition:
-            border-color 0.2s ease,
-            box-shadow 0.2s ease,
-            background 0.2s ease;
-    }
-
-    input::placeholder {
-        color:
-            rgba(129, 144, 165, 0.55);
-    }
-
-    input:focus {
-        border-color:
-            var(--border-hover);
-
-        background:
-            rgba(0, 238, 255, 0.04);
-
-        box-shadow:
-            0 0 0 3px
-            rgba(0, 238, 255, 0.06);
-    }
-
-    .password-toggle {
-        position: absolute;
-
-        right: 14px;
-        top: 50%;
-
-        transform:
-            translateY(-50%);
-
-        border: 0;
-
-        background: transparent;
-
-        color:
-            var(--muted);
-
-        cursor: pointer;
-
-        padding: 4px;
-
-        transition:
-            color 0.2s ease;
-    }
-
-    .password-toggle:hover {
-        color:
-            var(--cyan);
-    }
-
-    /* ERROR */
-
-    .error-message {
-        display: none;
-
-        margin-bottom: 17px;
-
-        padding: 12px 13px;
-
-        border-radius: 11px;
-
-        border:
-            1px solid
-            rgba(255, 77, 103, 0.18);
-
-        background:
-            rgba(255, 77, 103, 0.055);
-
-        color:
-            #ff9aaa;
-
-        font-family:
-            "JetBrains Mono",
-            monospace;
-
-        font-size:
-            10px;
-
-        line-height:
-            1.5;
-    }
-
-    .error-message.show {
-        display: flex;
-
-        align-items: flex-start;
-
-        gap: 9px;
-    }
-
-    .error-message i {
-        margin-top: 1px;
-    }
-
-    /* LOGIN BUTTON */
-
-    .login-button {
-        width: 100%;
-
-        height: 50px;
-
-        border: 0;
-
-        border-radius: 12px;
-
-        background:
-            linear-gradient(
-                90deg,
-                #008e9a,
-                var(--cyan)
-            );
-
-        color:
-            #001014;
-
-        font-size:
-            12px;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            0.5px;
-
-        cursor:
-            pointer;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        justify-content:
-            center;
-
-        gap:
-            10px;
-
-        box-shadow:
-            0 12px 28px
-            rgba(0, 238, 255, 0.14);
-
-        transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease,
-            filter 0.2s ease;
-    }
-
-    .login-button:hover {
-        transform:
-            translateY(-2px);
-
-        filter:
-            brightness(1.06);
-
-        box-shadow:
-            0 16px 35px
-            rgba(0, 238, 255, 0.20);
-    }
-
-    .login-button:active {
-        transform:
-            translateY(0);
-    }
-
-    /* BACK BUTTON */
-
-    .back-button {
-        width: 100%;
-
-        margin-top: 12px;
-
-        height: 44px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        gap: 9px;
-
-        border-radius: 11px;
-
-        border:
-            1px solid
-            rgba(255, 255, 255, 0.07);
-
-        background:
-            rgba(255, 255, 255, 0.025);
-
-        color:
-            var(--muted);
-
-        font-size:
-            11px;
-
-        font-weight:
-            600;
-
-        transition:
-            0.2s ease;
-    }
-
-    .back-button:hover {
-        color:
-            var(--text);
-
-        border-color:
-            rgba(0, 238, 255, 0.18);
-
-        background:
-            rgba(0, 238, 255, 0.035);
-    }
-
-    /* FOOTER INFO */
-
-    .login-footer {
-        margin-top: 17px;
-
-        text-align: center;
-
-        color:
-            rgba(129, 144, 165, 0.65);
-
-        font-family:
-            "JetBrains Mono",
-            monospace;
-
-        font-size:
-            8px;
-
-        letter-spacing:
-            0.9px;
-
-        line-height:
-            1.8;
-    }
-
-    .login-footer strong {
-        color:
-            rgba(0, 238, 255, 0.75);
-
-        font-weight:
-            500;
-    }
-
-    /* RESPONSIVE */
-
-    @media (max-width: 520px) {
-
-        body {
-            padding:
-                18px;
+            --radius: 22px;
         }
 
-        .login-card {
-            padding:
-                24px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 18px;
+
+            overflow-x: hidden;
+
+            color: var(--text);
+
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 50% 10%,
+                    rgba(0, 238, 255, 0.10),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 20% 80%,
+                    rgba(123, 44, 255, 0.08),
+                    transparent 24%
+                ),
+                linear-gradient(
+                    145deg,
+                    #010204 0%,
+                    var(--bg) 45%,
+                    var(--bg-secondary) 100%
+                );
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.08;
+
+            background-image:
+                linear-gradient(
+                    rgba(0, 238, 255, 0.14) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0, 238, 255, 0.14) 1px,
+                    transparent 1px
+                );
+
+            background-size: 42px 42px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black 0%,
+                    transparent 100%
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    black 0%,
+                    transparent 100%
+                );
+        }
+
+        body::after {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    transparent 30%,
+                    rgba(0, 0, 0, 0.62) 100%
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .login-page {
+            position: relative;
+            z-index: 2;
+
+            width: 100%;
+            max-width: 460px;
+        }
+
+        /* =========================================
+           BRAND
+        ========================================= */
+
+        .brand {
+            margin-bottom: 24px;
+
+            text-align: center;
+        }
+
+        .brand-icon {
+            width: 66px;
+            height: 66px;
+
+            margin: 0 auto 16px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 18px;
+
+            color: var(--cyan);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(0, 238, 255, 0.09),
+                    rgba(0, 238, 255, 0.025)
+                );
+
+            border:
+                1px solid rgba(0, 238, 255, 0.22);
+
+            box-shadow:
+                0 0 35px rgba(0, 238, 255, 0.12),
+                inset 0 0 25px rgba(0, 238, 255, 0.05);
+        }
+
+        .brand-icon i {
+            font-size: 27px;
         }
 
         .brand-title {
-            font-size:
-                16px;
-        }
-    }
-</style>
-```
+            font-size: 19px;
+            font-weight: 800;
 
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            margin-top: 6px;
+
+            color: var(--muted);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 9px;
+            letter-spacing: 1.8px;
+
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           LOGIN CARD
+        ========================================= */
+
+        .login-card {
+            position: relative;
+
+            padding: 32px;
+
+            overflow: hidden;
+
+            border-radius: var(--radius);
+
+            border: 1px solid var(--border);
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(10, 19, 30, 0.96),
+                    rgba(4, 10, 17, 0.96)
+                );
+
+            box-shadow:
+                0 30px 100px rgba(0, 0, 0, 0.42),
+                inset 0 0 60px rgba(0, 238, 255, 0.018);
+        }
+
+        .login-card::before {
+            content: "";
+
+            position: absolute;
+
+            left: 28px;
+            right: 28px;
+            top: 0;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(0, 238, 255, 0.65),
+                    transparent
+                );
+
+            box-shadow:
+                0 0 14px rgba(0, 238, 255, 0.35);
+        }
+
+        /* =========================================
+           SECURITY STATUS
+        ========================================= */
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 22px;
+
+            color: var(--success);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 9px;
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+        .security-status .dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--success);
+
+            box-shadow:
+                0 0 12px rgba(35, 227, 138, 0.7);
+        }
+
+        /* =========================================
+           HEADING
+        ========================================= */
+
+        .login-heading {
+            margin-bottom: 7px;
+
+            font-size: 24px;
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+        .login-description {
+            margin-bottom: 28px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--muted-light);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--cyan);
+
+            font-size: 13px;
+
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            height: 48px;
+
+            padding: 0 44px;
+
+            border: 1px solid rgba(0, 238, 255, 0.12);
+            border-radius: 12px;
+
+            outline: none;
+
+            background:
+                rgba(0, 238, 255, 0.025);
+
+            color: var(--text);
+
+            font-size: 13px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        input::placeholder {
+            color: rgba(129, 144, 165, 0.55);
+        }
+
+        input:focus {
+            border-color: var(--border-hover);
+
+            background:
+                rgba(0, 238, 255, 0.04);
+
+            box-shadow:
+                0 0 0 3px rgba(0, 238, 255, 0.06);
+        }
+
+        input:focus-visible {
+            outline: none;
+        }
+
+        .password-toggle {
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            display: grid;
+            place-items: center;
+
+            width: 28px;
+            height: 28px;
+
+            border-radius: 7px;
+
+            background: transparent;
+
+            color: var(--muted);
+
+            cursor: pointer;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--cyan);
+
+            background:
+                rgba(0, 238, 255, 0.06);
+        }
+
+        .password-toggle:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 2px;
+        }
+
+        /* =========================================
+           ERROR
+        ========================================= */
+
+        .error-message {
+            display: none;
+
+            margin-bottom: 17px;
+
+            padding: 12px 13px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid rgba(255, 77, 103, 0.18);
+
+            background:
+                rgba(255, 77, 103, 0.055);
+
+            color: #ff9aaa;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+        }
+
+        .error-message i {
+            margin-top: 1px;
+            flex: 0 0 auto;
+        }
+
+        /* =========================================
+           LOGIN BUTTON
+        ========================================= */
+
+        .login-button {
+            width: 100%;
+            height: 50px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            border: 0;
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--cyan-dark),
+                    var(--cyan)
+                );
+
+            color: #001014;
+
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 12px 28px rgba(0, 238, 255, 0.14);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+
+            filter: brightness(1.06);
+
+            box-shadow:
+                0 16px 35px rgba(0, 238, 255, 0.20);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+        }
+
+        .login-button:disabled {
+            cursor: wait;
+            opacity: 0.75;
+
+            transform: none;
+        }
+
+        /* =========================================
+           BACK BUTTON
+        ========================================= */
+
+        .back-button {
+            width: 100%;
+            height: 44px;
+
+            margin-top: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.07);
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 600;
+
+            transition:
+                color 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .back-button:hover {
+            color: var(--text);
+
+            border-color:
+                rgba(0, 238, 255, 0.18);
+
+            background:
+                rgba(0, 238, 255, 0.035);
+        }
+
+        .back-button:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+        }
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .login-footer {
+            margin-top: 17px;
+
+            text-align: center;
+
+            color:
+                rgba(129, 144, 165, 0.65);
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 8px;
+            letter-spacing: 0.9px;
+            line-height: 1.8;
+        }
+
+        .login-footer strong {
+            color: rgba(0, 238, 255, 0.75);
+            font-weight: 500;
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 520px) {
+            body {
+                padding: 18px 14px;
+            }
+
+            .login-card {
+                padding: 24px 20px;
+            }
+
+            .brand-title {
+                font-size: 16px;
+                letter-spacing: 2.3px;
+            }
+
+            .brand-subtitle {
+                font-size: 8px;
+                letter-spacing: 1.35px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 21px 17px;
+            }
+
+            .brand-icon {
+                width: 58px;
+                height: 58px;
+            }
+
+            .brand-title {
+                font-size: 14px;
+            }
+
+            .security-status {
+                font-size: 8px;
+            }
+
+            .login-heading {
+                font-size: 21px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-```
-<main class="login-page">
+    <main class="login-page">
 
-    <!-- BRAND -->
+        <section class="brand" aria-label="AlertNet Sentinel">
 
-    <section class="brand">
-
-        <div class="brand-icon">
-
-            <i class="fa-solid fa-user-shield"></i>
-
-        </div>
-
-        <div class="brand-title">
-            AlertNet Sentinel
-        </div>
-
-        <div class="brand-subtitle">
-            Administrative Security Console
-        </div>
-
-    </section>
-
-
-    <!-- LOGIN -->
-
-    <section class="login-card">
-
-        <div class="security-status">
-
-            <span class="dot"></span>
-
-            Secure authentication gateway
-
-        </div>
-
-
-        <h1 class="login-heading">
-            Accesso Admin
-        </h1>
-
-
-        <p class="login-description">
-
-            Questa area è riservata agli amministratori
-            autorizzati dell'infrastruttura AlertNet Sentinel.
-
-        </p>
-
-
-        <!-- ERRORE -->
-
-        <div
-            id="errorMessage"
-            class="error-message"
-        >
-
-            <i class="fa-solid fa-triangle-exclamation"></i>
-
-            <span id="errorText">
-                Credenziali non valide.
-            </span>
-
-        </div>
-
-
-        <!-- FORM -->
-
-        <form id="loginForm">
-
-            <!-- USERNAME -->
-
-            <div class="form-group">
-
-                <label
-                    class="form-label"
-                    for="username"
-                >
-                    Username
-                </label>
-
-                <div class="input-wrap">
-
-                    <i
-                        class="input-icon fa-solid fa-user"
-                    ></i>
-
-                    <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        placeholder="Inserisci username"
-                        autocomplete="username"
-                        required
-                    >
-
-                </div>
-
+            <div class="brand-icon">
+                <i
+                    class="fa-solid fa-user-shield"
+                    aria-hidden="true"
+                ></i>
             </div>
 
-
-            <!-- PASSWORD -->
-
-            <div class="form-group">
-
-                <label
-                    class="form-label"
-                    for="password"
-                >
-                    Password
-                </label>
-
-                <div class="input-wrap">
-
-                    <i
-                        class="input-icon fa-solid fa-lock"
-                    ></i>
-
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Inserisci password"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                    <button
-                        type="button"
-                        id="togglePassword"
-                        class="password-toggle"
-                        aria-label="Mostra password"
-                    >
-
-                        <i
-                            id="passwordIcon"
-                            class="fa-solid fa-eye"
-                        ></i>
-
-                    </button>
-
-                </div>
-
+            <div class="brand-title">
+                AlertNet Sentinel
             </div>
 
+            <div class="brand-subtitle">
+                Administrative Security Console
+            </div>
 
-            <!-- LOGIN -->
+        </section>
 
-            <button
-                type="submit"
-                class="login-button"
+        <section class="login-card" aria-labelledby="login-heading">
+
+            <div class="security-status">
+                <span class="dot" aria-hidden="true"></span>
+
+                Secure authentication gateway
+            </div>
+
+            <h1
+                id="login-heading"
+                class="login-heading"
+            >
+                Accesso Admin
+            </h1>
+
+            <p class="login-description">
+                Questa area è riservata agli amministratori autorizzati
+                dell'infrastruttura AlertNet Sentinel.
+            </p>
+
+            <div
+                id="errorMessage"
+                class="error-message"
+                role="alert"
+                aria-live="polite"
+            >
+                <i
+                    class="fa-solid fa-triangle-exclamation"
+                    aria-hidden="true"
+                ></i>
+
+                <span id="errorText">
+                    Credenziali non valide.
+                </span>
+            </div>
+
+            <form
+                id="loginForm"
+                novalidate
             >
 
-                <i class="fa-solid fa-right-to-bracket"></i>
+                <div class="form-group">
 
-                Accedi alla Console
+                    <label
+                        class="form-label"
+                        for="username"
+                    >
+                        Username
+                    </label>
 
-            </button>
+                    <div class="input-wrap">
 
-        </form>
+                        <i
+                            class="input-icon fa-solid fa-user"
+                            aria-hidden="true"
+                        ></i>
 
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            placeholder="Inserisci username"
+                            autocomplete="username"
+                            maxlength="64"
+                            spellcheck="false"
+                            required
+                        >
 
-        <!-- BACK -->
+                    </div>
 
-        <a
-            href="index.html"
-            class="back-button"
-        >
+                </div>
 
-            <i class="fa-solid fa-arrow-left"></i>
+                <div class="form-group">
 
-            Torna alla pagina di manutenzione
+                    <label
+                        class="form-label"
+                        for="password"
+                    >
+                        Password
+                    </label>
 
-        </a>
+                    <div class="input-wrap">
 
-    </section>
+                        <i
+                            class="input-icon fa-solid fa-lock"
+                            aria-hidden="true"
+                        ></i>
 
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Inserisci password"
+                            autocomplete="current-password"
+                            maxlength="128"
+                            required
+                        >
 
-    <!-- FOOTER -->
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="password-toggle"
+                            aria-label="Mostra password"
+                        >
+                            <i
+                                id="passwordIcon"
+                                class="fa-solid fa-eye"
+                                aria-hidden="true"
+                            ></i>
+                        </button>
 
-    <div class="login-footer">
+                    </div>
 
-        ALERTNET SENTINEL<br>
+                </div>
 
-        <strong>
-            ADMIN AUTHENTICATION SYSTEM
-        </strong>
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="login-button"
+                >
+                    <i
+                        id="loginIcon"
+                        class="fa-solid fa-right-to-bracket"
+                        aria-hidden="true"
+                    ></i>
 
-        <br>
+                    <span id="loginButtonText">
+                        Accedi alla Console
+                    </span>
+                </button>
 
-        UNAUTHORIZED ACCESS IS PROHIBITED
+            </form>
 
-    </div>
+            <a
+                href="index.html"
+                class="back-button"
+            >
+                <i
+                    class="fa-solid fa-arrow-left"
+                    aria-hidden="true"
+                ></i>
 
-</main>
+                Torna alla pagina di manutenzione
+            </a>
 
+        </section>
 
-<script>
+        <div class="login-footer">
+            ALERTNET SENTINEL<br>
 
-    /*
-    ========================================================
-    CREDENZIALI DEMO
-    ========================================================
+            <strong>
+                ADMIN AUTHENTICATION SYSTEM
+            </strong>
 
-    Username:
-    admin
+            <br>
 
-    Password:
-    Sentinel!Admin_2026#
+            UNAUTHORIZED ACCESS IS PROHIBITED
+        </div>
 
-    NOTA:
-    Questo è un sistema frontend/demo.
-    Per produzione utilizzare un backend.
-    ========================================================
-    */
+    </main>
 
-    const ADMIN_USERNAME = "admin";
+    <script>
+        /*
+        ========================================================
+        CREDENZIALI DEMO
+        ========================================================
 
-    const ADMIN_PASSWORD =
-        "Sentinel!Admin_2026#";
+        Username:
+        admin
 
+        Password:
+        Sentinel!Admin_2026#
 
-    /* ELEMENTI */
+        ATTENZIONE:
+        Questo metodo è esclusivamente frontend/demo.
+        Chiunque abbia accesso al sorgente può recuperare
+        le credenziali.
 
-    const loginForm =
-        document.getElementById(
-            "loginForm"
-        );
+        Per produzione utilizzare autenticazione backend,
+        sessioni server-side, cookie HttpOnly e HTTPS.
+        ========================================================
+        */
 
-    const username =
-        document.getElementById(
-            "username"
-        );
+        const ADMIN_USERNAME = "admin";
+        const ADMIN_PASSWORD = "Sentinel!Admin_2026#";
 
-    const password =
-        document.getElementById(
-            "password"
-        );
+        const loginForm = document.getElementById("loginForm");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
 
-    const errorMessage =
-        document.getElementById(
-            "errorMessage"
-        );
+        const errorMessage = document.getElementById("errorMessage");
+        const errorText = document.getElementById("errorText");
 
-    const errorText =
-        document.getElementById(
-            "errorText"
-        );
+        const togglePassword =
+            document.getElementById("togglePassword");
 
-    const togglePassword =
-        document.getElementById(
-            "togglePassword"
-        );
+        const passwordIcon =
+            document.getElementById("passwordIcon");
 
-    const passwordIcon =
-        document.getElementById(
-            "passwordIcon"
-        );
+        const loginButton =
+            document.getElementById("loginButton");
 
+        const loginIcon =
+            document.getElementById("loginIcon");
 
-    /* =====================================================
-       MOSTRA / NASCONDI PASSWORD
-    ===================================================== */
+        const loginButtonText =
+            document.getElementById("loginButtonText");
 
-    togglePassword.addEventListener(
-        "click",
-        () => {
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add("show");
+        }
 
+        function hideError() {
+            errorMessage.classList.remove("show");
+        }
+
+        togglePassword.addEventListener("click", () => {
             const isPassword =
                 password.type === "password";
 
-
             if (isPassword) {
-
-                password.type =
-                    "text";
+                password.type = "text";
 
                 passwordIcon.className =
                     "fa-solid fa-eye-slash";
@@ -958,11 +950,8 @@
                     "aria-label",
                     "Nascondi password"
                 );
-
             } else {
-
-                password.type =
-                    "password";
+                password.type = "password";
 
                 passwordIcon.className =
                     "fa-solid fa-eye";
@@ -971,22 +960,13 @@
                     "aria-label",
                     "Mostra password"
                 );
-
             }
+        });
 
-        }
-    );
-
-
-    /* =====================================================
-       LOGIN
-    ===================================================== */
-
-    loginForm.addEventListener(
-        "submit",
-        (event) => {
-
+        loginForm.addEventListener("submit", (event) => {
             event.preventDefault();
+
+            hideError();
 
             const enteredUsername =
                 username.value.trim();
@@ -994,92 +974,62 @@
             const enteredPassword =
                 password.value;
 
+            if (!enteredUsername || !enteredPassword) {
+                showError(
+                    "Inserisci username e password."
+                );
 
-            /* NASCONDE EVENTUALE ERRORE */
+                if (!enteredUsername) {
+                    username.focus();
+                } else {
+                    password.focus();
+                }
 
-            errorMessage.classList.remove(
-                "show"
-            );
+                return;
+            }
 
-
-            /* VERIFICA */
-
-            if (
+            const authenticated =
                 enteredUsername === ADMIN_USERNAME &&
-                enteredPassword === ADMIN_PASSWORD
-            ) {
+                enteredPassword === ADMIN_PASSWORD;
 
-                /*
-                    Salviamo un semplice flag
-                    locale per la demo.
-                */
+            if (authenticated) {
+
+                loginButton.disabled = true;
+
+                loginIcon.className =
+                    "fa-solid fa-spinner fa-spin";
+
+                loginButtonText.textContent =
+                    "Autenticazione in corso...";
 
                 sessionStorage.setItem(
                     "alertnet_admin_authenticated",
                     "true"
                 );
 
-
-                /*
-                    Accesso alla console admin.
-                */
-
-                window.location.href =
-                    "admin.html";
+                window.location.replace("admin.html");
 
                 return;
             }
 
-
-            /* CREDENZIALI ERRATE */
-
-            errorText.textContent =
-                "Username o password non validi.";
-
-            errorMessage.classList.add(
-                "show"
+            showError(
+                "Username o password non validi."
             );
 
-
-            password.value =
-                "";
-
+            password.value = "";
             password.focus();
+        });
 
-        }
-    );
+        username.addEventListener(
+            "input",
+            hideError
+        );
 
-
-    /* =====================================================
-       ENTER
-    ===================================================== */
-
-    username.addEventListener(
-        "input",
-        () => {
-
-            errorMessage.classList.remove(
-                "show"
-            );
-
-        }
-    );
-
-
-    password.addEventListener(
-        "input",
-        () => {
-
-            errorMessage.classList.remove(
-                "show"
-            );
-
-        }
-    );
-
-</script>
-```
+        password.addEventListener(
+            "input",
+            hideError
+        );
+    </script>
 
 </body>
 </html>
-```
