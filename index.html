@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -9,41 +11,44 @@
 
     <meta
         name="theme-color"
-        content="#020205"
+        content="#02050a"
     >
 
-    <title id="documentTitle">
-        AlertNet Continuum | The Sovereign Security Layer
+    <title>
+        AlertNet Sentinel | Manutenzione
     </title>
 
     <!-- =====================================================
-         MAINTENANCE GATE
+         MAINTENANCE REDIRECT
     ====================================================== -->
+
     <script>
         (function () {
             try {
                 const raw =
-                    localStorage.getItem("alertnet_site_config");
+                    localStorage.getItem(
+                        "alertnet_site_config"
+                    );
 
                 if (!raw) {
                     return;
                 }
 
-                const config = JSON.parse(raw);
+                const config =
+                    JSON.parse(raw);
 
                 if (
-                    config?.maintenance?.enabled === true
+                    config?.maintenance?.enabled === false
                 ) {
                     const target =
-                        config.pages?.maintenance ||
-                        "manutenzione.html";
+                        config.pages?.normal ||
+                        "index.html";
 
-                    if (
-                        !window.location.pathname.endsWith(target)
-                    ) {
-                        window.location.replace(target);
-                    }
+                    window.location.replace(
+                        target
+                    );
                 }
+
             } catch (error) {
                 console.error(
                     "AlertNet configuration error:",
@@ -54,7 +59,18 @@
     </script>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;500;700&display=swap"
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet"
     >
 
@@ -65,29 +81,38 @@
 
     <style>
         :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.4);
-            --secondary: #0066ff;
-            --accent: #7000ff;
+            --bg: #02050a;
+            --panel: rgba(8, 15, 24, 0.88);
 
-            --bg-base: #020205;
-            --bg-surface: #0a0a0f;
-            --bg-card: rgba(20, 20, 30, 0.6);
+            --border:
+                rgba(0, 238, 255, 0.14);
 
-            --border: rgba(255, 255, 255, 0.08);
+            --cyan:
+                #00eeff;
 
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --text-dark: #475569;
+            --cyan-soft:
+                rgba(0, 238, 255, 0.15);
 
-            --success: #10b981;
-            --error: #ff4757;
-            --warning: #f1c40f;
+            --text:
+                #f5f7fa;
+
+            --muted:
+                #8190a5;
+
+            --danger:
+                #ff4d67;
+
+            --success:
+                #23e38a;
+
+            --radius:
+                22px;
         }
 
         * {
             margin: 0;
             padding: 0;
+
             box-sizing: border-box;
         }
 
@@ -98,1104 +123,706 @@
         body {
             min-height: 100vh;
 
+            color: var(--text);
+
+            font-family:
+                "Inter",
+                sans-serif;
+
             background:
                 radial-gradient(
                     circle at 50% -10%,
-                    rgba(0, 242, 255, 0.06),
+                    rgba(0,238,255,0.10),
                     transparent 32%
                 ),
-                var(--bg-base);
-
-            color: var(--text-main);
-
-            font-family:
-                "Plus Jakarta Sans",
-                sans-serif;
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(123,44,255,0.08),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    145deg,
+                    #010204 0%,
+                    #02050a 45%,
+                    #030912 100%
+                );
 
             overflow-x: hidden;
+        }
 
-            line-height: 1.7;
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.08;
+
+            background-image:
+                linear-gradient(
+                    rgba(0,238,255,0.14) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0,238,255,0.14) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                42px 42px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
         }
 
         a {
             color: inherit;
+            text-decoration: none;
         }
 
-        button,
-        input,
-        textarea,
-        select {
+        button {
             font: inherit;
         }
 
-        .container {
-            width: min(1440px, calc(100% - 80px));
-
-            margin: 0 auto;
-        }
-
-        .section {
-            padding: 120px 0;
-
+        .page {
             position: relative;
-        }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
+            min-height: 100vh;
 
-            transition:
-                opacity 0.8s ease-out,
-                transform 0.8s ease-out;
-        }
+            z-index: 2;
 
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* =============================================
-           BUTTONS
-        ============================================== */
-
-        .btn {
-            min-height: 48px;
-
-            padding: 13px 28px;
-
-            border-radius: 12px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-            text-decoration: none;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-
-            font-size: 14px;
-
-            border: none;
-        }
-
-        .btn-glass {
-            background:
-                rgba(255,255,255,0.03);
-
-            color: #fff;
-
-            border:
-                1px solid var(--border);
-
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-glass:hover {
-            background:
-                rgba(255,255,255,0.08);
-
-            border-color:
-                var(--primary);
-        }
-
-        .btn-cyan {
-            background:
-                var(--primary);
-
-            color: #000;
-
-            box-shadow:
-                0 10px 20px var(--primary-glow);
-        }
-
-        .btn-cyan:hover {
-            transform: translateY(-2px);
-
-            box-shadow:
-                0 15px 30px var(--primary-glow);
-        }
-
-        /* =============================================
-           NAV
-        ============================================== */
-
-        nav {
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-
-            z-index: 9999;
-
-            padding: 30px 0;
-
-            transition:
-                0.4s ease;
-        }
-
-        nav.sticky {
-            padding: 15px 0;
-
-            background:
-                rgba(2, 2, 5, 0.82);
-
-            backdrop-filter:
-                blur(20px);
-
-            border-bottom:
-                1px solid var(--border);
-        }
-
-        .nav-content {
             display: flex;
+            flex-direction: column;
+        }
 
+        header {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                0 auto;
+
+            padding:
+                22px 0;
+
+            display: flex;
             align-items: center;
             justify-content: space-between;
 
-            gap: 24px;
+            gap: 15px;
         }
 
-        .nav-logo {
-            font-size: 24px;
-            font-weight: 900;
-
-            color: #fff;
-
-            text-decoration: none;
-
-            letter-spacing: -1px;
-
-            white-space: nowrap;
-        }
-
-        .nav-logo span {
-            color: var(--primary);
-        }
-
-        .nav-links {
+        .brand {
             display: flex;
-
             align-items: center;
 
-            gap: 26px;
+            gap: 12px;
         }
 
-        .nav-links a {
-            color: var(--text-muted);
+        .brand-icon {
+            width: 46px;
+            height: 46px;
 
-            text-decoration: none;
+            display: grid;
+            place-items: center;
 
-            font-size: 13px;
-            font-weight: 600;
+            border-radius: 14px;
 
-            transition:
-                0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-
-            width: 42px;
-            height: 42px;
-
-            border-radius: 10px;
-
-            border:
-                1px solid var(--border);
+            color: var(--cyan);
 
             background:
-                rgba(255,255,255,0.03);
-
-            color: #fff;
-
-            cursor: pointer;
-        }
-
-        /* =============================================
-           MOBILE NAV
-        ============================================== */
-
-        .mobile-menu {
-            display: none;
-
-            position: fixed;
-
-            top: 80px;
-            left: 15px;
-            right: 15px;
-
-            z-index: 9998;
-
-            padding: 15px;
-
-            background:
-                rgba(5, 7, 12, 0.97);
+                rgba(0,238,255,0.06);
 
             border:
-                1px solid var(--border);
-
-            border-radius: 16px;
-
-            backdrop-filter:
-                blur(25px);
+                1px solid
+                rgba(0,238,255,0.20);
 
             box-shadow:
-                0 25px 70px rgba(0,0,0,0.4);
+                0 0 25px
+                rgba(0,238,255,0.10);
         }
 
-        .mobile-menu.open {
-            display: block;
+        .brand-name {
+            font-size: 14px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
         }
 
-        .mobile-menu a {
-            display: block;
+        .brand-subtitle {
+            margin-top: 3px;
 
-            padding: 12px;
+            color: var(--muted);
 
-            color: var(--text-muted);
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
-            text-decoration: none;
+            font-size: 8px;
 
-            border-radius: 9px;
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
         }
 
-        .mobile-menu a:hover {
-            color: var(--primary);
-
-            background:
-                rgba(0,242,255,0.04);
-        }
-
-        /* =============================================
-           HERO
-        ============================================== */
-
-        .hero {
-            min-height: 860px;
-
+        .header-actions {
             display: flex;
-            align-items: center;
-
-            position: relative;
+            gap: 8px;
         }
 
-        .hero-mesh {
-            position: absolute;
+        .header-button {
+            min-height: 42px;
 
-            inset: 0;
+            padding:
+                0 15px;
 
-            z-index: -1;
-
-            background-image:
-                radial-gradient(
-                    at 0% 0%,
-                    hsla(185,100%,50%,0.10) 0,
-                    transparent 50%
-                ),
-                radial-gradient(
-                    at 100% 0%,
-                    hsla(220,100%,50%,0.10) 0,
-                    transparent 50%
-                );
-        }
-
-        .hero-content {
-            max-width: 950px;
-        }
-
-        .hero-badge {
             display: inline-flex;
 
             align-items: center;
+            justify-content: center;
+
             gap: 8px;
 
-            margin-bottom: 22px;
+            border-radius: 11px;
 
-            padding: 6px 12px;
-
-            border-radius: 7px;
+            border:
+                1px solid
+                rgba(0,238,255,0.18);
 
             background:
-                rgba(0,242,255,0.08);
+                rgba(0,238,255,0.04);
 
-            color: var(--primary);
+            color: var(--text);
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-button i {
+            color: var(--cyan);
+        }
+
+        main {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                0 auto;
+
+            flex: 1;
+
+            padding:
+                55px 0 35px;
+        }
+
+        .hero {
+            text-align: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            margin-bottom:
+                24px;
+
+            padding:
+                8px 13px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255,77,103,0.055);
+
+            border:
+                1px solid
+                rgba(255,77,103,0.16);
+
+            color:
+                #ff91a1;
 
             font-family:
                 "JetBrains Mono",
                 monospace;
 
             font-size: 10px;
+            font-weight: 700;
 
-            letter-spacing: 0.7px;
+            letter-spacing: 1.5px;
 
             text-transform: uppercase;
         }
 
-        .hero-title {
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--danger);
+
+            box-shadow:
+                0 0 12px
+                rgba(255,77,103,0.80);
+
+            animation:
+                pulse 1.7s
+                ease-in-out
+                infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform:
+                    scale(1);
+
+                opacity: 1;
+            }
+
+            50% {
+                transform:
+                    scale(1.45);
+
+                opacity: 0.55;
+            }
+        }
+
+        .hero h1 {
+            margin: 0 auto;
+
+            max-width: 900px;
+
             font-size:
-                clamp(50px, 8vw, 110px);
+                clamp(
+                    42px,
+                    8vw,
+                    84px
+                );
 
             font-weight: 800;
 
-            line-height: 0.92;
+            line-height: 0.97;
 
-            letter-spacing: -5px;
+            letter-spacing: -4px;
 
-            margin-bottom: 30px;
+            text-transform: uppercase;
         }
 
-        .hero-title span {
+        .hero h1 span {
             display: block;
 
-            background:
-                linear-gradient(
-                    90deg,
-                    #fff,
-                    var(--primary)
-                );
+            margin-top: 4px;
 
-            -webkit-background-clip: text;
-            background-clip: text;
+            color: var(--cyan);
 
-            -webkit-text-fill-color: transparent;
+            text-shadow:
+                0 0 35px
+                rgba(0,238,255,0.18);
         }
 
         .hero-description {
-            font-size:
-                clamp(16px, 1.6vw, 20px);
+            max-width: 700px;
 
-            color: var(--text-muted);
+            margin:
+                25px auto 0;
 
-            max-width: 730px;
+            color: var(--muted);
 
-            margin-bottom: 40px;
+            font-size: 14px;
+
+            line-height: 1.8;
         }
 
-        .hero-buttons {
-            display: flex;
+        .sentinel-wrap {
+            width:
+                min(860px, 100%);
 
-            flex-wrap: wrap;
-
-            gap: 14px;
+            margin:
+                52px auto;
         }
 
-        /* =============================================
-           STATUS
-        ============================================== */
+        .sentinel {
+            position: relative;
 
-        .status-section {
-            background:
-                rgba(255,255,255,0.01);
-        }
+            min-height: 350px;
 
-        .section-heading {
-            text-align: center;
-
-            margin-bottom: 60px;
-        }
-
-        .section-heading h2 {
-            font-size:
-                clamp(28px, 4vw, 46px);
-
-            letter-spacing: -1.5px;
-        }
-
-        .section-heading p {
-            margin-top: 8px;
-
-            color: var(--text-muted);
-        }
-
-        .status-grid {
             display: grid;
+            place-items: center;
 
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+            overflow: hidden;
 
-            gap: 20px;
-        }
+            padding: 30px;
 
-        .status-card {
-            background:
-                var(--bg-card);
+            border-radius:
+                var(--radius);
 
             border:
-                1px solid var(--border);
+                1px solid
+                var(--border);
 
-            padding: 25px;
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0,238,255,0.05),
+                    transparent 52%
+                ),
+                rgba(4,10,17,0.92);
 
-            border-radius: 20px;
+            box-shadow:
+                inset 0 0 50px
+                rgba(0,238,255,0.025),
 
-            transition:
-                transform 0.25s ease,
-                border-color 0.25s ease;
+                0 25px 80px
+                rgba(0,0,0,0.28);
         }
 
-        .status-card:hover {
+        .sentinel::before {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            left: 50%;
+            top: 50%;
+
             transform:
-                translateY(-4px);
-
-            border-color:
-                rgba(0,242,255,0.24);
-        }
-
-        .status-header {
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 15px;
-
-            font-size: 11px;
-
-            color: var(--text-muted);
-
-            text-transform:
-                uppercase;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
+                translate(-50%, -50%);
 
             border-radius: 50%;
-        }
 
-        .status-online {
-            background:
-                var(--success);
-
-            box-shadow:
-                0 0 10px var(--success);
-        }
-
-        .status-warning {
-            background:
-                var(--warning);
+            border:
+                1px solid
+                rgba(0,238,255,0.12);
 
             box-shadow:
-                0 0 10px var(--warning);
+                0 0 0 30px
+                rgba(0,238,255,0.025),
+
+                0 0 0 60px
+                rgba(0,238,255,0.015);
+
+            animation:
+                rotateRing 16s
+                linear
+                infinite;
         }
 
-        .status-offline {
-            background:
-                var(--error);
+        .sentinel::after {
+            content: "";
 
-            box-shadow:
-                0 0 10px var(--error);
-        }
+            position: absolute;
 
-        .status-value {
-            font-size: 22px;
+            inset: 0;
 
-            font-weight: 800;
-        }
-
-        .status-meta {
-            margin-top: 9px;
-
-            font-size: 11px;
-
-            color: var(--text-dark);
-        }
-
-        /* =============================================
-           AFFILIATE
-        ============================================== */
-
-        .affiliate-box {
-            display: flex;
-
-            align-items: center;
-
-            gap: 50px;
-
-            padding: 60px;
-
-            border-radius: 30px;
+            pointer-events: none;
 
             background:
                 linear-gradient(
-                    135deg,
-                    rgba(112,0,255,0.1),
-                    rgba(0,102,255,0.1)
+                    transparent 49.7%,
+                    rgba(0,238,255,0.06) 50%,
+                    transparent 50.3%
+                ),
+                linear-gradient(
+                    90deg,
+                    transparent 49.7%,
+                    rgba(0,238,255,0.06) 50%,
+                    transparent 50.3%
                 );
-
-            border:
-                1px solid var(--border);
         }
 
-        .affiliate-content {
-            flex: 1;
+        @keyframes rotateRing {
+            from {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(0deg);
+            }
+
+            to {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(360deg);
+            }
         }
 
-        .affiliate-content h2 {
-            font-size:
-                clamp(30px, 4vw, 42px);
+        .sentinel-content {
+            position: relative;
 
-            margin-bottom: 20px;
-        }
+            z-index: 3;
 
-        .affiliate-content p {
-            color: var(--text-muted);
-
-            margin-bottom: 28px;
-        }
-
-        .affiliate-stats {
-            flex: 1;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 20px;
-        }
-
-        .affiliate-stat {
-            background:
-                rgba(255,255,255,0.05);
-
-            padding: 25px;
-
-            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
             text-align: center;
         }
 
-        .affiliate-stat strong {
-            display: block;
+        .sentinel-core {
+            width: 98px;
+            height: 98px;
 
-            font-size: 30px;
+            display: grid;
+            place-items: center;
 
-            color: var(--primary);
-        }
-
-        .affiliate-stat span {
-            font-size: 11px;
-
-            color: var(--text-muted);
-        }
-
-        /* =============================================
-           CAREERS
-        ============================================== */
-
-        .jobs-heading {
-            margin-bottom: 55px;
-        }
-
-        .jobs-heading h2 {
-            font-size:
-                clamp(32px, 5vw, 48px);
-        }
-
-        .jobs-heading p {
-            color: var(--text-muted);
-        }
-
-        .job-card {
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 25px;
-
-            padding: 28px;
-
-            margin-bottom: 16px;
-
-            background:
-                var(--bg-surface);
+            border-radius: 50%;
 
             border:
-                1px solid var(--border);
-
-            border-radius: 22px;
-
-            transition:
-                0.3s ease;
-        }
-
-        .job-card:hover {
-            border-color:
-                var(--primary);
+                1px solid
+                rgba(0,238,255,0.40);
 
             background:
-                rgba(255,255,255,0.02);
+                radial-gradient(
+                    circle,
+                    rgba(0,238,255,0.18),
+                    rgba(0,238,255,0.03) 65%
+                );
+
+            box-shadow:
+                0 0 45px
+                rgba(0,238,255,0.16),
+
+                inset 0 0 25px
+                rgba(0,238,255,0.07);
+
+            animation:
+                breathe 3s
+                ease-in-out
+                infinite;
         }
 
-        .job-card h4 {
-            font-size: 19px;
+        .sentinel-core i {
+            color: var(--cyan);
+
+            font-size: 38px;
         }
 
-        .job-tags {
-            display: flex;
+        @keyframes breathe {
+            0%,
+            100% {
+                transform:
+                    scale(1);
+            }
 
-            flex-wrap: wrap;
-
-            gap: 8px;
-
-            margin-top: 10px;
+            50% {
+                transform:
+                    scale(1.06);
+            }
         }
 
-        .tag {
-            padding: 4px 11px;
+        .sentinel-label {
+            margin-top: 20px;
 
-            border-radius: 6px;
+            color: var(--cyan);
 
-            font-size: 10px;
-            font-weight: 700;
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
-            background:
-                var(--border);
+            font-size: 11px;
 
-            color: var(--text-muted);
+            letter-spacing: 2.5px;
+
+            text-transform: uppercase;
         }
 
-        /* =============================================
-           GLOSSARY
-        ============================================== */
+        .sentinel-sub {
+            margin-top: 8px;
 
-        .glossary-section {
-            background:
-                rgba(0,0,0,0.30);
+            max-width: 600px;
+
+            color: var(--muted);
+
+            font-size: 12px;
         }
 
-        .glossary-grid {
+        .info-grid {
             display: grid;
 
             grid-template-columns:
                 repeat(3, minmax(0, 1fr));
 
-            gap: 30px;
+            gap: 17px;
         }
 
-        .glossary-item {
-            padding: 5px 0;
+        .info-card {
+            padding: 24px;
+
+            border-radius: 18px;
+
+            background:
+                var(--panel);
+
+            border:
+                1px solid
+                var(--border);
         }
 
-        .glossary-item h4 {
-            color: var(--primary);
+        .card-icon {
+            width: 42px;
+            height: 42px;
 
-            margin-bottom: 9px;
+            display: grid;
+            place-items: center;
 
-            font-size: 16px;
+            margin-bottom: 17px;
+
+            border-radius: 12px;
+
+            background:
+                var(--cyan-soft);
+
+            color:
+                var(--cyan);
         }
 
-        .glossary-item p {
-            color: var(--text-muted);
-
-            font-size: 13px;
+        .info-card h3 {
+            font-size: 14px;
         }
 
-        /* =============================================
-           COOKIE
-        ============================================== */
+        .info-card p {
+            margin-top: 9px;
 
-        #cookie-banner {
-            position: fixed;
+            color: var(--muted);
 
-            left: 30px;
-            right: 30px;
-            bottom: 30px;
+            font-size: 12px;
 
-            z-index: 10000;
+            line-height: 1.7;
+        }
+
+        footer {
+            width:
+                min(1180px, 92%);
+
+            margin:
+                20px auto 0;
+
+            padding:
+                22px 0 28px;
 
             display: flex;
 
             align-items: center;
             justify-content: space-between;
 
-            gap: 20px;
-
-            padding: 22px;
-
-            background:
-                rgba(10,10,15,0.95);
-
-            border:
-                1px solid var(--border);
-
-            border-radius: 20px;
-
-            backdrop-filter:
-                blur(20px);
-
-            box-shadow:
-                0 20px 50px rgba(0,0,0,0.5);
-
-            transform:
-                translateY(200px);
-
-            transition:
-                0.6s ease;
-        }
-
-        #cookie-banner.show {
-            transform:
-                translateY(0);
-        }
-
-        .cookie-content {
-            max-width: 720px;
-        }
-
-        .cookie-content h4 {
-            margin-bottom: 5px;
-        }
-
-        .cookie-content p {
-            font-size: 12px;
-
-            color: var(--text-muted);
-        }
-
-        .cookie-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* =============================================
-           FOOTER
-        ============================================== */
-
-        footer {
-            padding:
-                90px 0 40px;
+            gap: 18px;
 
             border-top:
-                1px solid var(--border);
+                1px solid
+                rgba(255,255,255,0.05);
 
-            background:
-                #010103;
+            color: var(--muted);
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 9px;
         }
 
-        .footer-cols {
-            display: grid;
-
-            grid-template-columns:
-                2fr repeat(3, 1fr);
-
-            gap: 40px;
+        .footer-status {
+            color: var(--success);
         }
 
-        .footer-brand {
-            grid-column:
-                span 1;
-        }
-
-        .footer-logo {
-            font-size: 27px;
-
-            font-weight: 900;
-
-            margin-bottom: 18px;
-        }
-
-        .footer-logo span {
-            color: var(--primary);
-        }
-
-        .footer-brand p {
-            color: var(--text-muted);
-
-            font-size: 13px;
-
-            max-width: 380px;
-        }
-
-        .footer-socials {
-            display: flex;
-
-            gap: 10px;
-
-            margin-top: 25px;
-        }
-
-        .social-btn {
-            width: 43px;
-            height: 43px;
-
-            display: grid;
-            place-items: center;
-
-            border-radius: 11px;
-
-            background:
-                rgba(255,255,255,0.03);
-
-            border:
-                1px solid var(--border);
-
-            color: #fff;
-
-            text-decoration: none;
-        }
-
-        .social-btn:hover {
-            border-color:
-                var(--primary);
-
-            color: var(--primary);
-        }
-
-        .footer-col h5 {
-            margin-bottom: 18px;
-
-            font-size: 12px;
-
-            text-transform:
-                uppercase;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col li {
-            margin-bottom: 10px;
-        }
-
-        .footer-col a {
-            color: var(--text-muted);
-
-            text-decoration: none;
-
-            font-size: 12px;
-        }
-
-        .footer-col a:hover {
-            color: var(--primary);
-        }
-
-        .footer-bottom {
-            margin-top: 60px;
-
-            padding-top: 25px;
-
-            border-top:
-                1px solid var(--border);
-
-            text-align: center;
-
-            color: var(--text-dark);
-
-            font-size: 10px;
-        }
-
-        .footer-links {
-            display: flex;
-
-            justify-content: center;
-
-            flex-wrap: wrap;
-
-            gap: 22px;
-
-            margin-top: 12px;
-        }
-
-        .footer-links a {
-            color: inherit;
-
-            text-decoration: none;
-        }
-
-        /* =============================================
-           RESPONSIVE
-        ============================================== */
-
-        @media (max-width: 1100px) {
-            .container {
-                width:
-                    min(100% - 40px, 1440px);
-            }
-
-            .nav-links,
-            .nav-actions {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display:
-                    grid;
-
-                place-items:
-                    center;
-            }
-
-            .status-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-            .glossary-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 800px) {
-            .section {
-                padding: 80px 0;
-            }
-
-            .hero {
-                min-height: 760px;
-            }
-
-            .hero-title {
-                font-size:
-                    clamp(45px, 13vw, 75px);
-
-                letter-spacing:
-                    -3px;
-            }
-
-            .affiliate-box {
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                padding: 38px;
-
-                gap: 32px;
-            }
-
-            .affiliate-stats {
-                width: 100%;
-            }
-
-            .footer-cols {
-                grid-template-columns:
-                    1fr 1fr;
-            }
-        }
-
-        @media (max-width: 620px) {
-            nav {
-                padding:
-                    18px 0;
-            }
-
-            nav.sticky {
-                padding:
-                    13px 0;
-            }
-
-            .container {
-                width:
-                    calc(100% - 28px);
-            }
-
-            .status-grid {
+        @media (max-width: 860px) {
+            .info-grid {
                 grid-template-columns:
                     1fr;
             }
 
-            .glossary-grid {
-                grid-template-columns:
-                    1fr;
-            }
-
-            .hero {
-                min-height:
-                    690px;
-            }
-
-            .hero-buttons {
-                flex-direction:
-                    column;
-
-                align-items:
-                    stretch;
-            }
-
-            .hero-buttons .btn {
-                width: 100%;
-            }
-
-            .job-card {
+            footer {
                 flex-direction:
                     column;
 
                 align-items:
                     flex-start;
             }
+        }
 
-            .job-card .btn {
-                width: 100%;
+        @media (max-width: 600px) {
+            header {
+                width: 92%;
             }
 
-            .affiliate-box {
-                padding:
-                    28px 20px;
+            main {
+                width: 92%;
+                padding-top: 35px;
             }
 
-            .affiliate-stats {
-                grid-template-columns:
-                    1fr;
+            .brand-subtitle {
+                display: none;
             }
 
-            #cookie-banner {
-                left: 12px;
-                right: 12px;
-                bottom: 12px;
+            .header-button {
+                width: 42px;
+                height: 42px;
 
-                flex-direction:
-                    column;
+                padding: 0;
+            }
 
-                align-items:
-                    stretch;
+            .header-button span {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size:
+                    43px;
+
+                letter-spacing:
+                    -2.5px;
+            }
+
+            .hero-description {
+                font-size: 13px;
+            }
+
+            .sentinel {
+                min-height: 300px;
 
                 padding: 18px;
             }
 
-            .cookie-content {
-                max-width: 100%;
+            .sentinel::before {
+                width: 175px;
+                height: 175px;
             }
 
-            .cookie-actions {
-                width: 100%;
-
-                flex-direction:
-                    column;
+            .sentinel-core {
+                width: 84px;
+                height: 84px;
             }
 
-            .cookie-actions .btn {
-                width: 100%;
+            .sentinel-core i {
+                font-size: 31px;
             }
 
-            .footer-cols {
-                grid-template-columns:
-                    1fr;
-            }
-
-            .footer-brand {
-                grid-column:
-                    auto;
+            .sentinel-label {
+                font-size: 9px;
+                letter-spacing: 1.7px;
             }
         }
 
@@ -1203,10 +830,11 @@
             *,
             *::before,
             *::after {
-                animation: none !important;
+                animation-duration:
+                    0.01ms !important;
 
-                scroll-behavior:
-                    auto !important;
+                animation-iteration-count:
+                    1 !important;
 
                 transition-duration:
                     0.01ms !important;
@@ -1217,1320 +845,434 @@
 
 <body>
 
-    <!-- =====================================================
-         NAVIGATION
-    ====================================================== -->
+<div class="page">
 
-    <nav id="mainNav">
+    <header>
 
-        <div class="container nav-content">
+        <a
+            href="index.html"
+            class="brand"
+            aria-label="AlertNet Sentinel"
+        >
 
-            <a
-                href="index.html"
-                class="nav-logo"
-            >
-                ALERT<span>NET</span>
-            </a>
-
-            <div class="nav-links">
-
-                <a href="#status">
-                    Network Status
-                </a>
-
-                <a href="#affiliate">
-                    Partners
-                </a>
-
-                <a href="#careers">
-                    Careers
-                </a>
-
-                <a href="#glossary">
-                    Glossary
-                </a>
-
-                <a href="#support">
-                    Help Desk
-                </a>
-
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
 
-            <div class="nav-actions">
+            <div>
 
-                <a
-                    href="#support"
-                    class="btn btn-glass"
-                >
-                    Support Server
-                </a>
+                <div class="brand-name">
+                    AlertNet Sentinel
+                </div>
 
-                <a
-                    href="#status"
-                    class="btn btn-cyan"
-                >
-                    Dashboard
-                </a>
-
-            </div>
-
-            <button
-                type="button"
-                id="mobileMenuBtn"
-                class="mobile-menu-btn"
-                aria-label="Apri menu"
-            >
-                <i class="fa-solid fa-bars"></i>
-            </button>
-
-        </div>
-
-    </nav>
-
-    <div
-        id="mobileMenu"
-        class="mobile-menu"
-    >
-
-        <a href="#status">
-            Network Status
-        </a>
-
-        <a href="#affiliate">
-            Partners
-        </a>
-
-        <a href="#careers">
-            Careers
-        </a>
-
-        <a href="#glossary">
-            Glossary
-        </a>
-
-        <a href="#support">
-            Help Desk
-        </a>
-
-    </div>
-
-    <!-- =====================================================
-         HERO
-    ====================================================== -->
-
-    <header class="hero">
-
-        <div class="hero-mesh"></div>
-
-        <div class="container">
-
-            <div class="hero-content reveal">
-
-                <span
-                    id="heroBadge"
-                    class="hero-badge"
-                >
-                    NEXUS UPDATE LIVE
-                </span>
-
-                <h1
-                    id="heroTitle"
-                    class="hero-title"
-                >
-                    Your Community,
-                    <span>Unbreakable.</span>
-                </h1>
-
-                <p
-                    id="heroDescription"
-                    class="hero-description"
-                >
-                    L'unica suite di sicurezza per Discord con
-                    protezione Anycast, crittografia end-to-end
-                    dei log e AI generativa per il rilevamento
-                    istantaneo delle minacce.
-                </p>
-
-                <div class="hero-buttons">
-
-                    <a
-                        href="#"
-                        class="btn btn-cyan"
-                    >
-                        <i class="fa-brands fa-discord"></i>
-                        Add to Server
-                    </a>
-
-                    <a
-                        href="#status"
-                        class="btn btn-glass"
-                    >
-                        System Status
-                        <span
-                            style="color:var(--success)"
-                        >
-                            ●
-                        </span>
-                    </a>
-
+                <div class="brand-subtitle">
+                    Network Security Infrastructure
                 </div>
 
             </div>
+
+        </a>
+
+        <div class="header-actions">
+
+            <button
+                id="musicButton"
+                type="button"
+                class="header-button"
+                aria-label="Attiva musica"
+            >
+                <i
+                    id="musicIcon"
+                    class="fa-solid fa-play"
+                ></i>
+
+                <span id="musicText">
+                    Attiva Base
+                </span>
+            </button>
+
+            <a
+                href="login.html"
+                class="header-button"
+                aria-label="Accedi come admin"
+            >
+                <i class="fa-solid fa-user-shield"></i>
+
+                <span>
+                    Admin
+                </span>
+            </a>
 
         </div>
 
     </header>
 
-    <!-- =====================================================
-         STATUS
-    ====================================================== -->
+    <main>
 
-    <section
-        class="section status-section"
-        id="status"
-    >
+        <section
+            class="hero"
+            aria-labelledby="maintenanceTitle"
+        >
 
-        <div class="container">
+            <div class="status-pill">
 
-            <div class="section-heading reveal">
+                <span
+                    class="status-dot"
+                    aria-hidden="true"
+                ></span>
 
-                <h2>
-                    Global Infrastructure Status
-                </h2>
-
-                <p>
-                    Monitoraggio in tempo reale dei nostri
-                    nodi di calcolo globali.
-                </p>
+                Sistema in manutenzione
 
             </div>
 
-            <div
-                id="statusGrid"
-                class="status-grid reveal"
+            <h1 id="maintenanceTitle">
+                AlertNet
+                <span>On Maintenance</span>
+            </h1>
+
+            <p
+                id="maintenanceMessage"
+                class="hero-description"
             >
-
-                <div class="status-card">
-
-                    <div class="status-header">
-                        Core API Gateway
-
-                        <div
-                            id="apiIndicator"
-                            class="status-indicator status-online"
-                        ></div>
-                    </div>
-
-                    <div
-                        id="apiValue"
-                        class="status-value"
-                    >
-                        Operational
-                    </div>
-
-                    <div
-                        id="apiMeta"
-                        class="status-meta"
-                    >
-                        Latency: 14ms | Uptime: 100%
-                    </div>
-
-                </div>
-
-                <div class="status-card">
-
-                    <div class="status-header">
-                        Neural Engine
-
-                        <div
-                            id="neuralIndicator"
-                            class="status-indicator status-online"
-                        ></div>
-                    </div>
-
-                    <div
-                        id="neuralValue"
-                        class="status-value"
-                    >
-                        Operational
-                    </div>
-
-                    <div
-                        id="neuralMeta"
-                        class="status-meta"
-                    >
-                        Load: 12% | Analysis: 0.2ms
-                    </div>
-
-                </div>
-
-                <div class="status-card">
-
-                    <div class="status-header">
-                        Shard Clusters
-
-                        <div
-                            id="shardIndicator"
-                            class="status-indicator status-online"
-                        ></div>
-                    </div>
-
-                    <div
-                        id="shardValue"
-                        class="status-value"
-                    >
-                        Operational
-                    </div>
-
-                    <div
-                        id="shardMeta"
-                        class="status-meta"
-                    >
-                        Active Shards: 1,024/1,024
-                    </div>
-
-                </div>
-
-                <div class="status-card">
-
-                    <div class="status-header">
-                        Backup Vaults
-
-                        <div
-                            id="backupIndicator"
-                            class="status-indicator status-online"
-                        ></div>
-                    </div>
-
-                    <div
-                        id="backupValue"
-                        class="status-value"
-                    >
-                        Operational
-                    </div>
-
-                    <div
-                        id="backupMeta"
-                        class="status-meta"
-                    >
-                        Sync: 0.1s ago | Region: EU-WEST
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- =====================================================
-         PARTNER
-    ====================================================== -->
-
-    <section
-        class="section"
-        id="affiliate"
-    >
-
-        <div class="container">
-
-            <div class="affiliate-box reveal">
-
-                <div class="affiliate-content">
-
-                    <h2>
-                        Partner Program
-                    </h2>
-
-                    <p>
-                        Guadagna il 20% su ogni abbonamento Premium
-                        generato tramite il tuo link. Unisciti alla
-                        rete di AlertNet e aiuta a rendere Discord
-                        più sicuro.
-                    </p>
-
-                    <a
-                        href="#"
-                        class="btn btn-cyan"
-                    >
-                        Diventa Partner
-                    </a>
-
-                </div>
-
-                <div class="affiliate-stats">
-
-                    <div class="affiliate-stat">
-                        <strong>20%</strong>
-                        <span>Lifetime Commission</span>
-                    </div>
-
-                    <div class="affiliate-stat">
-                        <strong>Payout</strong>
-                        <span>Monthly (Crypto/Bank)</span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- =====================================================
-         CAREERS
-    ====================================================== -->
-
-    <section
-        class="section"
-        id="careers"
-    >
-
-        <div class="container">
-
-            <div class="jobs-heading reveal">
-
-                <h2>
-                    Join the Defense.
-                </h2>
-
-                <p>
-                    Stiamo costruendo il futuro della sicurezza
-                    digitale. Vuoi farne parte?
-                </p>
-
-            </div>
-
-            <div class="reveal">
-
-                <div class="job-card">
-
-                    <div>
-
-                        <h4>
-                            Senior Rust / Systems Engineer
-                        </h4>
-
-                        <div class="job-tags">
-
-                            <span class="tag">
-                                Remote
-                            </span>
-
-                            <span class="tag">
-                                Full-time
-                            </span>
-
-                            <span class="tag">
-                                Infrastructure
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <a
-                        href="#"
-                        class="btn btn-glass"
-                    >
-                        Apply Now
-                    </a>
-
-                </div>
-
-                <div class="job-card">
-
-                    <div>
-
-                        <h4>
-                            AI Security Specialist
-                        </h4>
-
-                        <div class="job-tags">
-
-                            <span class="tag">
-                                Remote / NYC
-                            </span>
-
-                            <span class="tag">
-                                Full-time
-                            </span>
-
-                            <span class="tag">
-                                R&amp;D
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <a
-                        href="#"
-                        class="btn btn-glass"
-                    >
-                        Apply Now
-                    </a>
-
-                </div>
-
-                <div class="job-card">
-
-                    <div>
-
-                        <h4>
-                            Developer Relations (DevRel)
-                        </h4>
-
-                        <div class="job-tags">
-
-                            <span class="tag">
-                                Remote
-                            </span>
-
-                            <span class="tag">
-                                Contract
-                            </span>
-
-                            <span class="tag">
-                                Growth
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <a
-                        href="#"
-                        class="btn btn-glass"
-                    >
-                        Apply Now
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- =====================================================
-         GLOSSARY
-    ====================================================== -->
-
-    <section
-        class="section glossary-section"
-        id="glossary"
-    >
-
-        <div class="container">
-
-            <div class="section-heading reveal">
-
-                <h2>
-                    Security Glossary
-                </h2>
-
-                <p>
-                    I concetti fondamentali della nostra
-                    tecnologia spiegati semplicemente.
-                </p>
-
-            </div>
-
-            <div class="glossary-grid reveal">
-
-                <div class="glossary-item">
-                    <h4>Nuking</h4>
-                    <p>
-                        L'azione malevola di distruggere un server
-                        eliminando massivamente canali, ruoli e ban
-                        degli utenti.
-                    </p>
-                </div>
-
-                <div class="glossary-item">
-                    <h4>Anycast</h4>
-                    <p>
-                        Una metodologia di routing che indirizza
-                        i dati al nodo fisicamente più vicino,
-                        minimizzando la latenza.
-                    </p>
-                </div>
-
-                <div class="glossary-item">
-                    <h4>Machine Learning</h4>
-                    <p>
-                        L'algoritmo che impara dai raid passati
-                        per prevedere e bloccare attacchi futuri
-                        in autonomia.
-                    </p>
-                </div>
-
-                <div class="glossary-item">
-                    <h4>Token Grabbing</h4>
-                    <p>
-                        Un tipo di attacco phishing mirato a rubare
-                        l'accesso dell'account Discord tramite link
-                        contraffatti.
-                    </p>
-                </div>
-
-                <div class="glossary-item">
-                    <h4>SLA (Service Level Agreement)</h4>
-                    <p>
-                        Il contratto che garantisce la disponibilità
-                        minima del servizio.
-                    </p>
-                </div>
-
-                <div class="glossary-item">
-                    <h4>Honeypot</h4>
-                    <p>
-                        Un sistema esca progettato per attirare i bot
-                        malevoli e bloccarli a livello di sicurezza.
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- =====================================================
-         SUPPORT
-    ====================================================== -->
-
-    <section
-        class="section"
-        id="support"
-    >
-
-        <div class="container">
-
-            <div
-                class="section-heading reveal"
-            >
-
-                <h2>
-                    Need Help?
-                </h2>
-
-                <p>
-                    Il nostro sistema di supporto è disponibile
-                    per assistenza tecnica e segnalazioni.
-                </p>
-
-                <div
-                    style="
-                        margin-top:25px;
-                        display:flex;
-                        justify-content:center;
-                        gap:12px;
-                        flex-wrap:wrap;
-                    "
-                >
-                    <a
-                        href="#"
-                        class="btn btn-cyan"
-                    >
-                        <i class="fa-brands fa-discord"></i>
-                        Support Server
-                    </a>
-
-                    <a
-                        href="mailto:support@example.com"
-                        class="btn btn-glass"
-                    >
-                        <i class="fa-solid fa-envelope"></i>
-                        Contact Support
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- =====================================================
-         COOKIE
-    ====================================================== -->
-
-    <div id="cookie-banner">
-
-        <div class="cookie-content">
-
-            <h4>
-                Privacy &amp; Sicurezza
-            </h4>
-
-            <p>
-                Utilizziamo cookie tecnici e storage locale
-                per garantire la migliore esperienza e proteggere
-                le preferenze della sessione.
+                AlertNet Sentinel è temporaneamente offline
+                per un intervento programmato sull'infrastruttura
+                di sicurezza.
             </p>
 
-        </div>
+        </section>
 
-        <div class="cookie-actions">
+        <section class="sentinel-wrap">
 
-            <button
-                type="button"
-                class="btn btn-glass"
-                onclick="closeCookieBanner()"
-                style="
-                    padding:10px 18px;
-                    font-size:11px;
-                "
-            >
-                Chiudi
-            </button>
+            <div class="sentinel">
 
-            <button
-                type="button"
-                class="btn btn-cyan"
-                onclick="acceptCookies()"
-                style="
-                    padding:10px 18px;
-                    font-size:11px;
-                "
-            >
-                Accetto
-            </button>
+                <div class="sentinel-content">
 
-        </div>
+                    <div class="sentinel-core">
 
-    </div>
+                        <i
+                            class="fa-solid fa-screwdriver-wrench"
+                        ></i>
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
+                    </div>
+
+                    <div
+                        id="sentinelLabel"
+                        class="sentinel-label"
+                    >
+                        Maintenance Protocol Active
+                    </div>
+
+                    <div
+                        id="sentinelSub"
+                        class="sentinel-sub"
+                    >
+                        Il Sentinel tornerà operativo al termine
+                        delle operazioni.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="info-grid">
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i
+                        class="fa-solid fa-shield-halved"
+                    ></i>
+                </div>
+
+                <h3>
+                    Sicurezza
+                </h3>
+
+                <p>
+                    I sistemi di sicurezza rimangono sotto
+                    monitoraggio durante l'intervento.
+                </p>
+
+            </article>
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+
+                <h3>
+                    Infrastruttura
+                </h3>
+
+                <p>
+                    Stiamo applicando modifiche e aggiornamenti
+                    ai componenti centrali dell'infrastruttura.
+                </p>
+
+            </article>
+
+            <article class="info-card">
+
+                <div class="card-icon">
+                    <i
+                        class="fa-solid fa-gauge-high"
+                    ></i>
+                </div>
+
+                <h3>
+                    Prestazioni
+                </h3>
+
+                <p>
+                    L'intervento è finalizzato a migliorare
+                    stabilità, affidabilità e performance.
+                </p>
+
+            </article>
+
+        </section>
+
+    </main>
 
     <footer>
 
-        <div class="container">
+        <div>
+            ALERTNET SENTINEL // CORE MAINTENANCE
+        </div>
 
-            <div class="footer-cols">
-
-                <div class="footer-brand">
-
-                    <div class="footer-logo">
-                        ALERT<span>NET</span>
-                    </div>
-
-                    <p>
-                        Oltre la moderazione. Una corazza digitale
-                        per le tue passioni. Proteggiamo il futuro
-                        delle community online.
-                    </p>
-
-                    <div class="footer-socials">
-
-                        <a
-                            href="#"
-                            class="social-btn"
-                            aria-label="Discord"
-                        >
-                            <i class="fa-brands fa-discord"></i>
-                        </a>
-
-                        <a
-                            href="#"
-                            class="social-btn"
-                            aria-label="GitHub"
-                        >
-                            <i class="fa-brands fa-github"></i>
-                        </a>
-
-                        <a
-                            href="#"
-                            class="social-btn"
-                            aria-label="X"
-                        >
-                            <i class="fa-brands fa-x-twitter"></i>
-                        </a>
-
-                    </div>
-
-                </div>
-
-                <div class="footer-col">
-
-                    <h5>
-                        Infrastruttura
-                    </h5>
-
-                    <ul>
-
-                        <li>
-                            <a href="#status">
-                                Global Nodes
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#status">
-                                Edge Computing
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#status">
-                                Security Vaults
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#status">
-                                System Status
-                            </a>
-                        </li>
-
-                    </ul>
-
-                </div>
-
-                <div class="footer-col">
-
-                    <h5>
-                        Sviluppatori
-                    </h5>
-
-                    <ul>
-
-                        <li>
-                            <a href="#">
-                                Documentation
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#">
-                                API Reference
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#">
-                                GitHub
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#">
-                                Open Source
-                            </a>
-                        </li>
-
-                    </ul>
-
-                </div>
-
-                <div class="footer-col">
-
-                    <h5>
-                        Supporto
-                    </h5>
-
-                    <ul>
-
-                        <li>
-                            <a href="#support">
-                                Support Server
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#support">
-                                Help Center
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#">
-                                Bug Bounty
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="mailto:support@example.com">
-                                Contact Us
-                            </a>
-                        </li>
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-
-                <p>
-                    &copy; 2026 AlertNet Continuum Platform.
-                    Made in EU.
-                </p>
-
-                <div class="footer-links">
-
-                    <a href="#">
-                        Privacy Policy
-                    </a>
-
-                    <a href="#">
-                        Terms of Service
-                    </a>
-
-                    <a href="#">
-                        Cookie Settings
-                    </a>
-
-                </div>
-
-            </div>
-
+        <div class="footer-status">
+            <i class="fa-solid fa-circle"></i>
+            SYSTEM SECURED
         </div>
 
     </footer>
 
-    <script>
-        "use strict";
+</div>
 
-        /* =====================================================
-           CONFIG
-        ====================================================== */
+<audio
+    id="backgroundAudio"
+    src="Guerriero.mp3"
+    preload="auto"
+    loop
+></audio>
 
-        const CONFIG_KEY =
-            "alertnet_site_config";
+<script>
+    "use strict";
 
-        /* =====================================================
-           NAV
-        ====================================================== */
+    const CONFIG_KEY =
+        "alertnet_site_config";
 
-        const mainNav =
-            document.getElementById(
-                "mainNav"
-            );
-
-        window.addEventListener(
-            "scroll",
-            () => {
-                mainNav.classList.toggle(
-                    "sticky",
-                    window.scrollY > 50
-                );
-            }
+    const audio =
+        document.getElementById(
+            "backgroundAudio"
         );
 
-        /* =====================================================
-           MOBILE MENU
-        ====================================================== */
-
-        const mobileMenuBtn =
-            document.getElementById(
-                "mobileMenuBtn"
-            );
-
-        const mobileMenu =
-            document.getElementById(
-                "mobileMenu"
-            );
-
-        mobileMenuBtn.addEventListener(
-            "click",
-            () => {
-                mobileMenu.classList.toggle(
-                    "open"
-                );
-            }
+    const musicButton =
+        document.getElementById(
+            "musicButton"
         );
 
-        mobileMenu
-            .querySelectorAll("a")
-            .forEach(link => {
-                link.addEventListener(
-                    "click",
-                    () => {
-                        mobileMenu.classList.remove(
-                            "open"
-                        );
-                    }
+    const musicIcon =
+        document.getElementById(
+            "musicIcon"
+        );
+
+    const musicText =
+        document.getElementById(
+            "musicText"
+        );
+
+    function getConfig() {
+        try {
+            const raw =
+                localStorage.getItem(
+                    CONFIG_KEY
                 );
-            });
 
-        /* =====================================================
-           REVEAL
-        ====================================================== */
+            return raw
+                ? JSON.parse(raw)
+                : null;
 
-        const revealObserver =
-            new IntersectionObserver(
-                entries => {
-                    entries.forEach(entry => {
-                        if (
-                            entry.isIntersecting
-                        ) {
-                            entry.target.classList.add(
-                                "active"
-                            );
-
-                            revealObserver.unobserve(
-                                entry.target
-                            );
-                        }
-                    });
-                },
-                {
-                    threshold: 0.1
-                }
-            );
-
-        document
-            .querySelectorAll(".reveal")
-            .forEach(element => {
-                revealObserver.observe(
-                    element
-                );
-            });
-
-        /* =====================================================
-           COOKIE
-        ====================================================== */
-
-        function acceptCookies() {
-            localStorage.setItem(
-                "cookiesAccepted",
-                "true"
-            );
-
-            closeCookieBanner();
+        } catch (error) {
+            console.error(error);
+            return null;
         }
+    }
 
-        function closeCookieBanner() {
-            const banner =
-                document.getElementById(
-                    "cookie-banner"
-                );
+    function updateMusicButton() {
+        const playing =
+            !audio.paused;
 
-            banner.classList.remove(
-                "show"
-            );
-        }
-
-        window.setTimeout(
-            () => {
-                if (
-                    !localStorage.getItem(
-                        "cookiesAccepted"
-                    )
-                ) {
-                    document
-                        .getElementById(
-                            "cookie-banner"
-                        )
-                        .classList.add(
-                            "show"
-                        );
-                }
-            },
-            1500
+        musicButton.classList.toggle(
+            "active",
+            playing
         );
 
-        /* =====================================================
-           LOAD ADMIN CONFIG
-        ====================================================== */
+        musicIcon.className =
+            playing
+                ? "fa-solid fa-volume-high"
+                : "fa-solid fa-play";
 
-        function getConfig() {
+        musicText.textContent =
+            playing
+                ? "Musica attiva"
+                : "Attiva Base";
+    }
+
+    musicButton.addEventListener(
+        "click",
+        async () => {
+
             try {
-                const raw =
-                    localStorage.getItem(
-                        CONFIG_KEY
-                    );
 
-                if (!raw) {
-                    return null;
+                if (audio.paused) {
+                    await audio.play();
+                } else {
+                    audio.pause();
                 }
 
-                return JSON.parse(raw);
+                updateMusicButton();
 
             } catch (error) {
+
                 console.error(
-                    "Unable to load AlertNet config:",
+                    "Errore audio:",
                     error
                 );
 
-                return null;
             }
         }
+    );
 
-        function setIndicator(
-            element,
-            status
+    audio.addEventListener(
+        "play",
+        updateMusicButton
+    );
+
+    audio.addEventListener(
+        "pause",
+        updateMusicButton
+    );
+
+    function applyMaintenanceConfig() {
+
+        const config =
+            getConfig();
+
+        if (!config) {
+            return;
+        }
+
+        if (
+            config.maintenance?.title
         ) {
-            element.className =
-                "status-indicator";
+            document.getElementById(
+                "maintenanceTitle"
+            ).innerHTML =
+                config.maintenance.title;
+        }
 
-            if (status === "online") {
-                element.classList.add(
-                    "status-online"
+        if (
+            config.maintenance?.message
+        ) {
+            document.getElementById(
+                "maintenanceMessage"
+            ).textContent =
+                config.maintenance.message;
+        }
+
+        if (
+            config.maintenance?.mode
+        ) {
+
+            const mode =
+                config.maintenance.mode;
+
+            const label =
+                document.getElementById(
+                    "sentinelLabel"
                 );
+
+            const sub =
+                document.getElementById(
+                    "sentinelSub"
+                );
+
+            if (mode === "emergency") {
+
+                label.textContent =
+                    "Emergency Protocol Active";
+
+                sub.textContent =
+                    "Il sistema è temporaneamente isolato per motivi di sicurezza.";
+
             } else if (
-                status === "warning"
+                mode === "offline"
             ) {
-                element.classList.add(
-                    "status-warning"
-                );
+
+                label.textContent =
+                    "Service Offline";
+
+                sub.textContent =
+                    "Il servizio non è attualmente disponibile.";
+
             } else {
-                element.classList.add(
-                    "status-offline"
-                );
+
+                label.textContent =
+                    "Maintenance Protocol Active";
+
+                sub.textContent =
+                    "Il Sentinel tornerà operativo al termine delle operazioni.";
             }
         }
 
-        function applyConfig() {
+        if (
+            config.appearance?.musicVolume
+            !== undefined
+        ) {
+            const volume =
+                Number(
+                    config.appearance.musicVolume
+                );
+
+            audio.volume =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        volume
+                    )
+                ) / 100;
+        }
+
+        updateMusicButton();
+    }
+
+    applyMaintenanceConfig();
+
+    window.setInterval(
+        () => {
+
             const config =
                 getConfig();
 
-            if (!config) {
-                return;
-            }
-
-            /* ---------------------------------
-               HERO
-            --------------------------------- */
-
             if (
-                config.homepage?.hero
+                config?.maintenance?.enabled ===
+                false
             ) {
-                const hero =
-                    config.homepage.hero;
-
-                if (hero.badge) {
-                    document
-                        .getElementById(
-                            "heroBadge"
-                        )
-                        .textContent =
-                            hero.badge;
-                }
-
-                if (hero.title) {
-                    document
-                        .getElementById(
-                            "heroTitle"
-                        )
-                        .innerHTML =
-                            hero.title;
-                }
-
-                if (hero.description) {
-                    document
-                        .getElementById(
-                            "heroDescription"
-                        )
-                        .textContent =
-                            hero.description;
-                }
+                window.location.replace(
+                    config.pages?.normal ||
+                    "index.html"
+                );
             }
 
-            /* ---------------------------------
-               STATUS
-            --------------------------------- */
-
-            if (
-                config.status
-            ) {
-
-                const status =
-                    config.status;
-
-                if (
-                    status.api
-                ) {
-                    document.getElementById(
-                        "apiValue"
-                    ).textContent =
-                        status.api.value;
-
-                    document.getElementById(
-                        "apiMeta"
-                    ).textContent =
-                        status.api.meta;
-
-                    setIndicator(
-                        document.getElementById(
-                            "apiIndicator"
-                        ),
-                        status.api.status
-                    );
-                }
-
-                if (
-                    status.neural
-                ) {
-                    document.getElementById(
-                        "neuralValue"
-                    ).textContent =
-                        status.neural.value;
-
-                    document.getElementById(
-                        "neuralMeta"
-                    ).textContent =
-                        status.neural.meta;
-
-                    setIndicator(
-                        document.getElementById(
-                            "neuralIndicator"
-                        ),
-                        status.neural.status
-                    );
-                }
-
-                if (
-                    status.shard
-                ) {
-                    document.getElementById(
-                        "shardValue"
-                    ).textContent =
-                        status.shard.value;
-
-                    document.getElementById(
-                        "shardMeta"
-                    ).textContent =
-                        status.shard.meta;
-
-                    setIndicator(
-                        document.getElementById(
-                            "shardIndicator"
-                        ),
-                        status.shard.status
-                    );
-                }
-
-                if (
-                    status.backup
-                ) {
-                    document.getElementById(
-                        "backupValue"
-                    ).textContent =
-                        status.backup.value;
-
-                    document.getElementById(
-                        "backupMeta"
-                    ).textContent =
-                        status.backup.meta;
-
-                    setIndicator(
-                        document.getElementById(
-                            "backupIndicator"
-                        ),
-                        status.backup.status
-                    );
-                }
-            }
-
-            /* ---------------------------------
-               SECTION VISIBILITY
-            --------------------------------- */
-
-            const visibility =
-                config.homepage?.visibility;
-
-            if (!visibility) {
-                return;
-            }
-
-            const sections = {
-                affiliate:
-                    document.getElementById(
-                        "affiliate"
-                    ),
-
-                careers:
-                    document.getElementById(
-                        "careers"
-                    ),
-
-                glossary:
-                    document.getElementById(
-                        "glossary"
-                    ),
-
-                support:
-                    document.getElementById(
-                        "support"
-                    )
-            };
-
-            Object.keys(sections)
-                .forEach(key => {
-
-                    if (
-                        sections[key]
-                    ) {
-                        sections[key].style.display =
-                            visibility[key] === false
-                                ? "none"
-                                : "";
-                    }
-
-                });
-
-            /* ---------------------------------
-               DOCUMENT TITLE
-            --------------------------------- */
-
-            if (
-                config.homepage?.siteTitle
-            ) {
-                document.title =
-                    config.homepage.siteTitle;
-            }
-        }
-
-        applyConfig();
-
-        /* =====================================================
-           SIMULATED API LATENCY
-        ====================================================== */
-
-        window.setInterval(
-            () => {
-
-                const apiMeta =
-                    document.getElementById(
-                        "apiMeta"
-                    );
-
-                const config =
-                    getConfig();
-
-                if (
-                    !config ||
-                    !config.status?.api
-                ) {
-                    return;
-                }
-
-                const latency =
-                    Math.floor(
-                        Math.random() * 5
-                    ) + 12;
-
-                if (
-                    config.status.api.status ===
-                    "online"
-                ) {
-                    apiMeta.textContent =
-                        `Latency: ${latency}ms | Uptime: 100%`;
-                }
-            },
-            3000
-        );
-    </script>
+        },
+        5000
+    );
+</script>
 
 </body>
 </html>
